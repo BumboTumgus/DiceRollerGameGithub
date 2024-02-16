@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfbd52dc21820594b8cfcaf7e79622be, type: 3}
+  m_Name: EnemyBasicAttack_EASO
+  m_EditorClassIdentifier: 
+  AttackTypeEnum: 0
+  AttackIcon: {fileID: 21300000, guid: 4c2d68d9484eea94d887f6669eb813c3, type: 3}
+  AttackIconColor: {r: 0.8773585, g: 0.3738105, b: 0.3117657, a: 1}
+  AttackTextColor: {r: 0.8773585, g: 0.3738105, b: 0.3117657, a: 1}
+  AttackDamage: 3
+  AttackCount: 1

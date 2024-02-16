@@ -1,0 +1,100 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &1080342276146248810
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4165385755254761791, guid: 11fd03ccf59136c4ba532da94503fdfa,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: c3a1f8ebb5ed0624cb008a49fd956d71, type: 2}
+    - target: {fileID: 5091021899196980453, guid: 11fd03ccf59136c4ba532da94503fdfa,
+        type: 3}
+      propertyPath: m_Name
+      value: Dice_LuckHealing Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 5669028376290862713, guid: 11fd03ccf59136c4ba532da94503fdfa,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 468c86a79f58fd64d9dd88071658762c, type: 2}
+    - target: {fileID: 8126129455405118003, guid: 11fd03ccf59136c4ba532da94503fdfa,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 25.00002
+      objectReference: {fileID: 0}
+    - target: {fileID: 8126129455405118003, guid: 11fd03ccf59136c4ba532da94503fdfa,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 25.00002
+      objectReference: {fileID: 0}
+    - target: {fileID: 8126129455405118003, guid: 11fd03ccf59136c4ba532da94503fdfa,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.573
+      objectReference: {fileID: 0}
+    - target: {fileID: 8126129455405118003, guid: 11fd03ccf59136c4ba532da94503fdfa,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.207
+      objectReference: {fileID: 0}
+    - target: {fileID: 8126129455405118003, guid: 11fd03ccf59136c4ba532da94503fdfa,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -2.668
+      objectReference: {fileID: 0}
+    - target: {fileID: 8126129455405118003, guid: 11fd03ccf59136c4ba532da94503fdfa,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8126129455405118003, guid: 11fd03ccf59136c4ba532da94503fdfa,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8126129455405118003, guid: 11fd03ccf59136c4ba532da94503fdfa,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8126129455405118003, guid: 11fd03ccf59136c4ba532da94503fdfa,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8126129455405118003, guid: 11fd03ccf59136c4ba532da94503fdfa,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 8126129455405118003, guid: 11fd03ccf59136c4ba532da94503fdfa,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 360
+      objectReference: {fileID: 0}
+    - target: {fileID: 8126129455405118003, guid: 11fd03ccf59136c4ba532da94503fdfa,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 360
+      objectReference: {fileID: 0}
+    - target: {fileID: 8726980016765200942, guid: 11fd03ccf59136c4ba532da94503fdfa,
+        type: 3}
+      propertyPath: _startingDiceFaceState
+      value: Lucky
+      objectReference: {fileID: 0}
+    - target: {fileID: 9102769173502277376, guid: 11fd03ccf59136c4ba532da94503fdfa,
+        type: 3}
+      propertyPath: _startingDiceFaceState
+      value: Heal
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 11fd03ccf59136c4ba532da94503fdfa, type: 3}
