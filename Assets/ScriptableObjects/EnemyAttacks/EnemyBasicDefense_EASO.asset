@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cfbd52dc21820594b8cfcaf7e79622be, type: 3}
-  m_Name: EnemyBasicAttack_EASO
+  m_Name: EnemyBasicDefense_EASO
   m_EditorClassIdentifier: 
-  AttackTypeEnum: 0
-  AttackIcon: {fileID: 21300000, guid: 1770df9cdf9fe044182815d7a939e7a2, type: 3}
-  AttackIconColor: {r: 0.8773585, g: 0.3738105, b: 0.3117657, a: 1}
-  AttackTextColor: {r: 0.8773585, g: 0.3738105, b: 0.3117657, a: 1}
-  AttackDamage: 3
+  AttackTypeEnum: 1
+  AttackIcon: {fileID: 21300000, guid: 08dff179af8fc4a4ba51a35e43427adc, type: 3}
+  AttackIconColor: {r: 0.4392157, g: 0.7176471, b: 0.827451, a: 1}
+  AttackTextColor: {r: 0.4392157, g: 0.7176471, b: 0.827451, a: 1}
+  AttackDamage: 4
   AttackCount: 1

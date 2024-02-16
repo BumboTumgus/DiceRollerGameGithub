@@ -50,7 +50,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _availableEnemyAttacks:
   - {fileID: 11400000, guid: 99ed6f7f2c113864bbaa3db97f5c33b4, type: 2}
+  - {fileID: 11400000, guid: 9522ef4975c43074fa448e891a37ed5f, type: 2}
   - {fileID: 11400000, guid: 24fc899e78fb4ed45bc5756041a54d78, type: 2}
+  - {fileID: 11400000, guid: 9522ef4975c43074fa448e891a37ed5f, type: 2}
   _enemyStatsUiPrefab: {fileID: 3191014285041173642, guid: 6b47f9ed5ee49214cbfa86f7e8a8189c,
     type: 3}
   _statsUiSpawnTarget: {fileID: 211870058357592560}
@@ -131,10 +133,45 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 4456359561338144835}
     m_Modifications:
+    - target: {fileID: 12204992394809255, guid: 7fefb550826e69d419c6c48a2fc2d8b5,
+        type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1291806386914591404, guid: 7fefb550826e69d419c6c48a2fc2d8b5,
         type: 3}
       propertyPath: m_Layer
       value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1327646259166722710, guid: 7fefb550826e69d419c6c48a2fc2d8b5,
+        type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2032982259497243515, guid: 7fefb550826e69d419c6c48a2fc2d8b5,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.9396927
+      objectReference: {fileID: 0}
+    - target: {fileID: 2032982259497243515, guid: 7fefb550826e69d419c6c48a2fc2d8b5,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2032982259497243515, guid: 7fefb550826e69d419c6c48a2fc2d8b5,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.3420201
+      objectReference: {fileID: 0}
+    - target: {fileID: 2032982259497243515, guid: 7fefb550826e69d419c6c48a2fc2d8b5,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2032982259497243515, guid: 7fefb550826e69d419c6c48a2fc2d8b5,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -40
       objectReference: {fileID: 0}
     - target: {fileID: 2540688692711272782, guid: 7fefb550826e69d419c6c48a2fc2d8b5,
         type: 3}
@@ -150,6 +187,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Layer
       value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4920035629034916866, guid: 7fefb550826e69d419c6c48a2fc2d8b5,
+        type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5025067016817276842, guid: 7fefb550826e69d419c6c48a2fc2d8b5,
+        type: 3}
+      propertyPath: playOnAwake
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8401675390485257800, guid: 7fefb550826e69d419c6c48a2fc2d8b5,
         type: 3}

@@ -22,7 +22,9 @@ public class UiEntityCombatStats : MonoBehaviour
     [SerializeField] private TMP_Text _enemyAttackText;
     [SerializeField] private Animation _enemyAttackContainerAnimation;
     [SerializeField] private Animation _enemyTurnIndicatorAnimation;
-    
+    [SerializeField] private RectTransform _playerAttackMarkerCounter;
+    [SerializeField] private GameObject _playerAttackMarker;
+
 
     public void UpdateAttackReadout(int attackDamage, int attackCount, bool animateChange = true)
     {
@@ -120,5 +122,25 @@ public class UiEntityCombatStats : MonoBehaviour
             else
                 _enemyTurnIndicatorAnimation.transform.localScale = new Vector3(0,1,1);
         }
+    }
+
+    public void AddPlayerAttackMarker()
+    {
+        Instantiate(_playerAttackMarker, _playerAttackMarkerCounter);
+        StartCoroutine(UpdatePlayerMarkerHolderAtEndOfFrame());
+    }
+
+    private IEnumerator UpdatePlayerMarkerHolderAtEndOfFrame()
+    {
+        yield return new WaitForEndOfFrame();
+        _playerAttackMarkerCounter.sizeDelta = new Vector2(_playerAttackMarkerCounter.GetComponent<HorizontalLayoutGroup>().preferredWidth, _playerAttackMarkerCounter.sizeDelta.y);
+
+    }
+
+    public void RemovePlayerAttackMarker()
+    {
+        if(_playerAttackMarkerCounter.GetChild(0) != null)
+            Destroy(_playerAttackMarkerCounter.GetChild(0).gameObject);
+        StartCoroutine(UpdatePlayerMarkerHolderAtEndOfFrame());
     }
 }

@@ -7,6 +7,7 @@ public class CombatAnimationBehaviour : MonoBehaviour
 {
     private const string ATTACK_ANIM = "Attack";
     private const string DEFENSE_ANIM = "Defense";
+    private const string BUFF_ANIM = "Buff";
     private const string HIT_ANIM = "Hit";
     private const string DEATH_ANIM = "Death";
     private const float SLOMO_ANIM_SPEED = 0.05f;
@@ -17,6 +18,7 @@ public class CombatAnimationBehaviour : MonoBehaviour
     private int _attackAnimIndex = 1;
     private int _hitAnimIndex = 1;
     private int _defenseAnimIndex = 1;
+    private int _buffAnimIndex = 1;
     private Animator _animator;
 
     private void Awake()
@@ -54,6 +56,15 @@ public class CombatAnimationBehaviour : MonoBehaviour
     public void PlayDeathAnimation()
     {
         _animator.Play(DEATH_ANIM);
+        //_animator.SetFloat("Speed", SLOMO_ANIM_SPEED);
+    }
+
+    public void PlayBuffAnimation()
+    {
+        _buffAnimIndex++;
+        if (_buffAnimIndex > SINGLE_ANIM_REPLAY_COUNT)
+            _buffAnimIndex = 1;
+        _animator.Play(BUFF_ANIM + _buffAnimIndex);
         _animator.SetFloat("Speed", SLOMO_ANIM_SPEED);
     }
 

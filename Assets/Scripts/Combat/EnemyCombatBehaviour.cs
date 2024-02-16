@@ -9,7 +9,8 @@ public class EnemyCombatBehaviour : MonoBehaviour
     public CombatAnimationBehaviour CombatAnimationBehaviour { get { return _combatAnimationBehaviour;}}
     public bool IsAlive { get { return _isAlive;}}
     public bool AttacksAreCrtiical { get { return _attacksAreCritical;}}
-    public EnemyAttackScriptableObject CurrentAttackSO { get { return _currentAttackSO;}}
+    public EnemyAttackScriptableObject CurrentAttackSO { get { return _currentAttackSO;} }
+    public UiEntityCombatStats UiCombatStats { get { return _uiCombatStats; } }
 
     [SerializeField] private EnemyAttackScriptableObject[] _availableEnemyAttacks;
     [SerializeField] private GameObject _enemyStatsUiPrefab;
@@ -17,8 +18,6 @@ public class EnemyCombatBehaviour : MonoBehaviour
 
     private int _healthCurrent;
     private int _healthMax;
-    private int _attackDamageCurrent;
-    private int _attackCountCurrent;
     private int _defenseBase;
     private int _defenseCurrent;
     private Vector3 _originalPosition;
@@ -32,7 +31,7 @@ public class EnemyCombatBehaviour : MonoBehaviour
     private void Awake()
     {
         _healthMax = 10;
-        _defenseBase = 2;
+        _defenseBase = 4;
 
         _healthCurrent = _healthMax;
         _originalPosition = transform.position;
@@ -56,12 +55,9 @@ public class EnemyCombatBehaviour : MonoBehaviour
 
     public void NewTurnStatInitialization()
     {
-        _attackDamageCurrent = 2;
-        _attackCountCurrent = 2;
         _defenseCurrent = _defenseBase;
 
         _uiCombatStats.UpdateHealthReadout(_healthCurrent, _healthMax, true, false);
-        _uiCombatStats.UpdateAttackReadout(_attackDamageCurrent, _attackCountCurrent, false);
         _uiCombatStats.UpdateDefenseReadout(_defenseCurrent, true, false);
         _uiCombatStats.TriggerTurnIndicator(false, true);
     }
@@ -92,7 +88,7 @@ public class EnemyCombatBehaviour : MonoBehaviour
             if(_healthCurrent <= 0)
             {
                 _healthCurrent = 0;
-                CharacterDeath();
+                _isAlive = false;
             }
             _uiCombatStats.UpdateHealthReadout(_healthCurrent, _healthMax, false);
         }
@@ -116,11 +112,6 @@ public class EnemyCombatBehaviour : MonoBehaviour
         _uiCombatStats.ShowEnemyAttack(_currentAttackSO);
     }
 
-    public void SetTurnIndicatorUi(bool myTurn)
-    {
-        _uiCombatStats.TriggerTurnIndicator(myTurn);
-    }
-
     public void LoadNextAttack()
     {
         _currentAttackSO = _availableEnemyAttacks[_currentAttackIndex];
@@ -131,16 +122,16 @@ public class EnemyCombatBehaviour : MonoBehaviour
             _currentAttackIndex = 0;
     }
 
-    public void SetupUiStatsRotation(int placementIndex)
+    public void AddDefense(int value)
     {
-        _uiCombatStats.transform.rotation = Quaternion.Euler(0, 10 * (3 - placementIndex), 0);
+        _defenseCurrent += value;
+        _uiCombatStats.UpdateDefenseReadout(_defenseCurrent, true);
     }
 
-    private void CharacterDeath()
+    public void CharacterDeath()
     {
         _isAlive = false;
         _combatAnimationBehaviour.PlayDeathAnimation();
-        CombatManagerSingleton.Instance.RemoveEnemyFromList(this);
         Destroy(gameObject, 2f);
         gameObject.layer = 0;
         _uiCombatStats.HideUi();

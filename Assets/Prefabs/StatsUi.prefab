@@ -1,5 +1,67 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &274286307987414280
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3155391103627445876}
+  - component: {fileID: 5995925102050866927}
+  m_Layer: 9
+  m_Name: PlayerAttackMarker
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &3155391103627445876
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 274286307987414280}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3271980727225188475}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: -35}
+  m_SizeDelta: {x: 80, y: 50}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &5995925102050866927
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 274286307987414280}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 0
+  m_Spacing: -20
+  m_ChildForceExpandWidth: 1
+  m_ChildForceExpandHeight: 1
+  m_ChildControlWidth: 0
+  m_ChildControlHeight: 0
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
 --- !u!1 &363745753573170123
 GameObject:
   m_ObjectHideFlags: 0
@@ -11,7 +73,7 @@ GameObject:
   - component: {fileID: 7783085920598366483}
   - component: {fileID: 7363846179538369371}
   - component: {fileID: 3777579319159257983}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -147,7 +209,7 @@ GameObject:
   - component: {fileID: 5545726055032677851}
   - component: {fileID: 6323631435644453015}
   - component: {fileID: 1990285041414774822}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: Image_03
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -221,7 +283,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6362465065496542674}
   - component: {fileID: 964303822796756254}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: PlayerDefense
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -275,7 +337,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2295801735733492158}
   - component: {fileID: 5658062434035672796}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: PlayerAttack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -329,7 +391,7 @@ GameObject:
   - component: {fileID: 7047423200327809964}
   - component: {fileID: 8386316649600260575}
   - component: {fileID: 7190291444747629559}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -466,7 +528,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3271980727225188475}
   - component: {fileID: 8681125381215513026}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: EnemyAttackIndicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -487,6 +549,7 @@ RectTransform:
   m_Children:
   - {fileID: 3851581596774779419}
   - {fileID: 4223978202001740545}
+  - {fileID: 3155391103627445876}
   m_Father: {fileID: 7212121467861697578}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -525,7 +588,7 @@ GameObject:
   - component: {fileID: 6922988139943399027}
   - component: {fileID: 1344544315737662307}
   - component: {fileID: 1121523595590211155}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: StatsUi
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -644,6 +707,9 @@ MonoBehaviour:
   _enemyAttackText: {fileID: 2067236190836163152}
   _enemyAttackContainerAnimation: {fileID: 8681125381215513026}
   _enemyTurnIndicatorAnimation: {fileID: 6445162728266960572}
+  _playerAttackMarkerCounter: {fileID: 3155391103627445876}
+  _playerAttackMarker: {fileID: 1641337635296854470, guid: a9c2b7116e080994b927cb17b91c72d5,
+    type: 3}
 --- !u!111 &1121523595590211155
 Animation:
   m_ObjectHideFlags: 0
@@ -673,7 +739,7 @@ GameObject:
   - component: {fileID: 7432185283548723971}
   - component: {fileID: 2067236190836163152}
   - component: {fileID: 2384135611673450295}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -825,7 +891,7 @@ GameObject:
   - component: {fileID: 4776040947831434888}
   - component: {fileID: 2277171021097901636}
   - component: {fileID: 8097349501241451221}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: HealthValue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -977,7 +1043,7 @@ GameObject:
   - component: {fileID: 3160151482416565055}
   - component: {fileID: 3373757474169331349}
   - component: {fileID: 5615583507653058819}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: HealthBarFill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1052,7 +1118,7 @@ GameObject:
   - component: {fileID: 3241665503535608314}
   - component: {fileID: 6233440860499927915}
   - component: {fileID: 8293899743881451815}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: Icon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1127,7 +1193,7 @@ GameObject:
   - component: {fileID: 5706833579764191751}
   - component: {fileID: 4440614369381782508}
   - component: {fileID: 999880906256383091}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: Image_04
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1202,7 +1268,7 @@ GameObject:
   - component: {fileID: 8390488119329750223}
   - component: {fileID: 853705880776769026}
   - component: {fileID: 5355609387763188061}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: Icon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1277,7 +1343,7 @@ GameObject:
   - component: {fileID: 691750600045587808}
   - component: {fileID: 398685817229867288}
   - component: {fileID: 3861921451488423079}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: Image_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1352,7 +1418,7 @@ GameObject:
   - component: {fileID: 7470828156387436226}
   - component: {fileID: 8526869813718556601}
   - component: {fileID: 2206960878900299161}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: Image_05
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1428,7 +1494,7 @@ GameObject:
   - component: {fileID: 2436407123195037509}
   - component: {fileID: 1988211564666120985}
   - component: {fileID: 969785935532428911}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: Icon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1520,7 +1586,7 @@ GameObject:
   - component: {fileID: 9117953539363577149}
   - component: {fileID: 3157746224407155876}
   - component: {fileID: 6445162728266960572}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: EnemyTurnIndicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1618,7 +1684,7 @@ GameObject:
   - component: {fileID: 4615095987399920910}
   - component: {fileID: 6844688063850348715}
   - component: {fileID: 2661103610894675916}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: HealthBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1709,7 +1775,7 @@ GameObject:
   - component: {fileID: 6255245570975555163}
   - component: {fileID: 7948827301148950860}
   - component: {fileID: 9173174371789834057}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: Image_02
   m_TagString: Untagged
   m_Icon: {fileID: 0}

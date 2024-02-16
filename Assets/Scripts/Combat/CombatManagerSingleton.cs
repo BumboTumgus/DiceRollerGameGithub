@@ -1,3 +1,4 @@
+using RPGCharacterAnims.Actions;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -65,18 +66,13 @@ public class CombatManagerSingleton : MonoBehaviour
     {
         Invoke(nameof(GivePlayerControlOfTurn), delayInSeconds);
     }
-
-    public void RemoveEnemyFromList(EnemyCombatBehaviour enemyToRemove)
-    {
-        _enemyCombatBehaviours.Remove(enemyToRemove);
-    }
-    
+        
     private IEnumerator SetUpEncounter()
     {
         for(int enemyPrefabIndex = 0; enemyPrefabIndex < _currentEncounter.EnemyPrefabs.Length; enemyPrefabIndex++)
         {
             _enemyCombatBehaviours.Add(Instantiate(_currentEncounter.EnemyPrefabs[enemyPrefabIndex], _enemySpawns[enemyPrefabIndex].position, _enemySpawns[enemyPrefabIndex].rotation).GetComponent<EnemyCombatBehaviour>());
-            _enemyCombatBehaviours[enemyPrefabIndex].SetupUiStatsRotation(enemyPrefabIndex);
+            _enemyCombatBehaviours[enemyPrefabIndex].UiCombatStats.transform.rotation = Quaternion.Euler(0, 10 * (3 - enemyPrefabIndex), 0);
             yield return new WaitForSeconds(enemyPrefabIndex * ENEMY_SPAWN_DELAY);
         }
         SwapToCombatState(CombatState.Idle);
@@ -96,28 +92,38 @@ public class CombatManagerSingleton : MonoBehaviour
         switch(state)
         {
             case CombatState.Idle:
-            temporaryStateText.text = "COMBAT STATE: IDLE";
+                temporaryStateText.text = "COMBAT STATE: IDLE";
                 break;
+
             case CombatState.PlayerPickingTargets:
-            temporaryStateText.text = "COMBAT STATE: PICK TARGETS";
-            _targettedEnemies = new List<EnemyCombatBehaviour>();
+                temporaryStateText.text = "COMBAT STATE: PICK TARGETS";
+                _targettedEnemies = new List<EnemyCombatBehaviour>();
                 break;
+
             case CombatState.PlayerExecutingAttacks:
-            temporaryStateText.text = "COMBAT STATE: EXECUTING PLAYER ATTACK";
-            foreach(EnemyCombatBehaviour enemyCombatBehaviour in _enemyCombatBehaviours)
-                enemyCombatBehaviour.GetComponent<PlayerToEnemyTargettingBehaviour>().SetHighlightStatus(false);
-                StartCoroutine(AllPlayerAttackRoutines());
+                temporaryStateText.text = "COMBAT STATE: EXECUTING PLAYER ATTACK";
+                foreach(EnemyCombatBehaviour enemyCombatBehaviour in _enemyCombatBehaviours)
+                    enemyCombatBehaviour.GetComponent<PlayerToEnemyTargettingBehaviour>().SetHighlightStatus(false);
+                    StartCoroutine(AllPlayerAttackRoutines());
                 break;
+
             case CombatState.EnemyExecutingAttacks:
-            temporaryStateText.text = "COMBAT STATE: EXECUTING ENEMY ATTACK";
-            StartCoroutine(AllEnemyTurns());
+                temporaryStateText.text = "COMBAT STATE: EXECUTING ENEMY ATTACK";
+                foreach (EnemyCombatBehaviour enemy in _enemyCombatBehaviours)
+                {
+                    enemy.NewTurnStatInitialization();
+                }
+                StartCoroutine(AllEnemyTurns());
                 break;
+
             case CombatState.NewCombatRound:
-            temporaryStateText.text = "COMBAT STATE: NEW COMBAT ROUND";
-            foreach(EnemyCombatBehaviour enemy in _enemyCombatBehaviours)
-                enemy.LoadNextAttack();
-            SwapToCombatState(CombatState.Idle);
-            break;
+                temporaryStateText.text = "COMBAT STATE: NEW COMBAT ROUND";
+                foreach (EnemyCombatBehaviour enemy in _enemyCombatBehaviours)
+                {
+                    enemy.LoadNextAttack();
+                }
+                SwapToCombatState(CombatState.Idle);
+                break;
         }
     }
 
@@ -147,8 +153,9 @@ public class CombatManagerSingleton : MonoBehaviour
         {
             EnemyCombatBehaviour enemyCombatBehaviour = _currentHoveredEnemy.GetComponent<EnemyCombatBehaviour>();
             _targettedEnemies.Add(enemyCombatBehaviour);
+            enemyCombatBehaviour.UiCombatStats.AddPlayerAttackMarker();
 
-            if(_targettedEnemies.Count == PlayerCharacterCombatBehaviour.AttackCountCurrent)
+            if (_targettedEnemies.Count == PlayerCharacterCombatBehaviour.AttackCountCurrent)
                 SwapToCombatState(CombatState.PlayerExecutingAttacks);
         }
     }
@@ -176,18 +183,20 @@ public class CombatManagerSingleton : MonoBehaviour
             lastTarget.transform.position = Vector3.Lerp(_enemyAttackEndPoint.position, lastTarget.OriginalPosition, currentTimer / ATTACK_RETURN_TO_START_ANIM_LENGTH);
             yield return _waitForEndOFrame;
         }
-        
+
+        for (int enemyIndex = 0; enemyIndex < _enemyCombatBehaviours.Count; enemyIndex++)
+        {
+            if (!_enemyCombatBehaviours[enemyIndex].IsAlive)
+            {
+                _enemyCombatBehaviours[enemyIndex].CharacterDeath();
+                _enemyCombatBehaviours.Remove(_enemyCombatBehaviours[enemyIndex]);
+                enemyIndex--;
+            }
+        }
 
         yield return new WaitForSeconds(END_OF_ACTION_DELAY);
 
-        bool enemiesStillAlive = false;
-        foreach(EnemyCombatBehaviour enemyCombatBehaviour in _enemyCombatBehaviours)
-        {
-            if(enemyCombatBehaviour.IsAlive)
-                enemiesStillAlive = true;
-        }
-
-        if(enemiesStillAlive)
+        if(_enemyCombatBehaviours.Count > 0)
             SwapToCombatState(CombatState.EnemyExecutingAttacks);
         else
             SwapToCombatState(CombatState.Idle);
@@ -198,6 +207,7 @@ public class CombatManagerSingleton : MonoBehaviour
         _playerCharacterCombatBehaviour.transform.position = _playerAttackStartPoint.position;
         target.transform.position = _enemyAttackStartPoint.position;
         float currentTimer = 0f;
+        target.UiCombatStats.RemovePlayerAttackMarker();
 
         bool criticalStrike = _playerCharacterCombatBehaviour.IsAttackCritical();
         int damage = _playerCharacterCombatBehaviour.AttackDamageCurrent;
@@ -214,7 +224,8 @@ public class CombatManagerSingleton : MonoBehaviour
         if(damage > target.DefenseCurrent && PlayerCharacterCombatBehaviour.VamperismCurrent > 0)
             PlayerCharacterCombatBehaviour.HealHealth(PlayerCharacterCombatBehaviour.VamperismCurrent);
 
-        while(currentTimer < ATTACK_SLIDE_ANIM_LENGTH)
+        target.TakeDamage(damage);
+        while (currentTimer < ATTACK_SLIDE_ANIM_LENGTH)
         {
             currentTimer += Time.deltaTime;
             _playerCharacterCombatBehaviour.transform.position = Vector3.Lerp(_playerAttackStartPoint.position, _playerAttackEndPoint.position, currentTimer / ATTACK_SLIDE_ANIM_LENGTH);
@@ -223,7 +234,6 @@ public class CombatManagerSingleton : MonoBehaviour
         }
         
         target.transform.position = target.OriginalPosition;
-        target.TakeDamage(damage);
         _playerCharacterCombatBehaviour.CombatAnimationBehaviour.SetAnimSpeedToNormal();
         target.CombatAnimationBehaviour.SetAnimSpeedToNormal();
     }
@@ -234,9 +244,15 @@ public class CombatManagerSingleton : MonoBehaviour
         {
             if(!enemy.IsAlive)
                 continue;
-            enemy.SetTurnIndicatorUi(true);
+
+            enemy.UiCombatStats.TriggerTurnIndicator(true);
             yield return new WaitForSeconds(END_OF_ACTION_DELAY);
-            yield return StartCoroutine(AllEnemyAttackRoutines(enemy));
+
+            if(enemy.CurrentAttackSO.AttackTypeEnum == EnemyAttackScriptableObject.AttackType.Attack)
+                yield return StartCoroutine(AllEnemyAttackRoutines(enemy));
+            else
+                yield return StartCoroutine(EnemyBuffRoutine(enemy));
+
         }
 
         SwapToCombatState(CombatState.NewCombatRound);
@@ -263,7 +279,44 @@ public class CombatManagerSingleton : MonoBehaviour
             yield return _waitForEndOFrame;
         }
 
-        enemy.SetTurnIndicatorUi(false);
+        enemy.UiCombatStats.TriggerTurnIndicator(false);
+        enemy.HideAttackUi();
+        yield return new WaitForSeconds(END_OF_ACTION_DELAY);
+    }
+
+    private IEnumerator EnemyBuffRoutine(EnemyCombatBehaviour enemy)
+    {
+        _dividerCanvasAnimation.Play(UI_DIVIDER_APPEAR_ANIM);
+
+        enemy.transform.position = _enemyAttackStartPoint.position;
+        float currentTimer = 0f;
+
+        enemy.CombatAnimationBehaviour.PlayDefenseAnimation();
+
+        //DamageNumberManagerSingleton.Instance.ShowEnemyDamageNumber(damage, damage <= _playerCharacterCombatBehaviour.DefenseCurrent, false, criticalStrike);
+
+        enemy.AddDefense(enemy.CurrentAttackSO.AttackDamage);
+        while (currentTimer < ATTACK_SLIDE_ANIM_LENGTH)
+        {
+            currentTimer += Time.deltaTime;
+            enemy.transform.position = Vector3.Lerp(_enemyAttackStartPoint.position, _enemyAttackEndPoint.position, currentTimer / ATTACK_SLIDE_ANIM_LENGTH);
+            yield return _waitForEndOFrame;
+        }
+
+        enemy.CombatAnimationBehaviour.SetAnimSpeedToNormal();
+        enemy.transform.position = _enemyAttackEndPoint.position;
+         currentTimer = 0;
+        _dividerCanvasAnimation.Play(UI_DIVIDER_DISAPPEAR_ANIM);
+
+        while (currentTimer < ATTACK_RETURN_TO_START_ANIM_LENGTH)
+        {
+            currentTimer += Time.deltaTime;
+            enemy.transform.position = Vector3.Lerp(_enemyAttackEndPoint.position, enemy.OriginalPosition, currentTimer / ATTACK_RETURN_TO_START_ANIM_LENGTH);
+            yield return _waitForEndOFrame;
+        }
+
+        enemy.UiCombatStats.TriggerTurnIndicator(false);
+        enemy.HideAttackUi();
         yield return new WaitForSeconds(END_OF_ACTION_DELAY);
     }
 
@@ -286,7 +339,8 @@ public class CombatManagerSingleton : MonoBehaviour
             
         DamageNumberManagerSingleton.Instance.ShowEnemyDamageNumber(damage, damage <= _playerCharacterCombatBehaviour.DefenseCurrent, false, criticalStrike);
 
-        while(currentTimer < ATTACK_SLIDE_ANIM_LENGTH)
+        _playerCharacterCombatBehaviour.TakeDamage(damage);
+        while (currentTimer < ATTACK_SLIDE_ANIM_LENGTH)
         {
             currentTimer += Time.deltaTime;
             _playerCharacterCombatBehaviour.transform.position = Vector3.Lerp(_playerAttackStartPoint.position, _playerAttackEndPoint.position, currentTimer / ATTACK_SLIDE_ANIM_LENGTH);
@@ -295,7 +349,6 @@ public class CombatManagerSingleton : MonoBehaviour
         }
         
         aggresor.transform.position = aggresor.OriginalPosition;
-        _playerCharacterCombatBehaviour.TakeDamage(damage);
         _playerCharacterCombatBehaviour.CombatAnimationBehaviour.SetAnimSpeedToNormal();
         aggresor.CombatAnimationBehaviour.SetAnimSpeedToNormal();
     }
