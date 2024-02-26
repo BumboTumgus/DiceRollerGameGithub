@@ -56,6 +56,7 @@ MonoBehaviour:
   _enemyStatsUiPrefab: {fileID: 3191014285041173642, guid: 6b47f9ed5ee49214cbfa86f7e8a8189c,
     type: 3}
   _statsUiSpawnTarget: {fileID: 211870058357592560}
+  _randomizeStartingAttack: 1
 --- !u!114 &3209638515251581755
 MonoBehaviour:
   m_ObjectHideFlags: 0

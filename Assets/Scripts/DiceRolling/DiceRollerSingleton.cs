@@ -99,16 +99,21 @@ public class DiceRollerSingleton : MonoBehaviour
                 UiDiceRerollSingleton.Instance.OnSetRerollCounter(_rerollCount);
                 _diceFinishedRollingCount = 0;
                 _hasRerolledAlready = false;
+                
+                UiDiceSummarySingleton.Instance.SetWindowVisibility(true);
                 break;
 
             case DiceRollingState.Rolling:
                 foreach(DiceRollingBehaviour diceRollingBehaviour in _currentDice)
                     if(diceRollingBehaviour.CurrentlyAllowsRolls)
                         diceRollingBehaviour.OnRollDice();
+                
+                UiDiceSummarySingleton.Instance.SetWindowVisibility(false);
                 break;
 
             case DiceRollingState.ReRollChoice:
                 _hasRerolledAlready = true;
+                UiDiceSummarySingleton.Instance.SetWindowVisibility(true);
                 break;
         }
         

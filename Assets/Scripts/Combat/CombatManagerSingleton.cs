@@ -220,7 +220,7 @@ public class CombatManagerSingleton : MonoBehaviour
         else
             target.CombatAnimationBehaviour.PlayDefenseAnimation();
             
-        DamageNumberManagerSingleton.Instance.ShowEnemyDamageNumber(damage, damage <= target.DefenseCurrent, true, criticalStrike);
+        DamageNumberManagerSingleton.Instance.ShowEnemyDamageNumber(damage, damage <= target.DefenseCurrent, criticalStrike);
         if(damage > target.DefenseCurrent && PlayerCharacterCombatBehaviour.VamperismCurrent > 0)
             PlayerCharacterCombatBehaviour.HealHealth(PlayerCharacterCombatBehaviour.VamperismCurrent);
 
@@ -293,7 +293,7 @@ public class CombatManagerSingleton : MonoBehaviour
 
         enemy.CombatAnimationBehaviour.PlayDefenseAnimation();
 
-        //DamageNumberManagerSingleton.Instance.ShowEnemyDamageNumber(damage, damage <= _playerCharacterCombatBehaviour.DefenseCurrent, false, criticalStrike);
+        DamageNumberManagerSingleton.Instance.ShowEnemyBuff(enemy.CurrentAttackSO.AttackIcon, enemy.CurrentAttackSO.AttackIconColor);
 
         enemy.AddDefense(enemy.CurrentAttackSO.AttackDamage);
         while (currentTimer < ATTACK_SLIDE_ANIM_LENGTH)
@@ -337,7 +337,7 @@ public class CombatManagerSingleton : MonoBehaviour
         else
             _playerCharacterCombatBehaviour.CombatAnimationBehaviour.PlayDefenseAnimation();
             
-        DamageNumberManagerSingleton.Instance.ShowEnemyDamageNumber(damage, damage <= _playerCharacterCombatBehaviour.DefenseCurrent, false, criticalStrike);
+        DamageNumberManagerSingleton.Instance.ShowPlayerDamageNumber(damage, damage <= _playerCharacterCombatBehaviour.DefenseCurrent, criticalStrike);
 
         _playerCharacterCombatBehaviour.TakeDamage(damage);
         while (currentTimer < ATTACK_SLIDE_ANIM_LENGTH)

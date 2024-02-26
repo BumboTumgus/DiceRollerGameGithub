@@ -18,6 +18,7 @@ public class DiceRollingBehaviour : MonoBehaviour
 
     public bool SelectedForReroll { get { return _diceCurrentlySelected;}}
     public bool CurrentlyAllowsRolls { get { return _currentlyAllowsRolls;}}
+    public DiceFaceBehaviour[] DiceFaces { get { return _diceFaces;}}
 
     [SerializeField] private DiceFaceBehaviour[] _diceFaces;
 

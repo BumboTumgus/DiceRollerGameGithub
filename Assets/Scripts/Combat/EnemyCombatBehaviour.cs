@@ -15,6 +15,7 @@ public class EnemyCombatBehaviour : MonoBehaviour
     [SerializeField] private EnemyAttackScriptableObject[] _availableEnemyAttacks;
     [SerializeField] private GameObject _enemyStatsUiPrefab;
     [SerializeField] private Transform _statsUiSpawnTarget;
+    [SerializeField] private bool _randomizeStartingAttack;
 
     private int _healthCurrent;
     private int _healthMax;
@@ -42,6 +43,8 @@ public class EnemyCombatBehaviour : MonoBehaviour
         _combatAnimationBehaviour = GetComponentInChildren<CombatAnimationBehaviour>();
         _isAlive = true;
         NewTurnStatInitialization();
+        if(_randomizeStartingAttack)
+            _currentAttackIndex = Random.Range(0, _availableEnemyAttacks.Length);
         LoadNextAttack();
     }
 
