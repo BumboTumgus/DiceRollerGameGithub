@@ -15,6 +15,7 @@ public class CombatManagerSingleton : MonoBehaviour
     private const string UI_DIVIDER_DISAPPEAR_ANIM = "Ui_DividerCanvas_AttackDisappear";
 
     public static CombatManagerSingleton Instance;
+
     public TMP_Text temporaryStateText;
     public PlayerCharacterCombatBehaviour PlayerCharacterCombatBehaviour { get { return _playerCharacterCombatBehaviour;}}
     public List<EnemyCombatBehaviour> EnemyCombatBehaviours { get { return _enemyCombatBehaviours;}}
@@ -78,6 +79,15 @@ public class CombatManagerSingleton : MonoBehaviour
         SwapToCombatState(CombatState.Idle);
         yield return new WaitForSeconds(1f);
         DiceRollerSingleton.Instance.SwitchToDiceState(DiceRollerSingleton.DiceRollingState.ClickToRoll);
+    }
+
+    private void PayoutCombatRewards()
+    {
+        Debug.Log("Payout combat rewards here and show the continue button");
+        UiCombatRewardsSingleton.Instance.SetWindowVisibility(true);
+        UiCombatRewardsSingleton.Instance.PopulateWindowWithRewards(_currentEncounter);
+        //TODO: add a ui single call - show the ui for the rewards and populate the buttons
+        // We get this rewards from our current chopsen encoutner.
     }
 
     private void GivePlayerControlOfTurn()
@@ -199,7 +209,10 @@ public class CombatManagerSingleton : MonoBehaviour
         if(_enemyCombatBehaviours.Count > 0)
             SwapToCombatState(CombatState.EnemyExecutingAttacks);
         else
+        {
             SwapToCombatState(CombatState.Idle);
+            PayoutCombatRewards();
+        }
     }
 
     private IEnumerator PlayerAttackRoutine(EnemyCombatBehaviour target)

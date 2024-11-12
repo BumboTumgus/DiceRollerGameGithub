@@ -17,3 +17,14 @@ MonoBehaviour:
   - {fileID: 6925904800109600643, guid: 6299df3ba256dcb4b85e56ab0dbe5b88, type: 3}
   - {fileID: 6925904800109600643, guid: 6299df3ba256dcb4b85e56ab0dbe5b88, type: 3}
   - {fileID: 6925904800109600643, guid: 6299df3ba256dcb4b85e56ab0dbe5b88, type: 3}
+  GoldRange: {x: 5, y: 10}
+  DropCountRange: {x: 1, y: 3}
+  GarenteedDiceFaceDrops:
+  - {fileID: 11400000, guid: 9fe43012088f9a745b4666a8f0004604, type: 2}
+  PotentialDiceFaceDrops:
+  - {fileID: 11400000, guid: bd41b489da4bfe84e9b5b9e184d64374, type: 2}
+  - {fileID: 11400000, guid: 8e461475cb82e8f4f92ee7b33c3e92a7, type: 2}
+  - {fileID: 11400000, guid: 4c53914e9a0062748acbf1ef1d67b319, type: 2}
+  - {fileID: 11400000, guid: 9fe43012088f9a745b4666a8f0004604, type: 2}
+  - {fileID: 11400000, guid: 48e674ef8fcc58a4b94c300e81a45ff4, type: 2}
+  - {fileID: 11400000, guid: 304e14101f24d8a4c9e5c9f45ab6f4b2, type: 2}
