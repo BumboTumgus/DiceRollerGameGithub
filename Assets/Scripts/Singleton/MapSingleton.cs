@@ -15,7 +15,7 @@ public class MapSingleton : MonoBehaviour
     private const float MAP_NODE_VERTICAL_SPACING = 300;
     private const float MAP_SIDE_MARGINS = 200;
     private const float MAP_TOP_MARGINS = 200;
-    private const float MAP_CONNECTION_EDGE_TRIM = 50;
+    private const float MAP_CONNECTION_EDGE_TRIM = 65;
     private const float MAP_NODE_RANDOMNESS= 50;
 
     public static MapSingleton Instance;
@@ -123,27 +123,12 @@ public class MapSingleton : MonoBehaviour
                 foreach (MapNode outgoingConnectedNode in currentNode.OutgoingNodeConnections)
                 {
                     RectTransform connectionRectTransform = Instantiate(_mapNodeConnectionToInstantiate, _mapNodeParent).GetComponent<RectTransform>();
-                    
-                    connectionRectTransform.localPosition = new Vector2(
-                        (outgoingConnectedNode.MapNodeUI.localPosition.x + currentNode.MapNodeUI.localPosition.x) / 2,
-                        (outgoingConnectedNode.MapNodeUI.localPosition.y + currentNode.MapNodeUI.localPosition.y) / 2);
+                    UILineRenderer lineRenderer = connectionRectTransform.GetComponent<UILineRenderer>();
 
-                    connectionRectTransform.sizeDelta = new Vector2(
-                        connectionRectTransform.sizeDelta.x,
-                        Mathf.Sqrt(Mathf.Pow(outgoingConnectedNode.MapNodeUI.localPosition.x - currentNode.MapNodeUI.localPosition.x, 2)
-                        + Mathf.Pow(outgoingConnectedNode.MapNodeUI.localPosition.y - currentNode.MapNodeUI.localPosition.y, 2))
-                        - MAP_CONNECTION_EDGE_TRIM * 2);
+                    connectionRectTransform.localPosition = new Vector2(0, 0);
 
-                    float rotationalValue = Mathf.Tan((outgoingConnectedNode.MapNodeUI.localPosition.x - currentNode.MapNodeUI.localPosition.x)
-                        / (outgoingConnectedNode.MapNodeUI.localPosition.y - currentNode.MapNodeUI.localPosition.y));
-                    
-                    Debug.LogFormat("The TAN value is: " + rotationalValue);
-                    rotationalValue = Mathf.Rad2Deg * rotationalValue; 
-                    Debug.Log("rot is " + rotationalValue);
-
-                    connectionRectTransform.rotation = Quaternion.Euler(connectionRectTransform.rotation.x,
-                        connectionRectTransform.rotation.y,
-                        rotationalValue * -1);
+                    lineRenderer.points[0] = currentNode.MapNodeUI.localPosition + Vector3.Normalize(outgoingConnectedNode.MapNodeUI.localPosition - currentNode.MapNodeUI.localPosition) * MAP_CONNECTION_EDGE_TRIM;
+                    lineRenderer.points[1] = outgoingConnectedNode.MapNodeUI.localPosition + Vector3.Normalize(currentNode.MapNodeUI.localPosition - outgoingConnectedNode.MapNodeUI.localPosition) * MAP_CONNECTION_EDGE_TRIM;
                 }
             }
         }
