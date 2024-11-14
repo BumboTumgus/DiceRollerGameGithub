@@ -15,20 +15,31 @@ public class MapNode
     public List<MapNode> IncomingConnections { get => _incomingNodeConnections; set => _incomingNodeConnections = value; }
     public List<MapNode> OutgoingNodeConnections { get => _outgoingNodeConnections; set => _outgoingNodeConnections = value; }
     public RectTransform MapNodeUI { get => _mapNodeUI; set => _mapNodeUI = value; }
+    public int HighestIncomingConnectedNodeIndex { get => _highestIncomingConnectedNodeIndex; set => _highestIncomingConnectedNodeIndex = value; }
+    public int LowestIncomingConnectedNodeIndex { get => _lowestIncomingConnectedNodeIndex; set => _lowestIncomingConnectedNodeIndex = value; }
+    public int HighestOutgoingConnectedNodeIndex { get => _highestOutgoingConnectedNodeIndex; set => _highestOutgoingConnectedNodeIndex = value; }
+    public int LowestOutgoingConnectedNodeIndex { get => _lowestOutgoingConnectedNodeIndex; set => _lowestOutgoingConnectedNodeIndex = value; }
+    public int NodeIndex { get => _nodeIndex; set => _nodeIndex = value; }
 
     private MapNodeType _assignedMapNodeType;
     private List<MapNode> _incomingNodeConnections = new List<MapNode>();
     private List<MapNode> _outgoingNodeConnections = new List<MapNode>();
+    private int _highestIncomingConnectedNodeIndex = -999;
+    private int _lowestIncomingConnectedNodeIndex = 999;
+    private int _highestOutgoingConnectedNodeIndex = -999;
+    private int _lowestOutgoingConnectedNodeIndex = 999;
+    private int _nodeIndex = 0;
     private RectTransform _mapNodeUI;
 
-    public MapNode(MapNodeType assignedMapNodeType)
+    public MapNode(MapNodeType assignedMapNodeType, int mapNodeIndex)
     {
         _assignedMapNodeType = assignedMapNodeType;
+        _nodeIndex = mapNodeIndex;
     }
 
-    public MapNode()
+    public MapNode(int mapNodeIndex)
     {
-
+        _nodeIndex = mapNodeIndex;
     }
 
     public void RandomizeNode()
@@ -64,10 +75,15 @@ public class MapNode
     {
         _incomingNodeConnections.Add(incomingNode);
         incomingNode.OutgoingNodeConnections.Add(this);
-    }
-    public void RemoveConnectionNodeIncoming(MapNode incomingNode)
-    {
-        _incomingNodeConnections.Remove(incomingNode);
-        incomingNode.OutgoingNodeConnections.Remove(this);
+
+        if (incomingNode.NodeIndex < _lowestIncomingConnectedNodeIndex)
+            _lowestIncomingConnectedNodeIndex = incomingNode.NodeIndex;
+        if (incomingNode.NodeIndex > _highestIncomingConnectedNodeIndex)
+            _highestIncomingConnectedNodeIndex = incomingNode.NodeIndex;
+
+        if (NodeIndex < incomingNode.LowestOutgoingConnectedNodeIndex)
+            incomingNode.LowestOutgoingConnectedNodeIndex = NodeIndex;
+        if (NodeIndex > incomingNode.HighestOutgoingConnectedNodeIndex)
+            incomingNode.HighestOutgoingConnectedNodeIndex = NodeIndex;
     }
 }
