@@ -12,8 +12,8 @@ public class MapSingleton : MonoBehaviour
     private const int MAX_NODE_COUNT_PER_DIVISION = 4;
 
     private const float MAP_CONTENT_WIDTH = 1240;
-    private const float MAP_NODE_VERTICAL_SPACING = 300;
-    private const float MAP_SIDE_MARGINS = 200;
+    private const float MAP_NODE_VERTICAL_SPACING = 350;
+    private const float MAP_SIDE_MARGINS = 100;
     private const float MAP_TOP_MARGINS = 200;
     private const float MAP_CONNECTION_EDGE_TRIM = 65;
     private const float MAP_NODE_RANDOMNESS= 50;
@@ -53,29 +53,21 @@ public class MapSingleton : MonoBehaviour
         // Create all our nodes for the map
         _mapNodes = new MapNode[MAP_DIVISION_COUNT + 1][];
 
-        _mapNodes[0] = new MapNode[] { new MapNode(MapNode.MapNodeType.StartingNode, 0) };
+        //_mapNodes[0] = new MapNode[] { new MapNode(MapNode.MapNodeType.StartingNode, 0) };
         _mapNodes[MAP_DIVISION_COUNT] = new MapNode[] { new MapNode(MapNode.MapNodeType.BossNode, 0) };
-        Debug.Log("TOTAL NODE COUNT IS " + _mapNodes.Length);
-        for(int mapDivisionIndex = 1; mapDivisionIndex < MAP_DIVISION_COUNT; mapDivisionIndex++)
+        for(int mapDivisionIndex = 0; mapDivisionIndex < MAP_DIVISION_COUNT; mapDivisionIndex++)
         {
             _mapNodes[mapDivisionIndex] = new MapNode[UnityEngine.Random.Range(2, MAX_NODE_COUNT_PER_DIVISION + 1)];
-            Debug.Log("length of mapnode at index " + mapDivisionIndex + " is " + _mapNodes[mapDivisionIndex].Length);
             for (int nodeIndex = 0; nodeIndex < _mapNodes[mapDivisionIndex].Length; nodeIndex++)
             {
                 _mapNodes[mapDivisionIndex][nodeIndex] = new MapNode(nodeIndex);
                 _mapNodes[mapDivisionIndex][nodeIndex].RandomizeNode();
-                Debug.Log("Our rolled nodetype for index " + nodeIndex + " is " + _mapNodes[mapDivisionIndex][nodeIndex].AssignedMapNodeType);
             }
         }
-        Debug.Log("NODES ALL CREATED AND ROLLED");
 
-        Debug.Log("length of mapnodes at 5 is " + _mapNodes[MAP_DIVISION_REST_OVERRIDE].Length);
         // Make sure a division of the nodes are all rests
         for (int nodeIndex = 0; nodeIndex < _mapNodes[MAP_DIVISION_REST_OVERRIDE].Length; nodeIndex++)
-        {
-            Debug.Log("IS this node null? " + _mapNodes[MAP_DIVISION_REST_OVERRIDE][nodeIndex]);
             _mapNodes[MAP_DIVISION_REST_OVERRIDE][nodeIndex].AssignedMapNodeType = MapNode.MapNodeType.RestNode;
-        }
 
         // Connect every node on the outsides of the map.
         for (int mapDivisionIndex = 0; mapDivisionIndex < MAP_DIVISION_COUNT; mapDivisionIndex++)
@@ -87,7 +79,7 @@ public class MapSingleton : MonoBehaviour
         }
 
         // Backtrack a connection from any central nodes ahead that don't have a connection
-        for (int mapDivisionIndex = 0; mapDivisionIndex < MAP_DIVISION_COUNT - 1; mapDivisionIndex++)
+        for (int mapDivisionIndex = 0; mapDivisionIndex < MAP_DIVISION_COUNT; mapDivisionIndex++)
         {
             Debug.LogFormat("<color=#ff0000>checking if we ned to backtrack link mapdiv index {0} with a length of {1} to div index {2}</color>", mapDivisionIndex + 1, _mapNodes[mapDivisionIndex + 1].Length, mapDivisionIndex);
             // Start connecting any central 1 ahead of the count backwards towards one of these nodes
@@ -127,6 +119,71 @@ public class MapSingleton : MonoBehaviour
                     // Build the connection here
                     Debug.LogFormat("Reverse Connecting node {0}:{1} to {2}:{3}", mapDivisionIndex, nodeIndex, mapDivisionIndex + 1, currentNodeToCheck);
                     _mapNodes[mapDivisionIndex + 1][nodeIndex].AddConnectionNodeIncoming(_mapNodes[mapDivisionIndex][currentNodeToCheck]);
+                }
+            }
+
+            // Start connecting the current central nodes with no connections to any of the ahead ones.
+            Debug.LogFormat("<color=#00ff00>checking if we need to link any forgotton nodes on mapdiv index {0} with a length of {1} to div index {2}</color>", mapDivisionIndex, _mapNodes[mapDivisionIndex].Length, mapDivisionIndex + 1);
+            if (_mapNodes[mapDivisionIndex].Length > 2)
+            {
+                Debug.Log("Linking central nodes with no outoging connections");
+                for (int nodeIndex = 1; nodeIndex < _mapNodes[mapDivisionIndex].Length - 1; nodeIndex++)
+                {
+                    Debug.Log("Completing for loop");
+                    if (_mapNodes[mapDivisionIndex][nodeIndex].OutgoingNodeConnections.Count > 0)
+                    {
+                        Debug.Log("This node has an outgoing conenction and doesn;t need to be linked");
+                        continue;
+                    }
+
+                    bool nodeConnectionSuccess = false;
+                    int currentNodeToCheck = UnityEngine.Random.Range(0, _mapNodes[mapDivisionIndex + 1].Length);
+                    bool incrementUp = currentNodeToCheck < nodeIndex;
+                    Debug.LogFormat("Forward linking node " + nodeIndex + "to our rnadom target of " + currentNodeToCheck);
+                    while (!nodeConnectionSuccess)
+                    {
+                        bool crossCheckSuccessful = true;
+
+                        //if (currentNodeToCheck == nodeIndex)
+                        //{
+                        //    nodeConnectionSuccess = true;
+                        //    break;
+                        //}
+
+                        if (incrementUp)
+                        {
+                            Debug.Log("increment up logic");
+                            for (int nodeCrissCrossIndex = currentNodeToCheck + 1; nodeCrissCrossIndex < _mapNodes[mapDivisionIndex + 1].Length; nodeCrissCrossIndex++)
+                                if (_mapNodes[mapDivisionIndex + 1][nodeCrissCrossIndex].LowestIncomingConnectedNodeIndex < nodeIndex)
+                                {
+                                    Debug.Log("node cross detected, changing index from " + currentNodeToCheck + " to " + nodeCrissCrossIndex);
+                                    currentNodeToCheck = nodeCrissCrossIndex;
+                                    crossCheckSuccessful = false;
+                                    break;
+                                }
+                        }
+                        else
+                        {
+                            Debug.Log("increment down logic");
+                            for (int nodeCrissCrossIndex = currentNodeToCheck - 1; nodeCrissCrossIndex >= 0; nodeCrissCrossIndex--)
+                                if (_mapNodes[mapDivisionIndex + 1][nodeCrissCrossIndex].HighestIncomingConnectedNodeIndex > nodeIndex)
+                                {
+                                    Debug.Log("node cross detected, changing index from " + currentNodeToCheck + " to " + nodeCrissCrossIndex);
+                                    currentNodeToCheck = nodeCrissCrossIndex;
+                                    crossCheckSuccessful = false;
+                                    break;
+                                }
+                        }
+
+                        if (!crossCheckSuccessful)
+                            continue;
+
+                        nodeConnectionSuccess = true;
+                    }
+
+                    // Build the connection here
+                    Debug.LogFormat("Connecting node {0}:{1} to {2}:{3}", mapDivisionIndex, nodeIndex, mapDivisionIndex + 1, currentNodeToCheck);
+                    _mapNodes[mapDivisionIndex + 1][currentNodeToCheck].AddConnectionNodeIncoming(_mapNodes[mapDivisionIndex][nodeIndex]);
                 }
             }
         }
