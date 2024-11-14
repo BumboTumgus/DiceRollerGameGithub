@@ -14,10 +14,12 @@ public class MapNode
     public MapNodeType AssignedMapNodeType { get => _assignedMapNodeType; set => _assignedMapNodeType = value; }
     public List<MapNode> IncomingConnections { get => _incomingNodeConnections; set => _incomingNodeConnections = value; }
     public List<MapNode> OutgoingNodeConnections { get => _outgoingNodeConnections; set => _outgoingNodeConnections = value; }
+    public RectTransform MapNodeUI { get => _mapNodeUI; set => _mapNodeUI = value; }
 
     private MapNodeType _assignedMapNodeType;
     private List<MapNode> _incomingNodeConnections = new List<MapNode>();
     private List<MapNode> _outgoingNodeConnections = new List<MapNode>();
+    private RectTransform _mapNodeUI;
 
     public MapNode(MapNodeType assignedMapNodeType)
     {
