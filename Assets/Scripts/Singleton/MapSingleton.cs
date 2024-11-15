@@ -12,9 +12,9 @@ public class MapSingleton : MonoBehaviour
     private const int MAX_NODE_COUNT_PER_DIVISION = 4;
 
     private const float MAP_CONTENT_WIDTH = 1240;
-    private const float MAP_NODE_VERTICAL_SPACING = 250;
+    private const float MAP_NODE_VERTICAL_SPACING = 300;
     private const float MAP_SIDE_MARGINS = 150;
-    private const float MAP_TOP_MARGINS = 200;
+    private const float MAP_TOP_MARGINS = 350;
     private const float MAP_CONNECTION_EDGE_TRIM = 65;
     private const float MAP_NODE_RANDOMNESS = 50;
     private const float MAP_DISSAPEAR_DELAY_AFTER_BUTTON_PRESS = 1.5f;
@@ -34,6 +34,7 @@ public class MapSingleton : MonoBehaviour
 
     private MapNode[][] _mapNodes;
     private bool _mapCurrentlyShowing = true;
+    private float _contentPreviousHeightWhenOpened = 0;
 
     private void Awake()
     {
@@ -58,6 +59,8 @@ public class MapSingleton : MonoBehaviour
             Start();
         if (Input.GetKeyDown(KeyCode.P))
             SetMapShowStatus(!_mapCurrentlyShowing);
+        if (Input.GetKeyDown(KeyCode.O))
+            SetMapInteractibility(true);
     }
 
     public IEnumerator SetMapShowStatusDelayed(bool showStatus, float delay)
@@ -74,9 +77,15 @@ public class MapSingleton : MonoBehaviour
         _mapCurrentlyShowing = showMap;
 
         if (_mapCurrentlyShowing)
+        {
             _mapAnimation.PlayAnimationByName(MAP_APPEAR_ANIM_NAME);
+            _mapContentBox.localPosition = new Vector2(_mapContentBox.localPosition.x, _contentPreviousHeightWhenOpened);
+        }
         else
+        {
             _mapAnimation.PlayAnimationByName(MAP_DISAPPEAR_ANIM_NAME);
+            _contentPreviousHeightWhenOpened = _mapContentBox.localPosition.y;
+        }
     }
 
     public void SetMapInteractibility(bool canInteract)
@@ -251,8 +260,9 @@ public class MapSingleton : MonoBehaviour
     private void SetupMapButtons()
     {
         // basic setup, adding callbacks and disabling buttons.
-        for (int mapDivisionIndex = 0; mapDivisionIndex < MAP_DIVISION_COUNT; mapDivisionIndex++)
+        for (int mapDivisionIndex = 0; mapDivisionIndex <= MAP_DIVISION_COUNT; mapDivisionIndex++)
         {
+            Debug.Log("disabling buttons for mapdiv " + mapDivisionIndex);
             for (int mapNodeIndex = 0; mapNodeIndex < _mapNodes[mapDivisionIndex].Length; mapNodeIndex++)
             {
                 Button nodeButton = _mapNodes[mapDivisionIndex][mapNodeIndex].MapNodeUI.GetComponent<Button>();
