@@ -375,6 +375,15 @@ public class MapSingleton : MonoBehaviour
     }
     #endregion
 
+    public void UiShowMapButtonPress()
+    {
+        SetMapShowStatus(true);
+    }
+    public void UiHideMapButtonPress()
+    {
+        SetMapShowStatus(false);
+    }
+
     private void ClearMap()
     {
         for(int childIndex = 0;  childIndex < _mapNodeParent.childCount; childIndex++)
