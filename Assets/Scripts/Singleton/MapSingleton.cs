@@ -12,21 +12,28 @@ public class MapSingleton : MonoBehaviour
     private const int MAX_NODE_COUNT_PER_DIVISION = 4;
 
     private const float MAP_CONTENT_WIDTH = 1240;
-    private const float MAP_NODE_VERTICAL_SPACING = 350;
-    private const float MAP_SIDE_MARGINS = 100;
+    private const float MAP_NODE_VERTICAL_SPACING = 250;
+    private const float MAP_SIDE_MARGINS = 150;
     private const float MAP_TOP_MARGINS = 200;
     private const float MAP_CONNECTION_EDGE_TRIM = 65;
-    private const float MAP_NODE_RANDOMNESS= 50;
+    private const float MAP_NODE_RANDOMNESS = 50;
+    private const float MAP_DISSAPEAR_DELAY_AFTER_BUTTON_PRESS = 1.5f;
+
+    private const string MAP_APPEAR_ANIM_NAME = "Ui_MapAppear";
+    private const string MAP_DISAPPEAR_ANIM_NAME = "Ui_MapDisappear";
 
     public static MapSingleton Instance;
 
     [SerializeField] private GameObject _mapNodeToInstantiate;
     [SerializeField] private GameObject _mapNodeConnectionToInstantiate;
     [SerializeField] private Transform _mapNodeParent;
+    [SerializeField] private Transform _mapContentBox;
+    [SerializeField] private UiAnimationPlayer _mapAnimation;
     [SerializeField] private Sprite[] _mapNodeArtwork;
-    private MapNode[][] _mapNodes;
+    [SerializeField] private CanvasGroup _mapInteractibilityCanvasGroup;
 
-    private int _currentExplorationIndex = 0;
+    private MapNode[][] _mapNodes;
+    private bool _mapCurrentlyShowing = true;
 
     private void Awake()
     {
@@ -36,7 +43,7 @@ public class MapSingleton : MonoBehaviour
             Destroy(this);
     }
 
-    //THIS IS FOR TESTING  UKE THIS AFTER
+    // THIS IS FOR TESTING  UKE THIS AFTER
     private void Start()
     {
         ClearMap();
@@ -49,9 +56,35 @@ public class MapSingleton : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Tab))
             Start();
+        if (Input.GetKeyDown(KeyCode.P))
+            SetMapShowStatus(!_mapCurrentlyShowing);
     }
 
-    public void CreateNewMapData()
+    public IEnumerator SetMapShowStatusDelayed(bool showStatus, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        SetMapShowStatus(showStatus);
+    }
+
+    public void SetMapShowStatus(bool showMap)
+    {
+        if (showMap == _mapCurrentlyShowing)
+            return;
+
+        _mapCurrentlyShowing = showMap;
+
+        if (_mapCurrentlyShowing)
+            _mapAnimation.PlayAnimationByName(MAP_APPEAR_ANIM_NAME);
+        else
+            _mapAnimation.PlayAnimationByName(MAP_DISAPPEAR_ANIM_NAME);
+    }
+
+    public void SetMapInteractibility(bool canInteract)
+    {
+        _mapInteractibilityCanvasGroup.interactable = canInteract;
+    }
+
+    private void CreateNewMapData()
     {
         // Create all our nodes for the map
         _mapNodes = new MapNode[MAP_DIVISION_COUNT + 1][];
@@ -171,9 +204,9 @@ public class MapSingleton : MonoBehaviour
         }
     }
 
-    public void DrawMap()
+    private void DrawMap()
     {
-        RectTransform rectTransform = _mapNodeParent.GetComponent<RectTransform>();
+        RectTransform rectTransform = _mapContentBox.GetComponent<RectTransform>();
         rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, MAP_TOP_MARGINS * 2 + MAP_NODE_VERTICAL_SPACING * MAP_DIVISION_COUNT);
 
         // Draw Nodes
@@ -226,6 +259,31 @@ public class MapSingleton : MonoBehaviour
                 nodeButton.enabled = false;
                 UiNodeButtonAddDelegate_EnableConnectedButtons(nodeButton, mapDivisionIndex, mapNodeIndex);
                 UiNodeButtonAddDelegate_DisableAllButtons(nodeButton, mapDivisionIndex);
+                UiNodeButtonAddDelegate_LockMapInteractibility(nodeButton);
+                UiNodeButtonAddDelegate_HideMap(nodeButton);
+                switch (_mapNodes[mapDivisionIndex][mapNodeIndex].AssignedMapNodeType)
+                {
+                    case MapNode.MapNodeType.CombatNode:
+                        UiNodeButtonAddDelegate_StartCombat(nodeButton, LevelDataSingleton.Instance.GetBasicEncounter());
+                        break;
+                    case MapNode.MapNodeType.EliteCombatNode:
+                        UiNodeButtonAddDelegate_StartCombat(nodeButton, LevelDataSingleton.Instance.GetEliteEncounter());
+                        break;
+                    case MapNode.MapNodeType.EventNode:
+                        UiNodeButtonAddDelegate_StartEvent(nodeButton, LevelDataSingleton.Instance.GetRandomEventDetails());
+                        break;
+                    case MapNode.MapNodeType.ShopNode:
+                        UiNodeButtonAddDelegate_OpenShop(nodeButton);
+                        break;
+                    case MapNode.MapNodeType.RestNode:
+                        UiNodeButtonAddDelegate_Rest(nodeButton);
+                        break;
+                    case MapNode.MapNodeType.BossNode:
+                        UiNodeButtonAddDelegate_StartCombat(nodeButton, LevelDataSingleton.Instance.GetBossEncounter());
+                        break;
+                    default:
+                        break;
+                }
             }
         }
 
@@ -234,16 +292,42 @@ public class MapSingleton : MonoBehaviour
             _mapNodes[0][mapNodeIndex].MapNodeUI.GetComponent<Button>().enabled = true ;
     }
 
+    #region Ui Button Delegate Containers
     private void UiNodeButtonAddDelegate_EnableConnectedButtons(Button nodeButton, int mapDivisionIndex, int mapNodeIndex)
     {
         nodeButton.onClick.AddListener(delegate { UiEnableConnectedButtonsInNextMapDivisonCallback(mapDivisionIndex, mapNodeIndex); });
     }
-
     private void UiNodeButtonAddDelegate_DisableAllButtons(Button nodeButton, int mapDivisionIndex)
     {
         nodeButton.onClick.AddListener(delegate { UiDisableAllButtonsInSameMapDivisionCallback(mapDivisionIndex); });
     }
+    private void UiNodeButtonAddDelegate_StartCombat(Button nodeButton, EncounterScriptableObject encounter)
+    {
+        nodeButton.onClick.AddListener(delegate { UiStartEncounterCallback(encounter); });
+    }
+    private void UiNodeButtonAddDelegate_StartEvent(Button nodeButton, EventScriptableObject eventSO)
+    {
+        nodeButton.onClick.AddListener(delegate { UiStartEventCallback(eventSO); });
+    }
+    private void UiNodeButtonAddDelegate_OpenShop(Button nodeButton)
+    {
+        nodeButton.onClick.AddListener(delegate { UiOpenShopCallback(); });
+    }
+    private void UiNodeButtonAddDelegate_Rest(Button nodeButton)
+    {
+        nodeButton.onClick.AddListener(delegate { UiStartRestCallback(); });
+    }
+    private void UiNodeButtonAddDelegate_LockMapInteractibility(Button nodeButton)
+    {
+        nodeButton.onClick.AddListener(delegate { SetMapInteractibility(false); });
+    }
+    private void UiNodeButtonAddDelegate_HideMap(Button nodeButton)
+    {
+        nodeButton.onClick.AddListener(delegate { UiHideMapWithDelay(); });
+    }
+    #endregion
 
+    #region Ui Button Delegate
     public void UiDisableAllButtonsInSameMapDivisionCallback(int mapDivision)
     {
         for(int mapNodeIndex = 0; mapNodeIndex < _mapNodes[mapDivision].Length; mapNodeIndex++) 
@@ -251,7 +335,6 @@ public class MapSingleton : MonoBehaviour
             _mapNodes[mapDivision][mapNodeIndex].MapNodeUI.GetComponent<Button>().enabled = false;
         }
     }
-
     public void UiEnableConnectedButtonsInNextMapDivisonCallback(int mapDivision, int nodeIndex)
     {
         for (int outgoingConnectionIndex = 0; outgoingConnectionIndex < _mapNodes[mapDivision][nodeIndex].OutgoingNodeConnections.Count; outgoingConnectionIndex++)
@@ -260,6 +343,27 @@ public class MapSingleton : MonoBehaviour
             connectedButton.enabled = true;
         }
     }
+    public void UiStartEncounterCallback(EncounterScriptableObject encounter)
+    {
+        CombatManagerSingleton.Instance.StartCombat(encounter);
+    }
+    public void UiStartEventCallback(EventScriptableObject eventSO)
+    {
+        // TODO: ADD EVENT MANNAGER START EVENT
+    }
+    public void UiOpenShopCallback()
+    {
+        // TODO: OPEN THE SHOP
+    }
+    public void UiStartRestCallback()
+    {
+        // TODO: OPEN THE REST MENU
+    }
+    public void UiHideMapWithDelay()
+    {
+        StartCoroutine(SetMapShowStatusDelayed(false, MAP_DISSAPEAR_DELAY_AFTER_BUTTON_PRESS));
+    }
+    #endregion
 
     private void ClearMap()
     {

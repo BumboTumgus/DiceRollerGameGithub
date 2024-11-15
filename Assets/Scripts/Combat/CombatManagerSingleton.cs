@@ -43,7 +43,7 @@ public class CombatManagerSingleton : MonoBehaviour
             Instance = this;
         if (Instance != this)
             Destroy(this);
-        StartCoroutine(SetUpEncounter());
+        //StartCoroutine(SetUpEncounter());
     }
 
     private void Update()
@@ -66,6 +66,12 @@ public class CombatManagerSingleton : MonoBehaviour
     public void EnablePlayerControlOfCombat(float delayInSeconds)
     {
         Invoke(nameof(GivePlayerControlOfTurn), delayInSeconds);
+    }
+
+    public void StartCombat(EncounterScriptableObject encounter)
+    {
+        _currentEncounter = encounter;
+        StartCoroutine(SetUpEncounter());
     }
         
     private IEnumerator SetUpEncounter()
