@@ -20,12 +20,12 @@ public class PlayerInventorySingleton : MonoBehaviour
 
     private List<DiceFaceData> _collectedDiceFaces = new List<DiceFaceData>();
     private int _collectedGold = 0;
-    private int _maximumInventorySize = 5;
+    //private int _maximumInventorySize = 5;
 
     private bool _inventoryOpened = false;
     private float _inventorySlideTargetDistance = 0;
     private float _inventoryCurrentSlideDistance = 0;
-    private float _inventoryColumnCount = 1;
+    private float _inventoryColumnCount = 3;
 
     private void Awake()
     {
