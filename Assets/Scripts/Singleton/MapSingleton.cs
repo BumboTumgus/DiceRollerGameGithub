@@ -33,7 +33,7 @@ public class MapSingleton : MonoBehaviour
     [SerializeField] private CanvasGroup _mapInteractibilityCanvasGroup;
 
     private MapNode[][] _mapNodes;
-    private bool _mapCurrentlyShowing = true;
+    private bool _mapCurrentlyShowing = false;
     private float _contentPreviousHeightWhenOpened = 0;
 
     private void Awake()
@@ -57,8 +57,6 @@ public class MapSingleton : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Tab))
             Start();
-        if (Input.GetKeyDown(KeyCode.P))
-            SetMapShowStatus(!_mapCurrentlyShowing);
         if (Input.GetKeyDown(KeyCode.O))
             SetMapInteractibility(true);
     }
@@ -262,7 +260,6 @@ public class MapSingleton : MonoBehaviour
         // basic setup, adding callbacks and disabling buttons.
         for (int mapDivisionIndex = 0; mapDivisionIndex <= MAP_DIVISION_COUNT; mapDivisionIndex++)
         {
-            Debug.Log("disabling buttons for mapdiv " + mapDivisionIndex);
             for (int mapNodeIndex = 0; mapNodeIndex < _mapNodes[mapDivisionIndex].Length; mapNodeIndex++)
             {
                 Button nodeButton = _mapNodes[mapDivisionIndex][mapNodeIndex].MapNodeUI.GetComponent<Button>();
