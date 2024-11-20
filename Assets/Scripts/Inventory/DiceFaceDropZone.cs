@@ -5,6 +5,9 @@ using static UnityEditor.Progress;
 
 public class DiceFaceDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPointerExitHandler
 {
+    private const string DICE_FACE_DRAGGABLE_NAME = "Ui_DiceFaceDraggable";
+    private const string DICE_FACE_INVENTORY_SLOT_NAME = "Ui_DiceFaceInventorySlot";
+
     public enum DropZoneType { Inventory, Dice, Discard }
     public DropZoneType slotType;
     public InventoryPopupTextManager.PopUpDirection PopUpDirection;
@@ -14,7 +17,7 @@ public class DiceFaceDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandle
 
     private void Start()
     {
-        popupManager = transform.parent.GetComponent<InventoryPopupTextManager>();
+        //popupManager = transform.parent.GetComponent<InventoryPopupTextManager>();
     }
 
     // Used when the pointer enters the dropzone, we check to see if there is an atatched drag item to it.
@@ -32,7 +35,7 @@ public class DiceFaceDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandle
             //    DiceFaceDraggable dropzoneDiceFace = myPanel.GetComponent<DiceFaceDraggable>();
             //}
 
-            popupManager.ShowPopup(popupManager.itemPopUp.transform.parent, PopUpDirection);
+            //popupManager.ShowPopup(popupManager.itemPopUp.transform.parent, PopUpDirection);
         }
     }
 
@@ -45,27 +48,26 @@ public class DiceFaceDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandle
     // This is used to see if the item was dropped on an appropriate slot.
     public void OnDrop(PointerEventData eventData)
     {
-        //Debug.Log("item was dropped on " + gameObject.name);
+        Debug.Log("INVENTORY item was dropped on " + gameObject.name);
          
         DiceFaceDraggable movedDiceFaceDraggable = eventData.pointerDrag.GetComponent<DiceFaceDraggable>();
         if(movedDiceFaceDraggable != null && movedDiceFaceDraggable.MyParent != gameObject.transform)
         {
-
-            Transform myPanel = transform.Find("ItemPanel");
+            Transform myDiceFaceDraggable = transform.Find(DICE_FACE_INVENTORY_SLOT_NAME).Find(DICE_FACE_DRAGGABLE_NAME);
             DiceFaceDraggable dropZoneDiceFaceDraggable = null;
 
             if(slotType != DropZoneType.Discard)
-                dropZoneDiceFaceDraggable = myPanel.GetComponent<DiceFaceDraggable>();
+                dropZoneDiceFaceDraggable = myDiceFaceDraggable.GetComponent<DiceFaceDraggable>();
 
 
             // If we dropped an item on the dropitem type slot, return the item and wipe the slot then drop the item.
             if(slotType == DropZoneType.Discard && movedDiceFaceDraggable.MyParent.GetComponent<DiceFaceDropZone>().slotType == DropZoneType.Inventory)
             {
                 Debug.Log("we should discard the diceface here");
-                popupManager.LockPointer = false;
+                //popupManager.LockPointer = false;
                 movedDiceFaceDraggable.transform.SetParent(movedDiceFaceDraggable.MyParent);
-                popupManager.HidePopups(true);
-                popupManager.AllowPopupsToAppear = true;
+                //popupManager.HidePopups(true);
+                //popupManager.AllowPopupsToAppear = true;
 
                 movedDiceFaceDraggable.transform.localPosition = Vector3.zero;
                 movedDiceFaceDraggable.ParentToInteractWith = null;
@@ -77,24 +79,24 @@ public class DiceFaceDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandle
             }
 
             // WE HAVE A VALID TARGET BEGIN SHIFTING IT OVER BELOW
-            // make the items switch their indexes (case only works for two items)
-            if (dropZoneDiceFaceDraggable.AttachedDiceFaceData != null)
-            {
-                int dropZoneItemIndex = dropZoneDiceFaceDraggable.AttachedDiceFaceData.InventoryIndex;
-                dropZoneDiceFaceDraggable.AttachedDiceFaceData.InventoryIndex = movedDiceFaceDraggable.AttachedDiceFaceData.InventoryIndex;
-                movedDiceFaceDraggable.AttachedDiceFaceData.InventoryIndex = dropZoneItemIndex;
-            }
-            // The logic for when there is no itemn on this panel when we slide an item over.
-            else
-                movedDiceFaceDraggable.AttachedDiceFaceData.InventoryIndex = SlotIndex;
+            //// make the items switch their indexes (case only works for two items)
+            //if (dropZoneDiceFaceDraggable.AttachedDiceFaceData != null)
+            //{
+            //    int dropZoneItemIndex = dropZoneDiceFaceDraggable.AttachedDiceFaceData.InventoryIndex;
+            //    dropZoneDiceFaceDraggable.AttachedDiceFaceData.InventoryIndex = movedDiceFaceDraggable.AttachedDiceFaceData.InventoryIndex;
+            //    movedDiceFaceDraggable.AttachedDiceFaceData.InventoryIndex = dropZoneItemIndex;
+            //}
+            //// The logic for when there is no itemn on this panel when we slide an item over.
+            //else
+            //    movedDiceFaceDraggable.AttachedDiceFaceData.InventoryIndex = SlotIndex;
 
             // Set the object at the target (here) to the parent of the object the player is moving.
-            movedDiceFaceDraggable.ParentToInteractWith = myPanel.parent;
+            movedDiceFaceDraggable.ParentToInteractWith = myDiceFaceDraggable.parent;
 
-            myPanel.SetParent(movedDiceFaceDraggable.MyParent);
-            myPanel.localPosition = Vector3.zero;
+            myDiceFaceDraggable.SetParent(movedDiceFaceDraggable.MyParent);
+            myDiceFaceDraggable.localPosition = Vector3.zero;
 
-            popupManager.HidePopups(true);
+            //popupManager.HidePopups(true);
         }
     }
 }

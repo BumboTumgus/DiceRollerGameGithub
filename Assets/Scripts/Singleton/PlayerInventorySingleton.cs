@@ -5,27 +5,18 @@ using UnityEngine;
 
 public class PlayerInventorySingleton : MonoBehaviour
 {
+    private const int MAXIMUM_INVENTORY_SIZE = 15;
+
     public static PlayerInventorySingleton Instance;
 
-    private const float UI_SLIDE_TARGET_HIDDEN = 650f;
-    private const float UI_SLIDE_TARGET_BASE = 330f;
-    private const float UI_SLIDE_TARGET_INCREMENT = 165f;
-    private const float UI_SLIDE_SNAP_DISTANCE = 2f;
-    private const float UI_SLIDE_SPEED = 0.1f;
-
-    public List<DiceFaceData> CollectedDiceFaces { get => _collectedDiceFaces; }
+    public DiceFaceData[] CollectedDiceFaces { get => _collectedDiceFaces; }
     public int CollectedGold { get => _collectedGold; set => _collectedGold = value; }
 
-    [SerializeField] private RectTransform _inventorySlideParent;
-
-    private List<DiceFaceData> _collectedDiceFaces = new List<DiceFaceData>();
+    [SerializeField] private DiceFaceData[] _collectedDiceFaces;
     private int _collectedGold = 0;
-    //private int _maximumInventorySize = 5;
+    private int _currentMaxInventorySize = 5;
+    [SerializeField] private DiceFaceData[] _diceFaceToAdd;
 
-    private bool _inventoryOpened = false;
-    private float _inventorySlideTargetDistance = 0;
-    private float _inventoryCurrentSlideDistance = 0;
-    private float _inventoryColumnCount = 3;
 
     private void Awake()
     {
@@ -33,58 +24,33 @@ public class PlayerInventorySingleton : MonoBehaviour
             Instance = this;
         if (Instance != this)
             Destroy(this);
-    }
 
-    private void Start()
-    {
-        SetInventoryOpenStatus(false);
-        _inventorySlideParent.localPosition = new Vector2(UI_SLIDE_TARGET_HIDDEN, _inventorySlideParent.localPosition.y);
-        _inventoryCurrentSlideDistance = UI_SLIDE_TARGET_HIDDEN;
-        _inventorySlideTargetDistance = UI_SLIDE_TARGET_HIDDEN;
+        _collectedDiceFaces = new DiceFaceData[MAXIMUM_INVENTORY_SIZE];
     }
 
     private void Update()
     {
-        SlideToTarget();
+        if (Input.GetKeyDown(KeyCode.Q))
+            AddDiceFaceToInventory(_diceFaceToAdd[0]);
+        if (Input.GetKeyDown(KeyCode.W))
+            AddDiceFaceToInventory(_diceFaceToAdd[1]);
+        if (Input.GetKeyDown(KeyCode.E))
+            AddDiceFaceToInventory(_diceFaceToAdd[2]);
     }
 
     public void AddDiceFaceToInventory(DiceFaceData diceFace)
     {
-        _collectedDiceFaces.Add(diceFace);
+        int inventoryIndex = GetNextOpenInventoryIndex();
+        _collectedDiceFaces[inventoryIndex] = diceFace;
+        InventoryUiManagerSingleton.Instance.UpdateInventorySlot(inventoryIndex);
     }
 
-    public void UiButtonPress_OpenInventory()
+    private int GetNextOpenInventoryIndex()
     {
-        SetInventoryOpenStatus(true);
-    }
+        for(int inventoryIndex = 0; inventoryIndex < MAXIMUM_INVENTORY_SIZE; inventoryIndex++)
+            if (_collectedDiceFaces[inventoryIndex] == null)
+                return inventoryIndex;
 
-    public void UiButtonPress_CloseInventory()
-    {
-        SetInventoryOpenStatus(false);
-    }
-
-    private void SetInventoryOpenStatus(bool inventoryOpened)
-    {
-        if (_inventoryOpened == inventoryOpened)
-            return;
-
-        _inventoryOpened = inventoryOpened;
-        if (_inventoryOpened)
-            _inventorySlideTargetDistance = UI_SLIDE_TARGET_BASE - (_inventoryColumnCount - 1) * UI_SLIDE_TARGET_INCREMENT;
-        else
-            _inventorySlideTargetDistance = UI_SLIDE_TARGET_HIDDEN;
-    }
-
-    private void SlideToTarget()
-    {
-        if (_inventoryCurrentSlideDistance == _inventorySlideTargetDistance)
-            return;
-
-        _inventoryCurrentSlideDistance = Mathf.Lerp(_inventoryCurrentSlideDistance, _inventorySlideTargetDistance, UI_SLIDE_SPEED);
-
-        if(Mathf.Abs(_inventoryCurrentSlideDistance - _inventorySlideTargetDistance) < UI_SLIDE_SNAP_DISTANCE)
-            _inventoryCurrentSlideDistance = _inventorySlideTargetDistance;
-
-        _inventorySlideParent.localPosition = new Vector2(_inventoryCurrentSlideDistance, _inventorySlideParent.localPosition.y);
+        return MAXIMUM_INVENTORY_SIZE;
     }
 }

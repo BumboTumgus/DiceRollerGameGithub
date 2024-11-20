@@ -13,7 +13,6 @@ public class DiceFaceData : ScriptableObject
     public DiceFace DiceFaceEnum;
     public Sprite DiceFaceUiSprite;
     public Color DiceFaceUiColor;
-    public int InventoryIndex;
 
     public DiceFaceData(Material diceFaceMat, GameObject rolledDiceParticles, GameObject playerPowerUpParticles, DiceFace diceFace, Sprite diceFaceUiSprite, Color diceFaceUiColor)
     {
@@ -23,6 +22,5 @@ public class DiceFaceData : ScriptableObject
         DiceFaceEnum = diceFace;
         DiceFaceUiSprite = diceFaceUiSprite;
         DiceFaceUiColor = diceFaceUiColor;
-        InventoryIndex = 0;
     }
 }
