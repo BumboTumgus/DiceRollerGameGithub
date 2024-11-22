@@ -5,24 +5,34 @@ using UnityEngine.UI;
 
 public class DiceFaceInventorySlot : MonoBehaviour
 {
-    public DiceFaceDraggable ConnectedDiceFaceDraggable;
-    public Image DiceFaceImage;
-
-    public void SetImageToDiceFaceData(DiceFaceData diceFaceData)
+    public void UpdateSlot(DiceFaceData diceFaceData)
     {
-        DiceFaceImage.sprite = diceFaceData.DiceFaceUiSprite;
-        DiceFaceImage.color = diceFaceData.DiceFaceUiColor;
+        Debug.LogFormat("CHANING THE INVENTORY SLOT {0} WITH A PARENT OF {1}", gameObject.name, transform.parent);
+        DiceFaceDraggable connectedDiceFaceDraggable = GetComponentInChildren<DiceFaceDraggable>();
+        Image connectedDiceFaceImage = GetComponentInChildren<Image>();
+
+        if (connectedDiceFaceDraggable != null)
+        {
+            connectedDiceFaceDraggable.enabled = true;
+            connectedDiceFaceDraggable.AttachedDiceFaceData = diceFaceData;
+        }
+
+        connectedDiceFaceImage.sprite = diceFaceData.DiceFaceUiSprite;
+        connectedDiceFaceImage.color = diceFaceData.DiceFaceUiColor;
     }
 
     public void WipeSlot()
     {
-        if (ConnectedDiceFaceDraggable != null)
+        DiceFaceDraggable connectedDiceFaceDraggable = GetComponentInChildren<DiceFaceDraggable>();
+        Image connectedDiceFaceImage = GetComponentInChildren<Image>();
+
+        if (connectedDiceFaceDraggable != null)
         {
-            ConnectedDiceFaceDraggable.enabled = false;
-            ConnectedDiceFaceDraggable.AttachedDiceFaceData = null;
+            connectedDiceFaceDraggable.enabled = false;
+            connectedDiceFaceDraggable.AttachedDiceFaceData = null;
         }
 
-        DiceFaceImage.sprite = null;
-        DiceFaceImage.color = new Vector4(255, 255, 255, 0);
+        connectedDiceFaceImage.sprite = null;
+        connectedDiceFaceImage.color = new Vector4(255, 255, 255, 0);
     }
 }

@@ -14,7 +14,7 @@ public class PlayerInventorySingleton : MonoBehaviour
 
     [SerializeField] private DiceFaceData[] _collectedDiceFaces;
     private int _collectedGold = 0;
-    private int _currentMaxInventorySize = 5;
+    private int _currentMaxInventorySize = 15;
     [SerializeField] private DiceFaceData[] _diceFaceToAdd;
 
 
@@ -25,7 +25,14 @@ public class PlayerInventorySingleton : MonoBehaviour
         if (Instance != this)
             Destroy(this);
 
+     
+        
         _collectedDiceFaces = new DiceFaceData[MAXIMUM_INVENTORY_SIZE];
+    }
+
+    private void Start()
+    {
+        InventoryUiManagerSingleton.Instance.SetInventoryUiBasedOnMaxSpace(_currentMaxInventorySize);
     }
 
     private void Update()
@@ -41,6 +48,7 @@ public class PlayerInventorySingleton : MonoBehaviour
     public void AddDiceFaceToInventory(DiceFaceData diceFace)
     {
         int inventoryIndex = GetNextOpenInventoryIndex();
+        Debug.Log("Adding a dice face to index " + inventoryIndex);
         _collectedDiceFaces[inventoryIndex] = diceFace;
         InventoryUiManagerSingleton.Instance.UpdateInventorySlot(inventoryIndex);
     }
@@ -52,5 +60,18 @@ public class PlayerInventorySingleton : MonoBehaviour
                 return inventoryIndex;
 
         return MAXIMUM_INVENTORY_SIZE;
+    }
+
+    public void SwapDiceFacesInventoryIndexes(int index1, int index2)
+    {
+        DiceFaceData tempDiceFace = _collectedDiceFaces[index1];
+        _collectedDiceFaces[index1] = _collectedDiceFaces[index2];
+        _collectedDiceFaces[index2] = tempDiceFace;
+    }
+
+    public void RemoveDiceFaceAtIndex(int index)
+    {
+        _collectedDiceFaces[index] = null;
+        InventoryUiManagerSingleton.Instance.DiceFaceDataInventorySlots[index].WipeSlot();
     }
 }

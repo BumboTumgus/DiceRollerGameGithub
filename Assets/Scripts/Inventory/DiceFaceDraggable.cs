@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 public class DiceFaceDraggable : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler
 {
     [HideInInspector] public Transform ParentToInteractWith = null;
-    [HideInInspector] public Transform MyParent = null;
+    [HideInInspector] public Transform MyInventorySlotParent = null;
     [HideInInspector] public DiceFaceData AttachedDiceFaceData;
 
     private InventoryPopupTextManager popupManager;
@@ -19,13 +19,13 @@ public class DiceFaceDraggable : MonoBehaviour, IDragHandler, IBeginDragHandler,
     // When we click and start dragging this dude around, set our parent and our parent to return to.
     public void OnBeginDrag(PointerEventData eventData)
     {
-        Debug.Log("INVENTORY On Begin Drag");
-
         ParentToInteractWith = null;
-        MyParent = transform.parent;
+        MyInventorySlotParent = transform.parent;
 
         transform.SetParent(transform.parent.parent.parent);
         transform.SetAsLastSibling();
+
+        InventoryUiManagerSingleton.Instance.SetGarbageOpenCloseStatus(true);
 
         //popupManager.HidePopups(false);
         //popupManager.AllowPopupsToAppear = false;
@@ -44,7 +44,6 @@ public class DiceFaceDraggable : MonoBehaviour, IDragHandler, IBeginDragHandler,
     // When we end, set us back to our original parent unless we were dropped on a valid slot.
     public void OnEndDrag(PointerEventData eventData)
     {
-        Debug.Log("INVENTORY On End Drag");
         //popupManager.LockPointer = false;
         //popupManager.AllowPopupsToAppear = true;
 
@@ -55,15 +54,17 @@ public class DiceFaceDraggable : MonoBehaviour, IDragHandler, IBeginDragHandler,
         }
         else
         {
-            transform.SetParent(MyParent);
+            transform.SetParent(MyInventorySlotParent);
             //popupManager.HidePopups(true);
             //audioManager.PlayAudio(4);
         }
         transform.localPosition = Vector3.zero;
         ParentToInteractWith = null;
 
-        MyParent = transform.parent;
+        MyInventorySlotParent = transform.parent;
         GetComponent<CanvasGroup>().blocksRaycasts = true;
+
+        InventoryUiManagerSingleton.Instance.SetGarbageOpenCloseStatus(false);
 
         //inventoryUiManager.HighlightHideAll();
     }
@@ -71,7 +72,6 @@ public class DiceFaceDraggable : MonoBehaviour, IDragHandler, IBeginDragHandler,
     // Used when the mouse hovers over this item.
     public void OnPointerEnter(PointerEventData eventData)
     {
-        Debug.Log("INVENTORY Pointer Enter");
         //if(!popupManager.LockPointer)
         //{
         //    transform.parent.SetAsLastSibling();
@@ -86,7 +86,6 @@ public class DiceFaceDraggable : MonoBehaviour, IDragHandler, IBeginDragHandler,
     // Used when the mouse is no longer hovering over this item.
     public void OnPointerExit(PointerEventData eventData)
     {
-        Debug.Log("INVENTORY Pointer Exit");
         //popupManager.HidePopups(false);
         //inventoryUiManager.HighlightHideAll();
     }
