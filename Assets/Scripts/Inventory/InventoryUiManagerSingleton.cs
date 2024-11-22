@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -20,6 +21,7 @@ public class InventoryUiManagerSingleton : MonoBehaviour
 
     [SerializeField] private RectTransform _inventorySlideParent;
     [SerializeField] private RectTransform _garbageSlideParent;
+    [SerializeField] private TMP_Text _goldReadout;
 
     private bool _inventoryOpened = false;
     private float _inventorySlideTargetDistance = 0;
@@ -39,7 +41,6 @@ public class InventoryUiManagerSingleton : MonoBehaviour
 
     private void Start()
     {
-        Debug.Log("Cleanup done");
         DiceFaceDataInventorySlots = GetComponentsInChildren<DiceFaceInventorySlot>();
 
         foreach (DiceFaceInventorySlot slot in DiceFaceDataInventorySlots)
@@ -64,7 +65,6 @@ public class InventoryUiManagerSingleton : MonoBehaviour
 
     public void UpdateInventorySlot(int InventoryIndex)
     {
-        Debug.Log("Updating ivnentory slot at index " + InventoryIndex);
         // If we have an item, set the picture to that associated with the item ans show thbe image.
         DiceFaceInventorySlot slotToUpdate = DiceFaceDataInventorySlots[InventoryIndex];
         slotToUpdate.UpdateSlot(PlayerInventorySingleton.Instance.CollectedDiceFaces[InventoryIndex]);
@@ -135,7 +135,6 @@ public class InventoryUiManagerSingleton : MonoBehaviour
 
     public void SetInventoryUiBasedOnMaxSpace(int inventorySpaceMax)
     {
-        Debug.Log("We should be hiding things based on our invetory here.");
         for (int inventorySlotIndex = inventorySpaceMax; inventorySlotIndex < DiceFaceDataInventorySlots.Length; inventorySlotIndex++)
         {
             DiceFaceDataInventorySlots[inventorySlotIndex].transform.parent.gameObject.SetActive(false);
@@ -147,5 +146,10 @@ public class InventoryUiManagerSingleton : MonoBehaviour
             _inventoryColumnCount = 2;
         else if (inventorySpaceMax < 16)
             _inventoryColumnCount = 3;
+    }
+
+    public void SetGoldReadoutValue(int value)
+    {
+        _goldReadout.text = value.ToString();
     }
 }

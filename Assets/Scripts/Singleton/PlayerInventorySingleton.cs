@@ -10,8 +10,7 @@ public class PlayerInventorySingleton : MonoBehaviour
     public static PlayerInventorySingleton Instance;
 
     public DiceFaceData[] CollectedDiceFaces { get => _collectedDiceFaces; }
-    public int CollectedGold { get => _collectedGold; set => _collectedGold = value; }
-
+    public int CollectedGold { get => _collectedGold; }
     [SerializeField] private DiceFaceData[] _collectedDiceFaces;
     private int _collectedGold = 0;
     private int _currentMaxInventorySize = 15;
@@ -25,9 +24,8 @@ public class PlayerInventorySingleton : MonoBehaviour
         if (Instance != this)
             Destroy(this);
 
-     
-        
         _collectedDiceFaces = new DiceFaceData[MAXIMUM_INVENTORY_SIZE];
+        UpdateGoldValue(0);
     }
 
     private void Start()
@@ -43,6 +41,10 @@ public class PlayerInventorySingleton : MonoBehaviour
             AddDiceFaceToInventory(_diceFaceToAdd[1]);
         if (Input.GetKeyDown(KeyCode.E))
             AddDiceFaceToInventory(_diceFaceToAdd[2]);
+        if (Input.GetKeyDown(KeyCode.R))
+            UpdateGoldValue(_collectedGold + 100);
+        if (Input.GetKeyDown(KeyCode.T))
+            UpdateGoldValue(_collectedGold - 100);
     }
 
     public void AddDiceFaceToInventory(DiceFaceData diceFace)
@@ -73,5 +75,11 @@ public class PlayerInventorySingleton : MonoBehaviour
     {
         _collectedDiceFaces[index] = null;
         InventoryUiManagerSingleton.Instance.DiceFaceDataInventorySlots[index].WipeSlot();
+    }
+
+    public void UpdateGoldValue(int newGoldValue)
+    {
+        _collectedGold = newGoldValue;
+        InventoryUiManagerSingleton.Instance.SetGoldReadoutValue(_collectedGold);
     }
 }
