@@ -13,13 +13,16 @@ public class UiCombatRewardsSingleton : MonoBehaviour
 
     [SerializeField] private GameObject _combatRewardWindow;
     [SerializeField] private Button[] _dieFaceButtons;
+    [SerializeField] private Button _goldRewardButton;
     [SerializeField] private Button _takeAllButton;
     [SerializeField] private Button _discardButton;
     [SerializeField] private RectTransform _diceButtonContainer;
     [SerializeField] private TMP_Text _goldTextCount;
 
-    private int _moneyEarned = 0;
+    private bool _goldTaken = false;
+    private int _goldEarned = 0;
     private List<DiceFaceData> _diceFacesEarned = new List<DiceFaceData>();
+    private bool[] _diceFacesTaken;
     private Animation _windowAnimation;
 
     private void Awake()
@@ -39,8 +42,9 @@ public class UiCombatRewardsSingleton : MonoBehaviour
         {
             _takeAllButton.gameObject.SetActive(true);
             _discardButton.gameObject.SetActive(true);
+            InventoryUiManagerSingleton.Instance.UiButtonPress_OpenInventory();
         }
-        if(!ignoreAnimation)
+        if (!ignoreAnimation)
         {
             _windowAnimation.Play(visibility ? WINDOW_APPEAR_ANIM_CODE : WINDOW_DISSAPEAR_ANIM_CODE);
             if (visibility)
@@ -54,12 +58,18 @@ public class UiCombatRewardsSingleton : MonoBehaviour
 
     public void PopulateWindowWithRewards(EncounterScriptableObject encounterRewards)
     {
-        _moneyEarned = Random.Range((int) encounterRewards.GoldRange.x, (int)encounterRewards.GoldRange.y + 1);
+        _goldEarned = Random.Range((int) encounterRewards.GoldRange.x, (int)encounterRewards.GoldRange.y + 1);
         int _diceFaceCount = Random.Range((int) encounterRewards.DropCountRange.x, (int)encounterRewards.DropCountRange.y + 1);
-        
+
+        _goldTaken = false;
+
         _diceFacesEarned.Clear();
         foreach(DiceFaceData garenteedDiceFace in encounterRewards.GarenteedDiceFaceDrops)
             _diceFacesEarned.Add(garenteedDiceFace);
+
+        _diceFacesTaken = new bool[_diceFaceCount];
+        for(int index = 0; index < _diceFacesTaken.Length; index++)
+            _diceFacesTaken[index] = false;
         
         if(_diceFacesEarned.Count < _diceFaceCount)
         {
@@ -71,9 +81,9 @@ public class UiCombatRewardsSingleton : MonoBehaviour
             }
         }
 
-        _goldTextCount.text = "+" + _moneyEarned + " Gold";
+        _goldTextCount.text = _goldEarned + " Gold";
 
-        for(int index = 0; index < 3; index++)
+        for(int index = 0; index < _dieFaceButtons.Length; index++)
         {
             if(index < _diceFacesEarned.Count)
             {
@@ -99,32 +109,47 @@ public class UiCombatRewardsSingleton : MonoBehaviour
         button.GetComponentInChildren<TMP_Text>().text = diceFaceData.DiceFaceEnum.ToString();
         button.GetComponentInChildren<Image>().color = diceFaceData.DiceFaceUiColor;
         button.GetComponentInChildren<Image>().sprite = diceFaceData.DiceFaceUiSprite;
-        // Subscribe an event that add this dice face to inventory then hides this button.
-        // button.onClick += 
+    }
+
+    public void AddGoldToInventoryAndHideButton()
+    {
+        _goldTaken = true;
+        PlayerInventorySingleton.Instance.UpdateGoldValue(PlayerInventorySingleton.Instance.CollectedGold + _goldEarned);
     }
 
     public void AddDiceFaceToInventoryAndHideButton(int diceFaceIndex)
     {
         Debug.Log("Add Dice Face of type: " + _diceFacesEarned[diceFaceIndex].DiceFaceEnum);
         PlayerInventorySingleton.Instance.AddDiceFaceToInventory(_diceFacesEarned[diceFaceIndex]);
+        _diceFacesTaken[diceFaceIndex] = true;
     }
 
     public void AddAllLootToInventoryButton()
     {
-        foreach(DiceFaceData diceFaceEarned in _diceFacesEarned)
+        if (!_goldTaken)
+            PlayerInventorySingleton.Instance.UpdateGoldValue(PlayerInventorySingleton.Instance.CollectedGold + _goldEarned);
+
+        for(int diceFaceEarnedIndex = 0; diceFaceEarnedIndex < _diceFacesEarned.Count; diceFaceEarnedIndex++) 
         {
-            Debug.Log("Add Dice Face of type: " + diceFaceEarned.DiceFaceEnum);
-            PlayerInventorySingleton.Instance.AddDiceFaceToInventory(diceFaceEarned);
+            if (_diceFacesTaken[diceFaceEarnedIndex])
+                continue;
+            PlayerInventorySingleton.Instance.AddDiceFaceToInventory(_diceFacesEarned[diceFaceEarnedIndex]);
         }
         foreach(Button dieFaceButton in _dieFaceButtons)
         {
             dieFaceButton.gameObject.SetActive(false);  
         }
+
+        PlayerInventorySingleton.Instance.UpdateGoldValue(PlayerInventorySingleton.Instance.CollectedGold + _goldEarned);
+        InventoryUiManagerSingleton.Instance.UiButtonPress_CloseInventory();
+        MapSingleton.Instance.UiShowMapButtonPress();
         SetWindowVisibility(false);
     }
 
     public void DiscardRemainingDiceFacesButton()
     {
+        InventoryUiManagerSingleton.Instance.UiButtonPress_CloseInventory();
+        MapSingleton.Instance.UiShowMapButtonPress();
         SetWindowVisibility(false);
     }
 

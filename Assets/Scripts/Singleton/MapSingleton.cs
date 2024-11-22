@@ -31,6 +31,7 @@ public class MapSingleton : MonoBehaviour
     [SerializeField] private UiAnimationPlayer _mapAnimation;
     [SerializeField] private Sprite[] _mapNodeArtwork;
     [SerializeField] private CanvasGroup _mapInteractibilityCanvasGroup;
+    [SerializeField] private CanvasGroup _mapScrollRectRaycastBlockingCanvasGroup;
 
     private MapNode[][] _mapNodes;
     private bool _mapCurrentlyShowing = false;
@@ -73,6 +74,8 @@ public class MapSingleton : MonoBehaviour
             return;
 
         _mapCurrentlyShowing = showMap;
+        _mapScrollRectRaycastBlockingCanvasGroup.interactable = showMap;
+        _mapScrollRectRaycastBlockingCanvasGroup.blocksRaycasts =  showMap;
 
         if (_mapCurrentlyShowing)
         {

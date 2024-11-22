@@ -13,7 +13,7 @@ public class PlayerInventorySingleton : MonoBehaviour
     public int CollectedGold { get => _collectedGold; }
     [SerializeField] private DiceFaceData[] _collectedDiceFaces;
     private int _collectedGold = 0;
-    private int _currentMaxInventorySize = 15;
+    private int _currentMaxInventorySize = 5;
     [SerializeField] private DiceFaceData[] _diceFaceToAdd;
 
 
