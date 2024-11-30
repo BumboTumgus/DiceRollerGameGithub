@@ -35,12 +35,6 @@ public class PlayerInventorySingleton : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Q))
-            AddDiceFaceToInventory(_diceFaceToAdd[0]);
-        if (Input.GetKeyDown(KeyCode.W))
-            AddDiceFaceToInventory(_diceFaceToAdd[1]);
-        if (Input.GetKeyDown(KeyCode.E))
-            AddDiceFaceToInventory(_diceFaceToAdd[2]);
         if (Input.GetKeyDown(KeyCode.R))
             UpdateGoldValue(_collectedGold + 100);
         if (Input.GetKeyDown(KeyCode.T))
@@ -81,5 +75,15 @@ public class PlayerInventorySingleton : MonoBehaviour
     {
         _collectedGold = newGoldValue;
         InventoryUiManagerSingleton.Instance.SetGoldReadoutValue(_collectedGold);
+    }
+
+    public bool RoomInInventory()
+    {
+        int count = 0;
+        foreach (DiceFaceData diceFaceData in _collectedDiceFaces)
+            if (diceFaceData != null)
+                count++;
+
+        return count < _currentMaxInventorySize;
     }
 }

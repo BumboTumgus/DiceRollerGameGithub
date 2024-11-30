@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class DiceFaceDraggable : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler
+public class DiceFaceDraggable : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
 {
     [HideInInspector] public Transform ParentToInteractWith = null;
     [HideInInspector] public Transform MyInventorySlotParent = null;
@@ -66,27 +66,6 @@ public class DiceFaceDraggable : MonoBehaviour, IDragHandler, IBeginDragHandler,
 
         InventoryUiManagerSingleton.Instance.SetGarbageOpenCloseStatus(false);
 
-        //inventoryUiManager.HighlightHideAll();
-    }
-
-    // Used when the mouse hovers over this item.
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        //if(!popupManager.LockPointer)
-        //{
-        //    transform.parent.SetAsLastSibling();
-        //    //popupManager.moreInfoPopUp.transform.SetAsLastSibling();
-        //    //popupManager.ShowPopup(transform, transform.parent.GetComponent<DiceFaceDropZone>().PopUpDirection);
-        //    //audioManager.PlayAudio(0);
-
-        //    //inventoryUiManager.HighlightSlotType(attachedItem.GetComponent<Item>().itemType);
-        //}
-    }
-
-    // Used when the mouse is no longer hovering over this item.
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        //popupManager.HidePopups(false);
         //inventoryUiManager.HighlightHideAll();
     }
 }

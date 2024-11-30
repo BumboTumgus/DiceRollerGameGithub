@@ -32,7 +32,7 @@ public class DiceRollerSingleton : MonoBehaviour
         if (Instance != this)
             Destroy(this);
 
-        _currentDice = FindObjectsOfType<DiceRollingBehaviour>();
+        //_currentDice = FindObjectsOfType<DiceRollingBehaviour>();
         SwitchToDiceState(DiceRollingState.Dormant);
         foreach(DiceRollingBehaviour die in _currentDice)
             die.gameObject.SetActive(false);

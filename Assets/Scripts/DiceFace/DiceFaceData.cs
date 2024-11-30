@@ -13,8 +13,9 @@ public class DiceFaceData : ScriptableObject
     public DiceFace DiceFaceEnum;
     public Sprite DiceFaceUiSprite;
     public Color DiceFaceUiColor;
+    public int DiceFaceCost;
 
-    public DiceFaceData(Material diceFaceMat, GameObject rolledDiceParticles, GameObject playerPowerUpParticles, DiceFace diceFace, Sprite diceFaceUiSprite, Color diceFaceUiColor)
+    public DiceFaceData(Material diceFaceMat, GameObject rolledDiceParticles, GameObject playerPowerUpParticles, DiceFace diceFace, Sprite diceFaceUiSprite, Color diceFaceUiColor, int diceFaceCost)
     {
         RolledDiceParticles = rolledDiceParticles;
         PlayerPowerUpParticles = playerPowerUpParticles;
@@ -22,5 +23,6 @@ public class DiceFaceData : ScriptableObject
         DiceFaceEnum = diceFace;
         DiceFaceUiSprite = diceFaceUiSprite;
         DiceFaceUiColor = diceFaceUiColor;
+        DiceFaceCost = diceFaceCost;
     }
 }

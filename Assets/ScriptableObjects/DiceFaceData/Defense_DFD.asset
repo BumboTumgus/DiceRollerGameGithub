@@ -20,3 +20,4 @@ MonoBehaviour:
   DiceFaceEnum: 1
   DiceFaceUiSprite: {fileID: 21300000, guid: 08dff179af8fc4a4ba51a35e43427adc, type: 3}
   DiceFaceUiColor: {r: 0.41960788, g: 0.78823537, b: 0.9921569, a: 1}
+  DiceFaceCost: 15
