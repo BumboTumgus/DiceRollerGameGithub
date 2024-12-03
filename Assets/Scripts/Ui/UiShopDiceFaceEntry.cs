@@ -17,7 +17,7 @@ public class UiShopDiceFaceEntry : MonoBehaviour
     private int _diceFaceCount = 1;
     private int _diceFaceCost = 1;
 
-    private void Start()
+    private void Awake()
     {
         _canvasGroup = GetComponent<CanvasGroup>();
     }

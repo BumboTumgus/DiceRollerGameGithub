@@ -4,39 +4,30 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class DiceFaceViewerController : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
+public class DiceFaceViewerController : MonoBehaviour, IDragHandler, IBeginDragHandler
 {
     private const float ROTATIONAL_SPEED_MULTIPLIER = 0.1f;
+    private const float ROTATIONAL_SNAP_TO_TARGET_ANGLE_THRESHOLD = 1f;
+    private const float SNAP_TO_FACE_ROTATION_SPEED = 0.04f;
 
-    [SerializeField] private GameObject _dieToSpawn;
     [SerializeField] private Transform _dieViewerSpawnPoint;
     [SerializeField] private Transform _dieViewerParent;
-    [SerializeField] private Rigidbody _rotationalDieRigidbody;
-    [SerializeField] private DiceRollingBehaviour _connectedDie;
     [SerializeField] private Image[] _connectedDieFaceButtonImages;
+    private Rigidbody _rotationalDieRigidbody;
+    private DiceRollingBehaviour _connectedDie;
     private Vector2 _previousMousePosition;
     private Vector3 _angularVelocity;
-
-    private void Start()
-    {
-        CreateNewRandomDie();
-    }
-
-    public void CreateNewRandomDie()
-    {
-        GameObject die = Instantiate(_dieToSpawn, _dieViewerSpawnPoint.position, _dieViewerSpawnPoint.rotation, _dieViewerParent);
-        StartCoroutine(GiveDieFrameToInit(die));
-    }
-
-    IEnumerator GiveDieFrameToInit(GameObject die)
-    {
-        yield return new WaitForEndOfFrame();
-        LoadDiceIntoViewer(die.GetComponent<DiceRollingBehaviour>());
-    }
+    private bool _grabAndMoveLock = false;
 
     public void LoadDiceIntoViewer(DiceRollingBehaviour connectedDie)
     {
+        if(_connectedDie != null)
+            UnloadDiceFromViewer();
+
         _connectedDie = connectedDie;
+        _connectedDie.transform.parent = _dieViewerParent;
+        _connectedDie.transform.position = _dieViewerSpawnPoint.position;
+
         for(int faceIndex = 0; faceIndex < 6; faceIndex++) 
         {
             _connectedDieFaceButtonImages[faceIndex].sprite = _connectedDie.DiceFaces[faceIndex].MyDiceFaceData.DiceFaceUiSprite;
@@ -47,6 +38,17 @@ public class DiceFaceViewerController : MonoBehaviour, IDragHandler, IBeginDragH
         _rotationalDieRigidbody.useGravity = false;
     }
 
+    public void UnloadDiceFromViewer()
+    {
+        _rotationalDieRigidbody.isKinematic = true;
+        _rotationalDieRigidbody.useGravity = true;
+        _connectedDie.transform.parent = null;
+        _connectedDie.transform.position = Vector3.one * 999;
+
+        if (!DiceRollerSingleton.Instance.DieArsenalContainsDie(_connectedDie))
+            Destroy(_connectedDie);
+    }
+
     public void OnBeginDrag(PointerEventData eventData)
     {
         _previousMousePosition = eventData.position;
@@ -54,6 +56,9 @@ public class DiceFaceViewerController : MonoBehaviour, IDragHandler, IBeginDragH
 
     public void OnDrag(PointerEventData eventData)
     {
+        if (_grabAndMoveLock)
+            return;
+
         Vector2 rotationalMovement = _previousMousePosition - eventData.position;
         _angularVelocity.x = rotationalMovement.y * -1;
         _angularVelocity.y = rotationalMovement.x;
@@ -62,8 +67,48 @@ public class DiceFaceViewerController : MonoBehaviour, IDragHandler, IBeginDragH
         _previousMousePosition = eventData.position;
     }
 
-    public void OnEndDrag(PointerEventData eventData)
+    public void RotateDieToTargetRotation(int faceIndexClickedOn)
     {
-        Debug.Log("DRAG ENDED");
+        StopAllCoroutines();
+
+        _rotationalDieRigidbody.angularVelocity = Vector3.zero;
+        switch (faceIndexClickedOn)
+        {
+            case 0:
+                StartCoroutine(RotateDieToTargetRotation(Quaternion.Euler(0, 180, 90)));
+                break;
+            case 1:
+                StartCoroutine(RotateDieToTargetRotation(Quaternion.Euler(0, 0, 0)));
+                break;
+            case 2:
+                StartCoroutine(RotateDieToTargetRotation(Quaternion.Euler(-90, 0, 0)));
+                break;
+            case 3:
+                StartCoroutine(RotateDieToTargetRotation(Quaternion.Euler(90, 90, 90)));
+                break;
+            case 4:
+                StartCoroutine(RotateDieToTargetRotation(Quaternion.Euler(0, 90, 0)));
+                break;
+            case 5:
+                StartCoroutine(RotateDieToTargetRotation(Quaternion.Euler(0, -90, 0)));
+                break;
+            default:
+            break;
+        }
+    }
+
+    public IEnumerator RotateDieToTargetRotation(Quaternion target)
+    {
+        _grabAndMoveLock = true;
+
+        while (Quaternion.Angle(_rotationalDieRigidbody.rotation, target) > ROTATIONAL_SNAP_TO_TARGET_ANGLE_THRESHOLD)
+        {
+            _rotationalDieRigidbody.rotation = Quaternion.Slerp(_rotationalDieRigidbody.rotation, target, SNAP_TO_FACE_ROTATION_SPEED);
+            yield return null;
+        }
+
+        _rotationalDieRigidbody.rotation = target;
+
+        _grabAndMoveLock = false;
     }
 }

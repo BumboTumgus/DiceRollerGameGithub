@@ -7,6 +7,7 @@ using UnityEngine.Events;
 
 public class DiceRollerSingleton : MonoBehaviour
 {
+    private const int MAXIMUM_DICE_CAPACITY = 15;
     private const float DICE_IDLE_ANIM_TIMER_INCREMENT = 1f;
     private const float DICE_IDLE_ANIM_CHANCE = 0.3f;
     private const float HIDE_TO_DORMANT_DELAY_INCREMENT = 0.2f;
@@ -15,7 +16,7 @@ public class DiceRollerSingleton : MonoBehaviour
     public static DiceRollerSingleton Instance;
     public enum DiceRollingState { Dormant, ClickToRoll, Rolling, ReRollChoice };
 
-    [SerializeField] private DiceRollingBehaviour[] _currentDice;
+    [SerializeField] private List<DiceRollingBehaviour> _currentDice;
     [SerializeField] private LayerMask _diceLayerMask;
 
     private DiceRollingState _currentDiceRollState = DiceRollingState.Dormant;
@@ -95,7 +96,7 @@ public class DiceRollerSingleton : MonoBehaviour
                 }
 
                 DiceBonusCalculatorSingleton.Instance.ResetRolledDiceBonuses();
-                _rerollCount = _currentDice.Length / 2;
+                _rerollCount = _currentDice.Count / 2;
                 UiDiceRerollSingleton.Instance.OnSetRerollCounter(_rerollCount);
                 _diceFinishedRollingCount = 0;
                 _hasRerolledAlready = false;
@@ -124,7 +125,7 @@ public class DiceRollerSingleton : MonoBehaviour
     public void IncrementDiceFinishedRollingCount()
     {
         _diceFinishedRollingCount++;
-        if (_diceFinishedRollingCount >= _currentDice.Length)
+        if (_diceFinishedRollingCount >= _currentDice.Count)
         {
             if (_rerollCount > 0 && !_hasRerolledAlready)
                 SwitchToDiceState(DiceRollingState.ReRollChoice);
@@ -151,6 +152,21 @@ public class DiceRollerSingleton : MonoBehaviour
             die.GetComponent<DiceHighlightingBehaviour>().ClearStatus();
 
         SwitchToDiceState(DiceRollingState.Rolling);
+    }
+
+    public void AddDieToArsenal(DiceRollingBehaviour dieToAdd)
+    {
+        _currentDice.Add(dieToAdd);
+    }
+
+    public bool DieArsenalAtCapacity()
+    {
+        return _currentDice.Count >= MAXIMUM_DICE_CAPACITY;
+    }
+
+    public bool DieArsenalContainsDie(DiceRollingBehaviour dieToCheck)
+    {
+        return _currentDice.Contains(dieToCheck);
     }
 
     private void HighlightHoveredDice()
@@ -198,7 +214,7 @@ public class DiceRollerSingleton : MonoBehaviour
             }
 
             UiDiceRerollSingleton.Instance.OnSetRerollCounter(_rerollCount);
-            UiDiceRollSingleton.Instance.OnSetPlayerActivelyRerolling(_diceFinishedRollingCount != _currentDice.Length);
+            UiDiceRollSingleton.Instance.OnSetPlayerActivelyRerolling(_diceFinishedRollingCount != _currentDice.Count);
         }
     }
 }

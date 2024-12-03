@@ -9,6 +9,10 @@ public class ShopSingleton : MonoBehaviour
     private const int DICE_FACE_MAX = 6;
     private const float DICE_EXTRA_FACE_CHANCE = 0.33f;
     private const float DICE_FACE_SALE_CHANCE = 0.1f;
+    private const int DICE_MIN = 1;
+    private const int DICE_MAX = 2;
+    private const float DICE_SALE_CHANCE = 0.1f;
+    private const float DICE_RANDOMIZE_FACES_CHANCE = 0.2f;
     private const int HEAL_HEAL_AMOUNT = 20;
     private const int HEAL_COST = 10;
 
@@ -18,7 +22,10 @@ public class ShopSingleton : MonoBehaviour
     [SerializeField] DiceFaceData[] _diceFaceDataShopBank;
     [SerializeField] UiShopDiceFaceEntry[] _diceFaceEntryShopBank;
     private List<DiceFaceData> _diceFacesForSale = new List<DiceFaceData>();
-    private DiceRollingBehaviour _dicesForSale;
+
+    [SerializeField] GameObject[] _diceShopBank;
+    [SerializeField] UiShopDiceEntry[] _diceEntryWithViewerShopBank;
+    private List<DiceRollingBehaviour> _diceForSale = new List<DiceRollingBehaviour>();
 
     private void Awake()
     {
@@ -30,7 +37,7 @@ public class ShopSingleton : MonoBehaviour
 
     private void Start()
     {
-        RollShopContents();
+        //RollShopContents();
     }
 
     private void Update()
@@ -41,6 +48,7 @@ public class ShopSingleton : MonoBehaviour
 
     public void RollShopContents()
     {
+        // Creating Dice faces to sell
         int diceFacesCount = Random.Range(DICE_FACE_MIN, DICE_FACE_MAX + 1);
         List<DiceFaceData> rollableDiceFacesInShop = _diceFaceDataShopBank.OfType<DiceFaceData>().ToList();
         _diceFacesForSale.Clear();
@@ -71,9 +79,35 @@ public class ShopSingleton : MonoBehaviour
             _diceFaceEntryShopBank[diceFaceDataIndex].SetDiceFaceReadoutToDiceFaceData(_diceFacesForSale[diceFaceDataIndex], diceFaceCount, onSale);
         }
 
-        for(int DiceFaceEntryIndex = DICE_FACE_MAX - 1; DiceFaceEntryIndex > _diceFacesForSale.Count - 1; DiceFaceEntryIndex--)
+        for(int diceFaceEntryIndex = DICE_FACE_MAX - 1; diceFaceEntryIndex > _diceFacesForSale.Count - 1; diceFaceEntryIndex--)
         {
-            _diceFaceEntryShopBank[DiceFaceEntryIndex].HideDiceFaceReadout();
+            _diceFaceEntryShopBank[diceFaceEntryIndex].HideDiceFaceReadout();
+        }
+
+        // Creating Dice to sell
+        int diceCount = Random.Range(DICE_MIN, DICE_MAX + 1);
+        _diceForSale.Clear();
+
+        Debug.Log("ROLLING DICE IN SHOP, our total count is " + diceCount);
+        for (int diceIndex = 0; diceIndex < diceCount; diceIndex++)
+        {
+            DiceRollingBehaviour dieRollingData = Instantiate(_diceShopBank[Random.Range(0, _diceShopBank.Length)], Vector3.one * 999, Quaternion.identity).GetComponent<DiceRollingBehaviour>();
+            _diceForSale.Add(dieRollingData);
+            Debug.Log("We rolled " + dieRollingData.gameObject.name);
+
+            if (Random.Range(0f, 1f) < DICE_RANDOMIZE_FACES_CHANCE)
+                dieRollingData.RandomizeDiceFaces();
+        }
+
+        for (int diceDataIndex = 0; diceDataIndex < _diceForSale.Count; diceDataIndex++)
+        {
+            bool onSale = Random.Range(0f, 1f) <= DICE_SALE_CHANCE;
+            _diceEntryWithViewerShopBank[diceDataIndex].SetDieReadoutToDiceRollingBehaviourDelayed(_diceForSale[diceDataIndex], 1, onSale);
+        }
+
+        for (int dieEntryIndex = DICE_MAX - 1; dieEntryIndex > _diceForSale.Count - 1; dieEntryIndex--)
+        {
+            _diceEntryWithViewerShopBank[dieEntryIndex].HideDieReadout();
         }
     }
 
@@ -92,6 +126,12 @@ public class ShopSingleton : MonoBehaviour
     public void ShowAlreadyFullHealthPopup()
     {
         _errorPopup.SetText("Already FUll Health");
+        _errorPopup.ShowWarning();
+    }
+
+    public void ShowDiceLimitReachedPopup()
+    {
+        _errorPopup.SetText("Dice Maximum Reached");
         _errorPopup.ShowWarning();
     }
 }

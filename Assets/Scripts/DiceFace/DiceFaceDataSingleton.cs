@@ -35,4 +35,9 @@ public class DiceFaceDataSingleton : MonoBehaviour
 
         return null;
     }
+
+    public string GetRandomDiceFaceDataIdentifier()
+    {
+        return _diceFaceDataBank[Random.Range(0, _diceFaceDataBank.Length)].DiceFaceEnum.ToString();
+    }
 }

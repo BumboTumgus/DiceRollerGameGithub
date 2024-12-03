@@ -81,6 +81,18 @@ public class DiceRollingBehaviour : MonoBehaviour
         _currentlyAllowsRolls = diceSelected;
     }
 
+    public void RandomizeDiceFaces()
+    {
+        StartCoroutine(RandomizeDiceFacesAfterSingleFrameDelay());
+    }
+
+    private IEnumerator RandomizeDiceFacesAfterSingleFrameDelay()
+    {
+        yield return null;
+        foreach (DiceFaceBehaviour diceFaceBehaviour in _diceFaces)
+            diceFaceBehaviour.SwitchDiceFace(DiceFaceDataSingleton.Instance.GetRandomDiceFaceDataIdentifier());
+    }
+
     private float GetRandomFloatWithFloor(float floor)
     {
         float randomFloat = Random.Range(-1f,1f);

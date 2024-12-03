@@ -43,7 +43,6 @@ public class CombatManagerSingleton : MonoBehaviour
             Instance = this;
         if (Instance != this)
             Destroy(this);
-        StartCoroutine(SetUpEncounter());
     }
 
     private void Update()
