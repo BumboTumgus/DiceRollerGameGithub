@@ -46,7 +46,7 @@ public class DiceFaceViewerController : MonoBehaviour, IDragHandler, IBeginDragH
         _connectedDie.transform.position = Vector3.one * 999;
 
         if (!DiceRollerSingleton.Instance.DieArsenalContainsDie(_connectedDie))
-            Destroy(_connectedDie);
+            Destroy(_connectedDie.gameObject);
     }
 
     public void OnBeginDrag(PointerEventData eventData)

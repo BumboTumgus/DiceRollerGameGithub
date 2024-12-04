@@ -333,7 +333,7 @@ public class MapSingleton : MonoBehaviour
     }
     private void UiNodeButtonAddDelegate_HideMap(Button nodeButton)
     {
-        nodeButton.onClick.AddListener(delegate { UiHideMapWithDelay(); });
+        nodeButton.onClick.AddListener(delegate { UiHideMapWithDelay(MAP_DISSAPEAR_DELAY_AFTER_BUTTON_PRESS); });
     }
     #endregion
 
@@ -369,9 +369,13 @@ public class MapSingleton : MonoBehaviour
     {
         // TODO: OPEN THE REST MENU
     }
-    public void UiHideMapWithDelay()
+    public void UiHideMapWithDelay(float delayInSeconds)
     {
-        StartCoroutine(SetMapShowStatusDelayed(false, MAP_DISSAPEAR_DELAY_AFTER_BUTTON_PRESS));
+        StartCoroutine(SetMapShowStatusDelayed(false, delayInSeconds));
+    }
+    public void UiShowMapWithDelay(float delayInSeconds)
+    {
+        StartCoroutine(SetMapShowStatusDelayed(true, delayInSeconds));
     }
     #endregion
 

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 
 public class ShopSingleton : MonoBehaviour
@@ -9,12 +10,19 @@ public class ShopSingleton : MonoBehaviour
     private const int DICE_FACE_MAX = 6;
     private const float DICE_EXTRA_FACE_CHANCE = 0.33f;
     private const float DICE_FACE_SALE_CHANCE = 0.1f;
+
     private const int DICE_MIN = 1;
     private const int DICE_MAX = 2;
     private const float DICE_SALE_CHANCE = 0.1f;
     private const float DICE_RANDOMIZE_FACES_CHANCE = 0.2f;
+
     private const int HEAL_HEAL_AMOUNT = 20;
     private const int HEAL_COST = 10;
+
+    private const float UI_SLIDE_TARGET_HIDDEN = -1000f;
+    private const float UI_SLIDE_TARGET_SHOWN = 645f;
+    private const float UI_SLIDE_SNAP_DISTANCE = 2f;
+    private const float UI_SLIDE_SPEED = 0.1f;
 
     public static ShopSingleton Instance;
 
@@ -27,23 +35,32 @@ public class ShopSingleton : MonoBehaviour
     [SerializeField] UiShopDiceEntry[] _diceEntryWithViewerShopBank;
     private List<DiceRollingBehaviour> _diceForSale = new List<DiceRollingBehaviour>();
 
+    [SerializeField] private RectTransform _shopSlideParent;
+    private bool _shopOpened = false;
+    private float _shopSlideTargetDistance = 0;
+    private float _shopCurrentSlideDistance = 0;
+
     private void Awake()
     {
         if (Instance == null)
             Instance = this;
         if (Instance != this)
             Destroy(this);
-    }
 
-    private void Start()
-    {
-        //RollShopContents();
+        _shopSlideParent.localPosition = new Vector2(UI_SLIDE_TARGET_HIDDEN, _shopSlideParent.localPosition.y);
+        _shopCurrentSlideDistance = UI_SLIDE_TARGET_HIDDEN;
+        _shopSlideTargetDistance = UI_SLIDE_TARGET_HIDDEN;
     }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.L))
+        {
             RollShopContents();
+            UiButtonPress_OpenShop();
+            InventoryUiManagerSingleton.Instance.UiButtonPress_OpenInventory();
+        }
+        MenuSlideToTarget();
     }
 
     public void RollShopContents()
@@ -53,13 +70,11 @@ public class ShopSingleton : MonoBehaviour
         List<DiceFaceData> rollableDiceFacesInShop = _diceFaceDataShopBank.OfType<DiceFaceData>().ToList();
         _diceFacesForSale.Clear();
 
-        Debug.Log("ROLLING DICE FACES IN SHOP, our total count is " + diceFacesCount);
         for(int diceFaceIndex = 0; diceFaceIndex < diceFacesCount; diceFaceIndex++)
         {
             DiceFaceData diceFaceData = rollableDiceFacesInShop[Random.Range(0, rollableDiceFacesInShop.Count)];
             _diceFacesForSale.Add(diceFaceData);
             rollableDiceFacesInShop.Remove(diceFaceData);
-            Debug.Log("We rolled " + diceFaceData.DiceFaceEnum);
         }
 
         for(int diceFaceDataIndex = 0; diceFaceDataIndex < _diceFacesForSale.Count; diceFaceDataIndex++)
@@ -88,12 +103,10 @@ public class ShopSingleton : MonoBehaviour
         int diceCount = Random.Range(DICE_MIN, DICE_MAX + 1);
         _diceForSale.Clear();
 
-        Debug.Log("ROLLING DICE IN SHOP, our total count is " + diceCount);
         for (int diceIndex = 0; diceIndex < diceCount; diceIndex++)
         {
             DiceRollingBehaviour dieRollingData = Instantiate(_diceShopBank[Random.Range(0, _diceShopBank.Length)], Vector3.one * 999, Quaternion.identity).GetComponent<DiceRollingBehaviour>();
             _diceForSale.Add(dieRollingData);
-            Debug.Log("We rolled " + dieRollingData.gameObject.name);
 
             if (Random.Range(0f, 1f) < DICE_RANDOMIZE_FACES_CHANCE)
                 dieRollingData.RandomizeDiceFaces();
@@ -111,6 +124,7 @@ public class ShopSingleton : MonoBehaviour
         }
     }
 
+    #region Error Popups
     public void ShowNotEnoughMoneyPopup()
     {
         _errorPopup.SetText("Not Enough Gold");
@@ -134,4 +148,46 @@ public class ShopSingleton : MonoBehaviour
         _errorPopup.SetText("Dice Maximum Reached");
         _errorPopup.ShowWarning();
     }
+    #endregion
+
+
+    #region Open Close Menu Logic
+    public void UiButtonPress_OpenShop()
+    {
+        SetShopOpenStatus(true);
+    }
+
+    public void UiButtonPress_CloseShop()
+    {
+        SetShopOpenStatus(false);
+    }
+
+    private void SetShopOpenStatus(bool shopOpened)
+    {
+        if (_shopOpened == shopOpened)
+            return;
+
+        _shopOpened = shopOpened;
+        if (_shopOpened)
+            _shopSlideTargetDistance = UI_SLIDE_TARGET_SHOWN;
+        else
+        {
+            _shopSlideTargetDistance = UI_SLIDE_TARGET_HIDDEN;
+            MapSingleton.Instance.UiShowMapWithDelay(1f);
+        }
+    }
+
+    private void MenuSlideToTarget()
+    {
+        if (_shopCurrentSlideDistance == _shopSlideTargetDistance)
+            return;
+
+        _shopCurrentSlideDistance = Mathf.Lerp(_shopCurrentSlideDistance, _shopSlideTargetDistance, UI_SLIDE_SPEED);
+
+        if (Mathf.Abs(_shopCurrentSlideDistance - _shopSlideTargetDistance) < UI_SLIDE_SNAP_DISTANCE)
+            _shopCurrentSlideDistance = _shopSlideTargetDistance;
+
+        _shopSlideParent.localPosition = new Vector2(_shopCurrentSlideDistance, _shopSlideParent.localPosition.y);
+    }
+    #endregion
 }

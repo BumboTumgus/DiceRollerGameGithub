@@ -13,7 +13,7 @@ public class PlayerInventorySingleton : MonoBehaviour
     public int CollectedGold { get => _collectedGold; }
     [SerializeField] private DiceFaceData[] _collectedDiceFaces;
     private int _collectedGold = 0;
-    private int _currentMaxInventorySize = 5;
+    private int _currentMaxInventorySize = 15;
     [SerializeField] private DiceFaceData[] _diceFaceToAdd;
 
 
@@ -44,7 +44,6 @@ public class PlayerInventorySingleton : MonoBehaviour
     public void AddDiceFaceToInventory(DiceFaceData diceFace)
     {
         int inventoryIndex = GetNextOpenInventoryIndex();
-        Debug.Log("Adding a dice face to index " + inventoryIndex);
         _collectedDiceFaces[inventoryIndex] = diceFace;
         InventoryUiManagerSingleton.Instance.UpdateInventorySlot(inventoryIndex);
     }

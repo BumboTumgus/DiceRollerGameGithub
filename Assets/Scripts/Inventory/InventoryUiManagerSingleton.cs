@@ -79,6 +79,7 @@ public class InventoryUiManagerSingleton : MonoBehaviour
     public void UiButtonPress_CloseInventory()
     {
         SetInventoryOpenStatus(false);
+        ShopSingleton.Instance.UiButtonPress_CloseShop();
     }
 
     private void SetInventoryOpenStatus(bool inventoryOpened)
