@@ -26,6 +26,9 @@ public class ShopSingleton : MonoBehaviour
 
     public static ShopSingleton Instance;
 
+    [SerializeField] TMP_Text _healCostText;
+    [SerializeField] TMP_Text _healAmountText;
+
     [SerializeField] UiErrorPopup _errorPopup;
     [SerializeField] DiceFaceData[] _diceFaceDataShopBank;
     [SerializeField] UiShopDiceFaceEntry[] _diceFaceEntryShopBank;
@@ -50,6 +53,9 @@ public class ShopSingleton : MonoBehaviour
         _shopSlideParent.localPosition = new Vector2(UI_SLIDE_TARGET_HIDDEN, _shopSlideParent.localPosition.y);
         _shopCurrentSlideDistance = UI_SLIDE_TARGET_HIDDEN;
         _shopSlideTargetDistance = UI_SLIDE_TARGET_HIDDEN;
+
+        _healCostText.text = HEAL_COST.ToString();
+        _healAmountText.text = "+" + HEAL_HEAL_AMOUNT + " HP";
     }
 
     private void Update()
@@ -58,7 +64,6 @@ public class ShopSingleton : MonoBehaviour
         {
             RollShopContents();
             UiButtonPress_OpenShop();
-            InventoryUiManagerSingleton.Instance.UiButtonPress_OpenInventory();
         }
         MenuSlideToTarget();
     }
@@ -155,11 +160,34 @@ public class ShopSingleton : MonoBehaviour
     public void UiButtonPress_OpenShop()
     {
         SetShopOpenStatus(true);
+        InventoryUiManagerSingleton.Instance.UiButtonPress_OpenInventory();
     }
 
     public void UiButtonPress_CloseShop()
     {
         SetShopOpenStatus(false);
+    }
+
+    public void UiButtonPress_AttemptHealPlayer()
+    {
+        if(CombatManagerSingleton.Instance.PlayerCharacterCombatBehaviour.IsAtMaxHealth())
+        {
+            ShowAlreadyFullHealthPopup();
+            return;
+        }
+        if(PlayerInventorySingleton.Instance.CollectedGold < HEAL_COST)
+        {
+            ShowNotEnoughMoneyPopup();
+            return;
+        }
+
+        CombatManagerSingleton.Instance.PlayerCharacterCombatBehaviour.HealHealth(HEAL_HEAL_AMOUNT);
+        PlayerInventorySingleton.Instance.UpdateGoldValue(PlayerInventorySingleton.Instance.CollectedGold - HEAL_COST);
+    }
+
+    public void OpenShopWithDelay(float delay)
+    {
+        Invoke(nameof(UiButtonPress_OpenShop), delay);
     }
 
     private void SetShopOpenStatus(bool shopOpened)
@@ -174,6 +202,7 @@ public class ShopSingleton : MonoBehaviour
         {
             _shopSlideTargetDistance = UI_SLIDE_TARGET_HIDDEN;
             MapSingleton.Instance.UiShowMapWithDelay(1f);
+            MapSingleton.Instance.SetMapInteractibility(true);
         }
     }
 

@@ -2392,8 +2392,8 @@ RectTransform:
   - {fileID: 724312246}
   - {fileID: 542789755}
   - {fileID: 1901254875}
-  - {fileID: 750238900}
   - {fileID: 323606330}
+  - {fileID: 750238900}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -3481,7 +3481,7 @@ GameObject:
   - component: {fileID: 192412196}
   - component: {fileID: 192412195}
   m_Layer: 5
-  m_Name: DiceCount_Text
+  m_Name: HealAmount_Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10696,7 +10696,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 215894690}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.44495454
+  m_Size: 0
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -27992,7 +27992,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1077875154}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1366785655}
+        m_TargetAssemblyTypeName: ShopSingleton, Assembly-CSharp
+        m_MethodName: UiButtonPress_AttemptHealPlayer
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1077875154
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -34487,6 +34499,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d27a4a40fa10424b9adc16a1922df06, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _healCostText: {fileID: 2092897084}
+  _healAmountText: {fileID: 192412195}
   _errorPopup: {fileID: 244121287}
   _diceFaceDataShopBank:
   - {fileID: 11400000, guid: 8e461475cb82e8f4f92ee7b33c3e92a7, type: 2}
@@ -34510,7 +34524,7 @@ MonoBehaviour:
   _diceEntryWithViewerShopBank:
   - {fileID: 1800297812}
   - {fileID: 1058780520}
-  _shopSlideParent: {fileID: 0}
+  _shopSlideParent: {fileID: 1858882071}
 --- !u!4 &1366785656
 Transform:
   m_ObjectHideFlags: 0
@@ -45925,7 +45939,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1945402594
 RectTransform:
   m_ObjectHideFlags: 0
@@ -45989,9 +46003,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 323606332}
-        m_TargetAssemblyTypeName: InventoryUiManagerSingleton, Assembly-CSharp
-        m_MethodName: UiButtonPress_CloseInventory
+      - m_Target: {fileID: 1366785655}
+        m_TargetAssemblyTypeName: ShopSingleton, Assembly-CSharp
+        m_MethodName: UiButtonPress_CloseShop
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -48681,7 +48695,7 @@ GameObject:
   - component: {fileID: 2092897085}
   - component: {fileID: 2092897084}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: HealCost_Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

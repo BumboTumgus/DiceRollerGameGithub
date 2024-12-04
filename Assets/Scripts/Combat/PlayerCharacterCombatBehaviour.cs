@@ -119,6 +119,11 @@ public class PlayerCharacterCombatBehaviour : MonoBehaviour
 
     }
 
+    public bool IsAtMaxHealth()
+    {
+        return _healthCurrent >= _healthMax;
+    }
+
     public bool IsAttackCritical()
     {
         int randomNum = Random.Range(0, 10);

@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -35,7 +34,7 @@ public class MapSingleton : MonoBehaviour
 
     private MapNode[][] _mapNodes;
     private bool _mapCurrentlyShowing = false;
-    private float _contentPreviousHeightWhenOpened = 0;
+    private float _contentPreviousHeightWhenOpened = 99999f;
 
     private void Awake()
     {
@@ -321,6 +320,7 @@ public class MapSingleton : MonoBehaviour
     }
     private void UiNodeButtonAddDelegate_OpenShop(Button nodeButton)
     {
+        nodeButton.onClick.AddListener(delegate { UiRollShopContents(nodeButton); });
         nodeButton.onClick.AddListener(delegate { UiOpenShopCallback(); });
     }
     private void UiNodeButtonAddDelegate_Rest(Button nodeButton)
@@ -363,7 +363,13 @@ public class MapSingleton : MonoBehaviour
     }
     public void UiOpenShopCallback()
     {
-        // TODO: OPEN THE SHOP
+        ShopSingleton.Instance.OpenShopWithDelay(1.5f);
+
+    }
+    public void UiRollShopContents(Button nodeButton)
+    {
+        ShopSingleton.Instance.RollShopContents();
+        nodeButton.onClick.RemoveListener(delegate { UiRollShopContents(nodeButton); });
     }
     public void UiStartRestCallback()
     {
