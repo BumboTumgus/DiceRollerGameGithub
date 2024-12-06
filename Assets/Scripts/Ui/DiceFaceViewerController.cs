@@ -28,8 +28,10 @@ public class DiceFaceViewerController : MonoBehaviour, IDragHandler, IBeginDragH
         _connectedDie.transform.parent = _dieViewerParent;
         _connectedDie.transform.position = _dieViewerSpawnPoint.position;
 
-        for(int faceIndex = 0; faceIndex < 6; faceIndex++) 
+        Debug.Log("COnnected die's face count is " + _connectedDie.DiceFaces.Length);
+        for (int faceIndex = 0; faceIndex < 6; faceIndex++) 
         {
+            Debug.Log("COnnected die's face were drawing is " + _connectedDie.DiceFaces[faceIndex].MyDiceFaceData.DiceFaceEnum);
             _connectedDieFaceButtonImages[faceIndex].sprite = _connectedDie.DiceFaces[faceIndex].MyDiceFaceData.DiceFaceUiSprite;
             _connectedDieFaceButtonImages[faceIndex].color = _connectedDie.DiceFaces[faceIndex].MyDiceFaceData.DiceFaceUiColor;
         }

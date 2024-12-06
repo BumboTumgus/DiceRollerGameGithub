@@ -15,6 +15,7 @@ public class DiceRollerSingleton : MonoBehaviour
 
     public static DiceRollerSingleton Instance;
     public enum DiceRollingState { Dormant, ClickToRoll, Rolling, ReRollChoice };
+    public List<DiceRollingBehaviour> CurrentDice { get => _currentDice; }
 
     [SerializeField] private List<DiceRollingBehaviour> _currentDice;
     [SerializeField] private LayerMask _diceLayerMask;
@@ -26,6 +27,7 @@ public class DiceRollerSingleton : MonoBehaviour
     private Transform _currentHoveredDice;
     private bool _hasRerolledAlready = false;
 
+
     private void Awake()
     {
         if (Instance == null)
@@ -36,7 +38,7 @@ public class DiceRollerSingleton : MonoBehaviour
         //_currentDice = FindObjectsOfType<DiceRollingBehaviour>();
         SwitchToDiceState(DiceRollingState.Dormant);
         foreach(DiceRollingBehaviour die in _currentDice)
-            die.gameObject.SetActive(false);
+            die.gameObject.transform.position = Vector3.one * 999;
     }
 
     private void Update()

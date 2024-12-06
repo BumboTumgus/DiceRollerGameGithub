@@ -19,15 +19,11 @@ public class ShopSingleton : MonoBehaviour
     private const int HEAL_HEAL_AMOUNT = 20;
     private const int HEAL_COST = 10;
 
-    private const float UI_SLIDE_TARGET_HIDDEN = -1000f;
-    private const float UI_SLIDE_TARGET_SHOWN = 645f;
-    private const float UI_SLIDE_SNAP_DISTANCE = 2f;
-    private const float UI_SLIDE_SPEED = 0.1f;
-
     public static ShopSingleton Instance;
 
     [SerializeField] TMP_Text _healCostText;
     [SerializeField] TMP_Text _healAmountText;
+    [SerializeField] UiSlidingPanelController _slidingPanelController;
 
     [SerializeField] UiErrorPopup _errorPopup;
     [SerializeField] DiceFaceData[] _diceFaceDataShopBank;
@@ -38,11 +34,6 @@ public class ShopSingleton : MonoBehaviour
     [SerializeField] UiShopDiceEntry[] _diceEntryWithViewerShopBank;
     private List<DiceRollingBehaviour> _diceForSale = new List<DiceRollingBehaviour>();
 
-    [SerializeField] private RectTransform _shopSlideParent;
-    private bool _shopOpened = false;
-    private float _shopSlideTargetDistance = 0;
-    private float _shopCurrentSlideDistance = 0;
-
     private void Awake()
     {
         if (Instance == null)
@@ -50,12 +41,11 @@ public class ShopSingleton : MonoBehaviour
         if (Instance != this)
             Destroy(this);
 
-        _shopSlideParent.localPosition = new Vector2(UI_SLIDE_TARGET_HIDDEN, _shopSlideParent.localPosition.y);
-        _shopCurrentSlideDistance = UI_SLIDE_TARGET_HIDDEN;
-        _shopSlideTargetDistance = UI_SLIDE_TARGET_HIDDEN;
-
         _healCostText.text = HEAL_COST.ToString();
         _healAmountText.text = "+" + HEAL_HEAL_AMOUNT + " HP";
+
+        _slidingPanelController.OnPanelSuccessfullyClosed_Callback.AddListener(() => MapSingleton.Instance.UiShowMapWithDelay(1f));
+        _slidingPanelController.OnPanelSuccessfullyClosed_Callback.AddListener(() => MapSingleton.Instance.SetMapInteractibility(true));
     }
 
     private void Update()
@@ -65,7 +55,6 @@ public class ShopSingleton : MonoBehaviour
             RollShopContents();
             UiButtonPress_OpenShop();
         }
-        MenuSlideToTarget();
     }
 
     public void RollShopContents()
@@ -159,13 +148,13 @@ public class ShopSingleton : MonoBehaviour
     #region Open Close Menu Logic
     public void UiButtonPress_OpenShop()
     {
-        SetShopOpenStatus(true);
+        _slidingPanelController.SetPanelOpenStatus(true);
         InventoryUiManagerSingleton.Instance.UiButtonPress_OpenInventory();
     }
 
     public void UiButtonPress_CloseShop()
     {
-        SetShopOpenStatus(false);
+        _slidingPanelController.SetPanelOpenStatus(false);
     }
 
     public void UiButtonPress_AttemptHealPlayer()
@@ -190,33 +179,5 @@ public class ShopSingleton : MonoBehaviour
         Invoke(nameof(UiButtonPress_OpenShop), delay);
     }
 
-    private void SetShopOpenStatus(bool shopOpened)
-    {
-        if (_shopOpened == shopOpened)
-            return;
-
-        _shopOpened = shopOpened;
-        if (_shopOpened)
-            _shopSlideTargetDistance = UI_SLIDE_TARGET_SHOWN;
-        else
-        {
-            _shopSlideTargetDistance = UI_SLIDE_TARGET_HIDDEN;
-            MapSingleton.Instance.UiShowMapWithDelay(1f);
-            MapSingleton.Instance.SetMapInteractibility(true);
-        }
-    }
-
-    private void MenuSlideToTarget()
-    {
-        if (_shopCurrentSlideDistance == _shopSlideTargetDistance)
-            return;
-
-        _shopCurrentSlideDistance = Mathf.Lerp(_shopCurrentSlideDistance, _shopSlideTargetDistance, UI_SLIDE_SPEED);
-
-        if (Mathf.Abs(_shopCurrentSlideDistance - _shopSlideTargetDistance) < UI_SLIDE_SNAP_DISTANCE)
-            _shopCurrentSlideDistance = _shopSlideTargetDistance;
-
-        _shopSlideParent.localPosition = new Vector2(_shopCurrentSlideDistance, _shopSlideParent.localPosition.y);
-    }
     #endregion
 }

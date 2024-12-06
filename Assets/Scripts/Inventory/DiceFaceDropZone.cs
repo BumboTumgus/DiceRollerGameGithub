@@ -10,15 +10,7 @@ public class DiceFaceDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandle
 
     public enum DropZoneType { Inventory, Dice, Discard }
     public DropZoneType slotType;
-    public InventoryPopupTextManager.PopUpDirection PopUpDirection;
     public int SlotIndex;
-
-    private InventoryPopupTextManager popupManager;
-
-    private void Start()
-    {
-        //popupManager = transform.parent.GetComponent<InventoryPopupTextManager>();
-    }
 
     // Used when the pointer enters the dropzone, we check to see if there is an atatched drag item to it.
     public void OnPointerEnter(PointerEventData eventData)
@@ -27,15 +19,6 @@ public class DiceFaceDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandle
         if (eventData.pointerDrag != null)
         {
             DiceFaceDraggable movedDiceFace = eventData.pointerDrag.GetComponent<DiceFaceDraggable>();
-
-            //if (movedDiceFace.myParent != gameObject.transform)
-            //{
-            //    //TODO: THIS IS HARDCODED AND A NO GO
-            //    Transform myPanel = transform.Find("ItemPanel");
-            //    DiceFaceDraggable dropzoneDiceFace = myPanel.GetComponent<DiceFaceDraggable>();
-            //}
-
-            //popupManager.ShowPopup(popupManager.itemPopUp.transform.parent, PopUpDirection);
         }
     }
 
@@ -54,17 +37,14 @@ public class DiceFaceDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandle
             // If we dropped an item on the dropitem type slot, return the item and wipe the slot then drop the item.
             if (slotType == DropZoneType.Discard)
             {
-                //popupManager.LockPointer = false;
                 movedDiceFaceDraggable.transform.SetParent(movedDiceFaceDraggable.MyInventorySlotParent);
-                //popupManager.HidePopups(true);
-                //popupManager.AllowPopupsToAppear = true;
 
                 movedDiceFaceDraggable.transform.localPosition = Vector3.zero;
                 movedDiceFaceDraggable.ParentToInteractWith = null;
                 movedDiceFaceDraggable.GetComponent<CanvasGroup>().blocksRaycasts = true;
 
                 PlayerInventorySingleton.Instance.RemoveDiceFaceAtIndex(movedDiceFaceDraggable.MyInventorySlotParent.parent.GetComponent<DiceFaceDropZone>().SlotIndex);
-                InventoryUiManagerSingleton.Instance.SetGarbageOpenCloseStatus(false);
+                InventoryUiManagerSingleton.Instance.SetGarbagePanelOpenStatus(false);
                 return;    
             }
 
@@ -81,6 +61,6 @@ public class DiceFaceDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandle
             }
         }
 
-        InventoryUiManagerSingleton.Instance.SetGarbageOpenCloseStatus(false);
+        InventoryUiManagerSingleton.Instance.SetGarbagePanelOpenStatus(false);
     }
 }

@@ -11,7 +11,7 @@ public class DiceFaceBehaviour : MonoBehaviour
 
     private Animation _animation;
     private GameObject _particleSystemToSpawn;
-    private DiceFaceData _myDiceFaceData;
+    [SerializeField] private DiceFaceData _myDiceFaceData;
     private Renderer _renderer;
 
     private void Start()

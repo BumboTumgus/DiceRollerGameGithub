@@ -16,6 +16,7 @@ public class UiAnimationPlayer : MonoBehaviour
     {
         _animation.Play();
     }
+
     public void PlayAnimationByName(string animationName)
     {
         _animation.Play(animationName);
