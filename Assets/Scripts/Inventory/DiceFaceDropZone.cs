@@ -38,7 +38,6 @@ public class DiceFaceDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandle
             if (slotType == DropZoneType.Discard)
             {
                 movedDiceFaceDraggable.transform.SetParent(movedDiceFaceDraggable.MyInventorySlotParent);
-
                 movedDiceFaceDraggable.transform.localPosition = Vector3.zero;
                 movedDiceFaceDraggable.ParentToInteractWith = null;
                 movedDiceFaceDraggable.GetComponent<CanvasGroup>().blocksRaycasts = true;
@@ -58,6 +57,23 @@ public class DiceFaceDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandle
 
                 myDiceFaceDraggable.SetParent(movedDiceFaceDraggable.MyInventorySlotParent);
                 myDiceFaceDraggable.localPosition = Vector3.zero;
+            }
+
+            // assign the dice face this slot is assigned to a new temporary face.
+            if(slotType == DropZoneType.Dice)
+            {
+                Debug.Log("DROPPED ON A DICE< DELETE THIS FACE AND ADD IT TO THE CONNECTED DICE FACE");
+
+                // execute the logic of applying this face to the dice
+                GetComponent<UiDiceFaceTemperExecutor>().UpdateDiceFaceAtIndex(SlotIndex, movedDiceFaceDraggable.AttachedDiceFaceData);
+
+                movedDiceFaceDraggable.transform.SetParent(movedDiceFaceDraggable.MyInventorySlotParent);
+                movedDiceFaceDraggable.transform.localPosition = Vector3.zero;
+                movedDiceFaceDraggable.ParentToInteractWith = null;
+                movedDiceFaceDraggable.GetComponent<CanvasGroup>().blocksRaycasts = true;
+
+                PlayerInventorySingleton.Instance.RemoveDiceFaceAtIndex(movedDiceFaceDraggable.MyInventorySlotParent.parent.GetComponent<DiceFaceDropZone>().SlotIndex);
+                InventoryUiManagerSingleton.Instance.SetGarbagePanelOpenStatus(false);
             }
         }
 

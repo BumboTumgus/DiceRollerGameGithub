@@ -153,13 +153,21 @@ public class DiceRollingBehaviour : MonoBehaviour
     private void DissapearToDormant()
     {
         _animation.Play(DISSAPPEAR_TO_DORMANT_ANIM_STRING);
-        GameObject spawnedParticle = Instantiate(_rolledDiceFace.MyDiceFaceData.PlayerPowerUpParticles, transform.position, Quaternion.identity);
+        GameObject spawnedParticle;
+        if (_rolledDiceFace.MyTempDiceFaceData != null)
+            spawnedParticle = Instantiate(_rolledDiceFace.MyTempDiceFaceData.PlayerPowerUpParticles, transform.position, Quaternion.identity);
+        else
+            spawnedParticle = Instantiate(_rolledDiceFace.MyDiceFaceData.PlayerPowerUpParticles, transform.position, Quaternion.identity);
+
         spawnedParticle.GetComponent<PlayerPowerUpParticleBehaviour>().InitializeBehaviour(CombatManagerSingleton.Instance.PlayerCharacterCombatBehaviour.transform);
         spawnedParticle.GetComponent<PlayerPowerUpParticleBehaviour>().OnParticleReachedDestination += CalculateRolledFaceBonus;
     }
 
     private void CalculateRolledFaceBonus()
     {
-        DiceBonusCalculatorSingleton.Instance.CalculateBonusForRolledDiceFace(_rolledDiceFace.MyDiceFaceData.DiceFaceEnum);
+        if(_rolledDiceFace.MyTempDiceFaceData != null)
+            DiceBonusCalculatorSingleton.Instance.CalculateBonusForRolledDiceFace(_rolledDiceFace.MyTempDiceFaceData.DiceFaceEnum);
+        else
+            DiceBonusCalculatorSingleton.Instance.CalculateBonusForRolledDiceFace(_rolledDiceFace.MyDiceFaceData.DiceFaceEnum);
     }
 }

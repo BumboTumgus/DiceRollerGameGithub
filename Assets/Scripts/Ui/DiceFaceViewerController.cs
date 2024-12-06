@@ -9,6 +9,7 @@ public class DiceFaceViewerController : MonoBehaviour, IDragHandler, IBeginDragH
     private const float ROTATIONAL_SPEED_MULTIPLIER = 0.1f;
     private const float ROTATIONAL_SNAP_TO_TARGET_ANGLE_THRESHOLD = 1f;
     private const float SNAP_TO_FACE_ROTATION_SPEED = 0.04f;
+    public DiceRollingBehaviour ConnectedDie { get => _connectedDie; }
 
     [SerializeField] private Transform _dieViewerSpawnPoint;
     [SerializeField] private Transform _dieViewerParent;
@@ -19,21 +20,27 @@ public class DiceFaceViewerController : MonoBehaviour, IDragHandler, IBeginDragH
     private Vector3 _angularVelocity;
     private bool _grabAndMoveLock = false;
 
+
     public void LoadDiceIntoViewer(DiceRollingBehaviour connectedDie)
     {
-        if(_connectedDie != null)
-            UnloadDiceFromViewer();
+        UnloadDiceFromViewer();
 
         _connectedDie = connectedDie;
         _connectedDie.transform.parent = _dieViewerParent;
         _connectedDie.transform.position = _dieViewerSpawnPoint.position;
 
-        Debug.Log("COnnected die's face count is " + _connectedDie.DiceFaces.Length);
         for (int faceIndex = 0; faceIndex < 6; faceIndex++) 
         {
-            Debug.Log("COnnected die's face were drawing is " + _connectedDie.DiceFaces[faceIndex].MyDiceFaceData.DiceFaceEnum);
-            _connectedDieFaceButtonImages[faceIndex].sprite = _connectedDie.DiceFaces[faceIndex].MyDiceFaceData.DiceFaceUiSprite;
-            _connectedDieFaceButtonImages[faceIndex].color = _connectedDie.DiceFaces[faceIndex].MyDiceFaceData.DiceFaceUiColor;
+            if (_connectedDie.DiceFaces[faceIndex].MyTempDiceFaceData != null)
+            {
+                _connectedDieFaceButtonImages[faceIndex].sprite = _connectedDie.DiceFaces[faceIndex].MyTempDiceFaceData.DiceFaceUiSprite;
+                _connectedDieFaceButtonImages[faceIndex].color = _connectedDie.DiceFaces[faceIndex].MyTempDiceFaceData.DiceFaceUiColor;
+            }
+            else
+            {
+                _connectedDieFaceButtonImages[faceIndex].sprite = _connectedDie.DiceFaces[faceIndex].MyDiceFaceData.DiceFaceUiSprite;
+                _connectedDieFaceButtonImages[faceIndex].color = _connectedDie.DiceFaces[faceIndex].MyDiceFaceData.DiceFaceUiColor;
+            }
         }
         _rotationalDieRigidbody = _connectedDie.GetComponent<Rigidbody>();
         _rotationalDieRigidbody.isKinematic = false;
@@ -42,6 +49,10 @@ public class DiceFaceViewerController : MonoBehaviour, IDragHandler, IBeginDragH
 
     public void UnloadDiceFromViewer()
     {
+        if (_connectedDie == null)
+            return;
+
+        Debug.Log("DIE UNLOADED");
         _rotationalDieRigidbody.isKinematic = true;
         _rotationalDieRigidbody.useGravity = true;
         _connectedDie.transform.parent = null;

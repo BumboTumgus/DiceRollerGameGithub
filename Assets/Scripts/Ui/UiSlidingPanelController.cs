@@ -33,7 +33,7 @@ public class UiSlidingPanelController : MonoBehaviour
         SlideToTarget();
     }
 
-    public void SetPanelOpenStatus(bool panelOpened)
+    public void SetPanelOpenStatus(bool panelOpened, bool triggerCallbacks = true)
     {
         if (_panelOpened == panelOpened)
             return;
@@ -42,12 +42,14 @@ public class UiSlidingPanelController : MonoBehaviour
         if (_panelOpened)
         {
             _panelSlideTargetDistance = _slideTargetShown;
-            OnPanelSuccessfullyOpened_Callback.Invoke();
+            if(triggerCallbacks)
+                OnPanelSuccessfullyOpened_Callback.Invoke();
         }
         else
         {
             _panelSlideTargetDistance = _slideTargetHidden;
-            OnPanelSuccessfullyClosed_Callback.Invoke();
+            if (triggerCallbacks)
+                OnPanelSuccessfullyClosed_Callback.Invoke();
         }
     }
 

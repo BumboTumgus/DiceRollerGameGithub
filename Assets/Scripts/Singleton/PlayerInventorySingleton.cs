@@ -39,6 +39,12 @@ public class PlayerInventorySingleton : MonoBehaviour
             UpdateGoldValue(_collectedGold + 100);
         if (Input.GetKeyDown(KeyCode.T))
             UpdateGoldValue(_collectedGold - 100);
+        if (Input.GetKeyDown(KeyCode.Alpha8))
+            AddDiceFaceToInventory(_diceFaceToAdd[0]);
+        if (Input.GetKeyDown(KeyCode.Alpha9))
+            AddDiceFaceToInventory(_diceFaceToAdd[1]);
+        if (Input.GetKeyDown(KeyCode.Alpha0))
+            AddDiceFaceToInventory(_diceFaceToAdd[2]);
     }
 
     public void AddDiceFaceToInventory(DiceFaceData diceFace)

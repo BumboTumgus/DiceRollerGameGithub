@@ -8,12 +8,14 @@ public class RestingSingleton : MonoBehaviour
     private const string RESTING_SCREEN_DISAPPEAR_ANIM_NAME = "RestingScreenOptions_Disappear";
 
     public static RestingSingleton Instance;
+    public List<DiceFaceData> DiceFacesUsed = new List<DiceFaceData>();
 
     [SerializeField] private UiAnimationPlayer _restingScreenOptionsAnimation;
     [SerializeField] private CanvasGroup _restingScreenOptionsCanvasGroup;
     [SerializeField] private UiSlidingPanelController _restModifyDiceSlidingPanelController;
     [SerializeField] private DiceFaceViewerController _diceFaceViewerController;
 
+    private bool _currentlyResting = false;
     private bool _restingScreenChoiceShowing = false;
     private int _currentTemperDieIndex = 0;
 
@@ -37,6 +39,8 @@ public class RestingSingleton : MonoBehaviour
 
     public void ShowRestScreen()
     {
+        _currentlyResting = true;
+        DiceFacesUsed = new List<DiceFaceData>();
         _restingScreenChoiceShowing = true;
         _restingScreenOptionsAnimation.PlayAnimationByName(RESTING_SCREEN_APPEAR_ANIM_NAME);
     }
@@ -51,11 +55,11 @@ public class RestingSingleton : MonoBehaviour
     public void UiButtonPress_ModifyDice()
     {
         _restingScreenOptionsAnimation.PlayAnimationByName(RESTING_SCREEN_DISAPPEAR_ANIM_NAME);
+        _restingScreenChoiceShowing = false;
         _restModifyDiceSlidingPanelController.SetPanelOpenStatus(true);
         InventoryUiManagerSingleton.Instance.UiButtonPress_OpenInventory();
 
         _currentTemperDieIndex = 0;
-        Debug.Log("The dice roller singleton should have it;s dice here, we will grab them for visualization. COUNT IS " + DiceRollerSingleton.Instance.CurrentDice.Count);
         _diceFaceViewerController.LoadDiceIntoViewer(DiceRollerSingleton.Instance.CurrentDice[_currentTemperDieIndex]);
     }
 
@@ -75,9 +79,44 @@ public class RestingSingleton : MonoBehaviour
         _diceFaceViewerController.LoadDiceIntoViewer(DiceRollerSingleton.Instance.CurrentDice[_currentTemperDieIndex]);
     }
 
+    public void UiButtonPress_CancelTemper()
+    {
+        foreach (DiceFaceData diceFaceDataUsed in DiceFacesUsed)
+            PlayerInventorySingleton.Instance.AddDiceFaceToInventory(diceFaceDataUsed);
+
+        foreach(DiceRollingBehaviour diceRollingBehaviour in DiceRollerSingleton.Instance.CurrentDice)
+        {
+            foreach(DiceFaceBehaviour diceFaceBehaviour in diceRollingBehaviour.DiceFaces)
+            {
+                if (diceFaceBehaviour.MyTempDiceFaceData != null)
+                    diceFaceBehaviour.RevertToOriginalDiceFace();
+            }
+        }
+
+        _restingScreenOptionsAnimation.PlayAnimationByName(RESTING_SCREEN_APPEAR_ANIM_NAME);
+        _restModifyDiceSlidingPanelController.SetPanelOpenStatus(false);
+        InventoryUiManagerSingleton.Instance.UiButtonPress_CloseInventoryNoCallbacks();
+    }
+
+    public void UiButtonPress_ComfirmTemper()
+    {
+        DiceFacesUsed = new List<DiceFaceData>();
+
+        foreach (DiceRollingBehaviour diceRollingBehaviour in DiceRollerSingleton.Instance.CurrentDice)
+        {
+            foreach (DiceFaceBehaviour diceFaceBehaviour in diceRollingBehaviour.DiceFaces)
+            {
+                if (diceFaceBehaviour.MyTempDiceFaceData != null)
+                    diceFaceBehaviour.SetTempAsNewOriginal();
+            }
+        }
+
+        _restModifyDiceSlidingPanelController.SetPanelOpenStatus(false);
+        InventoryUiManagerSingleton.Instance.UiButtonPress_CloseInventory();
+    }
+
     public void UiButtonPress_ForgeNewDie()
     {
-
     }
 
     public void UiButtonPress_RemoveCurses()
@@ -88,6 +127,12 @@ public class RestingSingleton : MonoBehaviour
 
     public void FinishedRestingNowProceedToMap()
     {
+        if (!_currentlyResting)
+            return;
+        _currentlyResting = false;
+
+        _diceFaceViewerController.UnloadDiceFromViewer();
+
         if (_restingScreenChoiceShowing)
             _restingScreenOptionsAnimation.PlayAnimationByName(RESTING_SCREEN_DISAPPEAR_ANIM_NAME);
         _restingScreenChoiceShowing = false;

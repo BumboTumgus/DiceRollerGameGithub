@@ -55,6 +55,10 @@ public class InventoryUiManagerSingleton : MonoBehaviour
     {
         _inventorySlidingPanelController.SetPanelOpenStatus(false);
     }
+    public void UiButtonPress_CloseInventoryNoCallbacks()
+    {
+        _inventorySlidingPanelController.SetPanelOpenStatus(false, false);
+    }
 
     public void SetGarbagePanelOpenStatus(bool open)
     {

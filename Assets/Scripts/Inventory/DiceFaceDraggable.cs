@@ -16,7 +16,7 @@ public class DiceFaceDraggable : MonoBehaviour, IDragHandler, IBeginDragHandler,
         ParentToInteractWith = null;
         MyInventorySlotParent = transform.parent;
 
-        transform.SetParent(transform.parent.parent.parent);
+        transform.SetParent(transform.root);
         transform.SetAsLastSibling();
 
         InventoryUiManagerSingleton.Instance.SetGarbagePanelOpenStatus(true);
