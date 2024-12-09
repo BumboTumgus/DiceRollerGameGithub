@@ -20,6 +20,7 @@ public class UiErrorPopup : MonoBehaviour
     private void Start()
     {
         _animation = GetComponent<Animation>();
+        GetComponent<CanvasGroup>().alpha = 0;
     }
 
     public void SetText(string text)

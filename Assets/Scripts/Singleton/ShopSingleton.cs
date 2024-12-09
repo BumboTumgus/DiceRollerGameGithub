@@ -133,7 +133,7 @@ public class ShopSingleton : MonoBehaviour
 
     public void ShowAlreadyFullHealthPopup()
     {
-        _errorPopup.SetText("Already FUll Health");
+        _errorPopup.SetText("Already Full Health");
         _errorPopup.ShowWarning();
     }
 

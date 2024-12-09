@@ -2695,6 +2695,7 @@ RectTransform:
   - {fileID: 323606330}
   - {fileID: 750238900}
   - {fileID: 345568772}
+  - {fileID: 244121286}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -5644,7 +5645,7 @@ RectTransform:
   m_Children:
   - {fileID: 1032545616}
   - {fileID: 1012214297}
-  m_Father: {fileID: 1858882071}
+  m_Father: {fileID: 134140607}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -13211,7 +13212,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 573678361}
   m_Enabled: 1
-  m_Alpha: 1
+  m_Alpha: 0
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
@@ -36886,6 +36887,7 @@ MonoBehaviour:
   - {fileID: 849935617}
   _basicDieToInstantiate: {fileID: 5091021899196980453, guid: 11fd03ccf59136c4ba532da94503fdfa,
     type: 3}
+  _errorPopup: {fileID: 244121287}
 --- !u!4 &1351144176 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 474170, guid: 7a1f053d1121e9b41be4092b6c54d826,
@@ -48405,7 +48407,6 @@ RectTransform:
   - {fileID: 1945402594}
   - {fileID: 1800297811}
   - {fileID: 1058780519}
-  - {fileID: 244121286}
   m_Father: {fileID: 1901254875}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}

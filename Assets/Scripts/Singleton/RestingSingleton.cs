@@ -19,6 +19,7 @@ public class RestingSingleton : MonoBehaviour
     [SerializeField] private DiceFaceViewerController _diceFaceViewerController;
     [SerializeField] private UiDiceFaceForgeExecutor[] _diceFaceForgeExecutors;
     [SerializeField] private GameObject _basicDieToInstantiate;
+    [SerializeField] private UiErrorPopup _errorPopup;
 
     private bool _currentlyResting = false;
     private bool _restingScreenChoiceShowing = false;
@@ -132,6 +133,12 @@ public class RestingSingleton : MonoBehaviour
 
     public void UiButtonPress_ForgeNewDie()
     {
+        if (PlayerInventorySingleton.Instance.CollectedGold < 100)
+        {
+            ShowErrorPopup("Not Enough Gold To Forge");
+            return;
+        }
+
         _restingScreenOptionsAnimation.PlayAnimationByName(RESTING_SCREEN_DISAPPEAR_ANIM_NAME);
         _restingScreenChoiceShowing = false;
         _restForgeDieSlidingPanelController.SetPanelOpenStatus(true);
@@ -144,7 +151,10 @@ public class RestingSingleton : MonoBehaviour
     public void UiButtonPress_ComfirmForge()
     {
         if (DiceFacesUsed.Count != 6)
+        {
+            ShowErrorPopup("Not Enough Dice Faces Selected To Forge");
             return;
+        }
 
         DiceRollingBehaviour dieCreated = Instantiate(_basicDieToInstantiate, Vector3.one * 999, Quaternion.identity).GetComponent<DiceRollingBehaviour>();
         for(int dieFaceIndex = 0; dieFaceIndex < 6; dieFaceIndex++)
@@ -193,5 +203,11 @@ public class RestingSingleton : MonoBehaviour
 
         MapSingleton.Instance.SetMapShowStatus(true);
         MapSingleton.Instance.SetMapInteractibility(true);
+    }
+
+    private void ShowErrorPopup(string text)
+    {
+        _errorPopup.SetText(text);
+        _errorPopup.ShowWarning();
     }
 }
