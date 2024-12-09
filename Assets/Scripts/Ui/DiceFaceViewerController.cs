@@ -21,6 +21,11 @@ public class DiceFaceViewerController : MonoBehaviour, IDragHandler, IBeginDragH
     private bool _grabAndMoveLock = false;
 
 
+    private void Start()
+    {
+        SetDiceViewerVisibleStatus(false);
+    }
+
     public void LoadDiceIntoViewer(DiceRollingBehaviour connectedDie)
     {
         UnloadDiceFromViewer();
@@ -123,5 +128,25 @@ public class DiceFaceViewerController : MonoBehaviour, IDragHandler, IBeginDragH
         _rotationalDieRigidbody.rotation = target;
 
         _grabAndMoveLock = false;
+    }
+
+    public void SetDiceViewerVisibleStatus(bool visibility, float delay = 0f) 
+    {
+        if (delay == 0)
+        {
+            _dieViewerParent.gameObject.SetActive(visibility);
+            return;
+        }
+
+        if (!_dieViewerParent.gameObject.activeInHierarchy)
+            return;
+
+        StartCoroutine(SetViewerVisiblity(visibility, delay));
+    }
+
+    private IEnumerator SetViewerVisiblity(bool visibility, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        _dieViewerParent.gameObject.SetActive(visibility);
     }
 }

@@ -61,6 +61,11 @@ public class DiceFaceBehaviour : MonoBehaviour
         Invoke(nameof(PlayDicePopUpAnimation), delayInSeconds);
     }
 
+    public void SetStartingDieFace(string dieFaceState)
+    {
+        _startingDiceFaceState = dieFaceState;
+    }
+
     private void PlayDicePopUpAnimation()
     {
         _animation.Play();

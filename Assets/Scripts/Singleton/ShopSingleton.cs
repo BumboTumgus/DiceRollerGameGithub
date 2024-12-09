@@ -155,6 +155,8 @@ public class ShopSingleton : MonoBehaviour
     public void UiButtonPress_CloseShop()
     {
         _slidingPanelController.SetPanelOpenStatus(false);
+        foreach(UiShopDiceEntry uiShopDiceEntry in _diceEntryWithViewerShopBank)
+            uiShopDiceEntry.DiceFaceViewer.SetDiceViewerVisibleStatus(false, 0.5f);
     }
 
     public void UiButtonPress_AttemptHealPlayer()

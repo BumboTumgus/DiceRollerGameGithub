@@ -8,7 +8,7 @@ public class DiceFaceDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandle
     private const string DICE_FACE_DRAGGABLE_NAME = "Ui_DiceFaceDraggable";
     private const string DICE_FACE_INVENTORY_SLOT_NAME = "Ui_DiceFaceInventorySlot";
 
-    public enum DropZoneType { Inventory, Dice, Discard }
+    public enum DropZoneType { Inventory, DiceTemper, DiceForge, Discard }
     public DropZoneType slotType;
     public int SlotIndex;
 
@@ -60,12 +60,27 @@ public class DiceFaceDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandle
             }
 
             // assign the dice face this slot is assigned to a new temporary face.
-            if(slotType == DropZoneType.Dice)
+            if(slotType == DropZoneType.DiceTemper)
             {
                 Debug.Log("DROPPED ON A DICE< DELETE THIS FACE AND ADD IT TO THE CONNECTED DICE FACE");
 
                 // execute the logic of applying this face to the dice
                 GetComponent<UiDiceFaceTemperExecutor>().UpdateDiceFaceAtIndex(SlotIndex, movedDiceFaceDraggable.AttachedDiceFaceData);
+
+                movedDiceFaceDraggable.transform.SetParent(movedDiceFaceDraggable.MyInventorySlotParent);
+                movedDiceFaceDraggable.transform.localPosition = Vector3.zero;
+                movedDiceFaceDraggable.ParentToInteractWith = null;
+                movedDiceFaceDraggable.GetComponent<CanvasGroup>().blocksRaycasts = true;
+
+                PlayerInventorySingleton.Instance.RemoveDiceFaceAtIndex(movedDiceFaceDraggable.MyInventorySlotParent.parent.GetComponent<DiceFaceDropZone>().SlotIndex);
+                InventoryUiManagerSingleton.Instance.SetGarbagePanelOpenStatus(false);
+            }
+
+            // add this diceface to the list of dice face to add onto our new forged dice if we confirm the forging.
+            if (slotType == DropZoneType.DiceForge)
+            {
+                Debug.Log("DROPPED ON THE FORGE< LETS DO SOME SHIIII");
+                GetComponent<UiDiceFaceForgeExecutor>().AddDiceFaceToForgeList(movedDiceFaceDraggable.AttachedDiceFaceData);
 
                 movedDiceFaceDraggable.transform.SetParent(movedDiceFaceDraggable.MyInventorySlotParent);
                 movedDiceFaceDraggable.transform.localPosition = Vector3.zero;

@@ -373,7 +373,7 @@ public class MapSingleton : MonoBehaviour
     }
     public void UiStartRestCallback()
     {
-        // TODO: OPEN THE REST MENU
+        RestingSingleton.Instance.ShowRestScreenWithDelay(1.5f);
     }
     public void UiHideMapWithDelay(float delayInSeconds)
     {

@@ -5,8 +5,9 @@ using UnityEngine;
 
 public class UiShopDiceEntry : MonoBehaviour
 {
+    public DiceFaceViewerController DiceFaceViewer { get => _diceFaceViewer; }
+
     [SerializeField] private DiceFaceViewerController _diceFaceViewer;
-    //[SerializeField] private TMP_Text _dieCountText;
     [SerializeField] private TMP_Text _dieCostText;
     [SerializeField] private GameObject _saleIcon;
     [SerializeField] private GameObject _soldOutBanner;
@@ -15,6 +16,7 @@ public class UiShopDiceEntry : MonoBehaviour
     private DiceRollingBehaviour _diceDataConnectedToButton;
     private int _dieCount = 1;
     private int _dieCost = 1;
+
 
     private void Awake()
     {
@@ -35,6 +37,7 @@ public class UiShopDiceEntry : MonoBehaviour
 
         // Load the dice into the viewer
         _diceFaceViewer.LoadDiceIntoViewer(diceData);
+        _diceFaceViewer.SetDiceViewerVisibleStatus(true);
 
         //_dieCountText.text = "x" + count;
 
@@ -67,6 +70,7 @@ public class UiShopDiceEntry : MonoBehaviour
     public void HideDieReadout()
     {
         Debug.Log("Hiding FAce REadout");
+        _diceFaceViewer.SetDiceViewerVisibleStatus(false);
         gameObject.SetActive(false);
     }
 

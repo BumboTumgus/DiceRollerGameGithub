@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class RestingSingleton : MonoBehaviour
@@ -11,9 +12,13 @@ public class RestingSingleton : MonoBehaviour
     public List<DiceFaceData> DiceFacesUsed = new List<DiceFaceData>();
 
     [SerializeField] private UiAnimationPlayer _restingScreenOptionsAnimation;
+    [SerializeField] private TMP_Text _restingScreenHealAmountText;
     [SerializeField] private CanvasGroup _restingScreenOptionsCanvasGroup;
     [SerializeField] private UiSlidingPanelController _restModifyDiceSlidingPanelController;
+    [SerializeField] private UiSlidingPanelController _restForgeDieSlidingPanelController;
     [SerializeField] private DiceFaceViewerController _diceFaceViewerController;
+    [SerializeField] private UiDiceFaceForgeExecutor[] _diceFaceForgeExecutors;
+    [SerializeField] private GameObject _basicDieToInstantiate;
 
     private bool _currentlyResting = false;
     private bool _restingScreenChoiceShowing = false;
@@ -37,12 +42,18 @@ public class RestingSingleton : MonoBehaviour
             ShowRestScreen();
     }
 
+    public void ShowRestScreenWithDelay(float delay)
+    {
+        Invoke(nameof(ShowRestScreen), delay);
+    }
+
     public void ShowRestScreen()
     {
         _currentlyResting = true;
-        DiceFacesUsed = new List<DiceFaceData>();
+        DiceFacesUsed.Clear();
         _restingScreenChoiceShowing = true;
         _restingScreenOptionsAnimation.PlayAnimationByName(RESTING_SCREEN_APPEAR_ANIM_NAME);
+        _restingScreenHealAmountText.text = "Heal Health (+" + CombatManagerSingleton.Instance.PlayerCharacterCombatBehaviour.CurrentMissingHealth() + "HP)";
     }
 
     #region Ui Button Handlers
@@ -60,6 +71,7 @@ public class RestingSingleton : MonoBehaviour
         InventoryUiManagerSingleton.Instance.UiButtonPress_OpenInventory();
 
         _currentTemperDieIndex = 0;
+        _diceFaceViewerController.SetDiceViewerVisibleStatus(true);
         _diceFaceViewerController.LoadDiceIntoViewer(DiceRollerSingleton.Instance.CurrentDice[_currentTemperDieIndex]);
     }
 
@@ -83,8 +95,9 @@ public class RestingSingleton : MonoBehaviour
     {
         foreach (DiceFaceData diceFaceDataUsed in DiceFacesUsed)
             PlayerInventorySingleton.Instance.AddDiceFaceToInventory(diceFaceDataUsed);
+        DiceFacesUsed.Clear();
 
-        foreach(DiceRollingBehaviour diceRollingBehaviour in DiceRollerSingleton.Instance.CurrentDice)
+        foreach (DiceRollingBehaviour diceRollingBehaviour in DiceRollerSingleton.Instance.CurrentDice)
         {
             foreach(DiceFaceBehaviour diceFaceBehaviour in diceRollingBehaviour.DiceFaces)
             {
@@ -94,14 +107,14 @@ public class RestingSingleton : MonoBehaviour
         }
 
         _restingScreenOptionsAnimation.PlayAnimationByName(RESTING_SCREEN_APPEAR_ANIM_NAME);
+        _restingScreenChoiceShowing = true;
         _restModifyDiceSlidingPanelController.SetPanelOpenStatus(false);
+        _diceFaceViewerController.SetDiceViewerVisibleStatus(false, 0.5f);
         InventoryUiManagerSingleton.Instance.UiButtonPress_CloseInventoryNoCallbacks();
     }
 
     public void UiButtonPress_ComfirmTemper()
     {
-        DiceFacesUsed = new List<DiceFaceData>();
-
         foreach (DiceRollingBehaviour diceRollingBehaviour in DiceRollerSingleton.Instance.CurrentDice)
         {
             foreach (DiceFaceBehaviour diceFaceBehaviour in diceRollingBehaviour.DiceFaces)
@@ -112,16 +125,54 @@ public class RestingSingleton : MonoBehaviour
         }
 
         _restModifyDiceSlidingPanelController.SetPanelOpenStatus(false);
+        _diceFaceViewerController.SetDiceViewerVisibleStatus(false, 0.5f);
         InventoryUiManagerSingleton.Instance.UiButtonPress_CloseInventory();
+        DiceFacesUsed.Clear();
     }
 
     public void UiButtonPress_ForgeNewDie()
     {
+        _restingScreenOptionsAnimation.PlayAnimationByName(RESTING_SCREEN_DISAPPEAR_ANIM_NAME);
+        _restingScreenChoiceShowing = false;
+        _restForgeDieSlidingPanelController.SetPanelOpenStatus(true);
+        InventoryUiManagerSingleton.Instance.UiButtonPress_OpenInventory();
+
+        foreach(UiDiceFaceForgeExecutor executor in _diceFaceForgeExecutors)
+            executor.ResetDiceFaceForgeExecutor();
+    }
+
+    public void UiButtonPress_ComfirmForge()
+    {
+        if (DiceFacesUsed.Count != 6)
+            return;
+
+        DiceRollingBehaviour dieCreated = Instantiate(_basicDieToInstantiate, Vector3.one * 999, Quaternion.identity).GetComponent<DiceRollingBehaviour>();
+        for(int dieFaceIndex = 0; dieFaceIndex < 6; dieFaceIndex++)
+        {
+            dieCreated.DiceFaces[dieFaceIndex].SetStartingDieFace(DiceFacesUsed[dieFaceIndex].DiceFaceEnum.ToString());
+        }
+        DiceRollerSingleton.Instance.AddDieToArsenal(dieCreated);
+
+        DiceFacesUsed.Clear();
+        _restForgeDieSlidingPanelController.SetPanelOpenStatus(false);
+        InventoryUiManagerSingleton.Instance.UiButtonPress_CloseInventory();
+    }
+
+    public void UiButtonPress_CancelForge()
+    {
+        foreach (DiceFaceData diceFaceDataUsed in DiceFacesUsed)
+            PlayerInventorySingleton.Instance.AddDiceFaceToInventory(diceFaceDataUsed);
+        DiceFacesUsed.Clear();
+
+        _restingScreenOptionsAnimation.PlayAnimationByName(RESTING_SCREEN_APPEAR_ANIM_NAME);
+        _restingScreenChoiceShowing = true;
+        _restForgeDieSlidingPanelController.SetPanelOpenStatus(false);
+        InventoryUiManagerSingleton.Instance.UiButtonPress_CloseInventoryNoCallbacks();
     }
 
     public void UiButtonPress_RemoveCurses()
     {
-
+        FinishedRestingNowProceedToMap();
     }
     #endregion
 
@@ -138,6 +189,7 @@ public class RestingSingleton : MonoBehaviour
         _restingScreenChoiceShowing = false;
 
         _restModifyDiceSlidingPanelController.SetPanelOpenStatus(false);
+        _restForgeDieSlidingPanelController.SetPanelOpenStatus(false);
 
         MapSingleton.Instance.SetMapShowStatus(true);
         MapSingleton.Instance.SetMapInteractibility(true);

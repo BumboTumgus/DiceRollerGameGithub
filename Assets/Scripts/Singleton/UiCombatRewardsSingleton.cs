@@ -143,6 +143,7 @@ public class UiCombatRewardsSingleton : MonoBehaviour
         PlayerInventorySingleton.Instance.UpdateGoldValue(PlayerInventorySingleton.Instance.CollectedGold + _goldEarned);
         InventoryUiManagerSingleton.Instance.UiButtonPress_CloseInventory();
         MapSingleton.Instance.UiShowMapButtonPress();
+        MapSingleton.Instance.SetMapInteractibility(true);
         SetWindowVisibility(false);
     }
 
@@ -150,6 +151,7 @@ public class UiCombatRewardsSingleton : MonoBehaviour
     {
         InventoryUiManagerSingleton.Instance.UiButtonPress_CloseInventory();
         MapSingleton.Instance.UiShowMapButtonPress();
+        MapSingleton.Instance.SetMapInteractibility(true);
         SetWindowVisibility(false);
     }
 
