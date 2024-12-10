@@ -28,7 +28,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _Albedo:
-        m_Texture: {fileID: 2800000, guid: 4c2d68d9484eea94d887f6669eb813c3, type: 3}
+        m_Texture: {fileID: 2800000, guid: a0923f8dca8f46a419fceda898038098, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BaseMap:
@@ -147,7 +147,7 @@ Material:
     - _BaseColor: {r: 1, g: 0, b: 0, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EdgeHighlightColor: {r: 1, g: 1, b: 1, a: 0}
-    - _EmissionColor: {r: 0.9528302, g: 0.32959527, b: 0.32959527, a: 0.2901961}
+    - _EmissionColor: {r: 0.95283014, g: 0.32959524, b: 0.32959524, a: 0.4117647}
     - _OutlineColor: {r: 0.235849, g: 0.09493286, b: 0.09493286, a: 0.78431374}
     - _PixelGridOrigin: {r: 0, g: 0, b: 0, a: 0}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
