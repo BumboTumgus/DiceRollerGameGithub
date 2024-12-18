@@ -314,7 +314,7 @@ public class MapSingleton : MonoBehaviour
     {
         nodeButton.onClick.AddListener(delegate { UiStartEncounterCallback(encounter); });
     }
-    private void UiNodeButtonAddDelegate_StartEvent(Button nodeButton, EventScriptableObject eventSO)
+    private void UiNodeButtonAddDelegate_StartEvent(Button nodeButton, EventData eventSO)
     {
         nodeButton.onClick.AddListener(delegate { UiStartEventCallback(eventSO); });
     }
@@ -357,7 +357,7 @@ public class MapSingleton : MonoBehaviour
     {
         CombatManagerSingleton.Instance.StartCombat(encounter);
     }
-    public void UiStartEventCallback(EventScriptableObject eventSO)
+    public void UiStartEventCallback(EventData eventSO)
     {
         // TODO: ADD EVENT MANNAGER START EVENT
     }

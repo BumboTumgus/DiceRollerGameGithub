@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd58961b0e809d1469b3aae1956f0c50, type: 3}
+  m_Name: EventOption_ManDyingWithSatchel_AttemptToHeal
+  m_EditorClassIdentifier: 
+  OptionText: Attempt To Stop the bleeding [DEFENSE,ATTACK]
+  OptionOutcomes:
+  - {fileID: 11400000, guid: d4ae3dd7d2398fb4f98e180ccef6499a, type: 2}
+  - {fileID: 11400000, guid: 6151d5752c720a74d9a20bb6ff07088c, type: 2}
+  OutcomeRollBoosterDiceFaces:
+  - {fileID: 11400000, guid: 4c53914e9a0062748acbf1ef1d67b319, type: 2}
+  - {fileID: 11400000, guid: 8e461475cb82e8f4f92ee7b33c3e92a7, type: 2}
+  OptionRequiredDiceFaceData: []
+  OptionRequirementGold: 0
+  OptionRequirementGod: none
+  OptionRequirementCharacter: none

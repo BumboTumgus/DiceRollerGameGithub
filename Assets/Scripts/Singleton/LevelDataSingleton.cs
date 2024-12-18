@@ -6,7 +6,7 @@ public class LevelDataSingleton : MonoBehaviour
 {
     public static LevelDataSingleton Instance;
 
-    public List<EventScriptableObject> EventEncounters { get => eventEncounters; }
+    public List<EventData> EventEncounters { get => eventEncounters; }
     public EncounterScriptableObject BossEncounter { get => bossEncounter; }
     public List<EncounterScriptableObject> EliteEncounters { get => eliteEncounters; }
     public List<EncounterScriptableObject> BasicEncounters { get => basicEncounters; }
@@ -15,7 +15,7 @@ public class LevelDataSingleton : MonoBehaviour
     [SerializeField] private List<EncounterScriptableObject> basicEncounters = new List<EncounterScriptableObject>();
     [SerializeField] private List<EncounterScriptableObject> eliteEncounters = new List<EncounterScriptableObject>();
     [SerializeField] private EncounterScriptableObject bossEncounter;
-    [SerializeField] private List<EventScriptableObject> eventEncounters = new List<EventScriptableObject>();
+    [SerializeField] private List<EventData> eventEncounters = new List<EventData>();
 
 
     private void Awake()
@@ -26,9 +26,9 @@ public class LevelDataSingleton : MonoBehaviour
             Destroy(this);
     }
 
-    public EventScriptableObject GetRandomEventDetails()
+    public EventData GetRandomEventDetails()
     {
-        EventScriptableObject eventToReturn = EventEncounters[Random.Range(0, EventEncounters.Count)];
+        EventData eventToReturn = EventEncounters[Random.Range(0, EventEncounters.Count)];
         //EventEncounters.Remove(eventToReturn);
         return eventToReturn;
     }

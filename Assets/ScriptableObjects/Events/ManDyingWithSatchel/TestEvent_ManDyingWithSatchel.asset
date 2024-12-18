@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae976ba5e87031a46bf6a7e8c8dd9cf5, type: 3}
+  m_Name: TestEvent_ManDyingWithSatchel
+  m_EditorClassIdentifier: 
+  EventTitle: Man Dying With Satchel
+  EventDescription: A man is laying there and dying. He has a satchel near him. What
+    do you do?
+  EventImage: {fileID: 21300000, guid: 93f2dc1e1652b534dbee0189028373ec, type: 3}
+  EventOptions:
+  - {fileID: 11400000, guid: 369c454112d00c94c8ca0a6124a40c8f, type: 2}
+  - {fileID: 11400000, guid: 21c2ec1ea2a07f44891842a98dd62758, type: 2}
+  - {fileID: 11400000, guid: e4b2580967f68564193e4c0c21e9ae1b, type: 2}
+  - {fileID: 11400000, guid: 0684821989cccb046a15a075881604f3, type: 2}
