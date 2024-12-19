@@ -18,6 +18,5 @@ MonoBehaviour:
   PlayerPowerUpParticles: {fileID: 142400065139066366, guid: 79019620b529891488f60df5df993249,
     type: 3}
   DiceFaceEnum: 4
-  DiceFaceUiSprite: {fileID: 21300000, guid: f454ffbe61ac2bf4da2828a9790f6b26, type: 3}
-  DiceFaceUiColor: {r: 0.9960785, g: 0.9960785, b: 0.9921569, a: 1}
+  DiceFaceUiSprite: {fileID: 21300000, guid: 72d606a42b3a3a045ada7fb0524fafe8, type: 3}
   DiceFaceCost: 30

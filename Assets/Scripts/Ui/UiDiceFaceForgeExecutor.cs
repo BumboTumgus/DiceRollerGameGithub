@@ -6,7 +6,6 @@ using UnityEngine.UI;
 public class UiDiceFaceForgeExecutor : MonoBehaviour
 {
     [SerializeField] private Sprite _noDiceFaceSprite;
-    [SerializeField] private Color _noDiceFaceColor;
     [SerializeField] private Image _uiDiceFaceImage;
     private DiceFaceData _attachedDiceFaceData;
 
@@ -22,12 +21,12 @@ public class UiDiceFaceForgeExecutor : MonoBehaviour
         _attachedDiceFaceData = diceFaceToAddToForge;
 
         _uiDiceFaceImage.sprite = diceFaceToAddToForge.DiceFaceUiSprite;
+        _uiDiceFaceImage.color = Color.white;
     }
 
     public void ResetDiceFaceForgeExecutor()
     {
         _attachedDiceFaceData = null;
         _uiDiceFaceImage.sprite = _noDiceFaceSprite;
-        _uiDiceFaceImage.color = _noDiceFaceColor;
     }
 }

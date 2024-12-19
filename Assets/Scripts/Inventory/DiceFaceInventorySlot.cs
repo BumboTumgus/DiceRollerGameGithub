@@ -18,6 +18,7 @@ public class DiceFaceInventorySlot : MonoBehaviour
         }
 
         connectedDiceFaceImage.sprite = diceFaceData.DiceFaceUiSprite;
+        connectedDiceFaceImage.color = Color.white;
     }
 
     public void WipeSlot()
