@@ -359,7 +359,7 @@ public class MapSingleton : MonoBehaviour
     }
     public void UiStartEventCallback(EventData eventSO)
     {
-        // TODO: ADD EVENT MANNAGER START EVENT
+        EventSingelton.Instance.StartEvent(eventSO);
     }
     public void UiOpenShopCallback()
     {

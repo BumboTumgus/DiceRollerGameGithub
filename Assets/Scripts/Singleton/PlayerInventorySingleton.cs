@@ -11,6 +11,12 @@ public class PlayerInventorySingleton : MonoBehaviour
 
     public DiceFaceData[] CollectedDiceFaces { get => _collectedDiceFaces; }
     public int CollectedGold { get => _collectedGold; }
+
+    public enum PlayableCharacters { None, Warrior }
+    public enum PickableGods { None, TheVoid, TheWanderer, TheOracle, TheJester, TheFool }
+    public PlayableCharacters SelectedCharacter;
+    public PickableGods SelectedGod;
+
     [SerializeField] private DiceFaceData[] _collectedDiceFaces;
     private int _collectedGold = 0;
     private int _currentMaxInventorySize = 15;

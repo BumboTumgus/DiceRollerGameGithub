@@ -171,6 +171,58 @@ public class DiceRollerSingleton : MonoBehaviour
         return _currentDice.Contains(dieToCheck);
     }
 
+    public int DieFacesThatMatch(DiceFaceData diceFace)
+    {
+        int faceMatchCount = 0;
+
+        foreach (DiceRollingBehaviour diceRollingBehaviour in _currentDice)
+        {
+            foreach (DiceFaceBehaviour diceFaceBehaviour in diceRollingBehaviour.DiceFaces)
+            {
+                if (diceFaceBehaviour.MyDiceFaceData.DiceFaceEnum == diceFace.DiceFaceEnum)
+                    faceMatchCount++;
+            }
+        }
+
+        return faceMatchCount;
+    }
+
+    public bool DiceContainsRequiredDiceFaces(List<DiceFaceData> diceFacesRequired)
+    {
+        if (diceFacesRequired == null || diceFacesRequired.Count == 0)
+            return true;
+
+        List<DiceFaceData> diceFacesUsedForComparison = new List<DiceFaceData>();
+        bool diceFaceFoundInDie = false;
+
+        foreach(DiceFaceData diceFaceRequired in diceFacesRequired)
+        {
+            foreach (DiceRollingBehaviour diceRollingBehaviour in _currentDice)
+            {
+                foreach (DiceFaceBehaviour diceFaceBehaviour in diceRollingBehaviour.DiceFaces)
+                {
+                    if (diceFaceBehaviour.MyDiceFaceData.DiceFaceEnum != diceFaceRequired.DiceFaceEnum)
+                        continue;
+                    if (diceFacesUsedForComparison.Contains(diceFaceBehaviour.MyDiceFaceData))
+                        continue;
+
+                    diceFacesUsedForComparison.Add(diceFaceBehaviour.MyDiceFaceData);
+                    diceFaceFoundInDie = true;
+                    break;
+                }
+
+                if (diceFaceFoundInDie)
+                    break;
+            }
+
+            if (!diceFaceFoundInDie)
+                return false;
+            diceFaceFoundInDie = false;
+        }
+
+        return true;
+    }
+
     private void HighlightHoveredDice()
     {
         if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit rayhit, 10f, _diceLayerMask))
