@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: EnemyBasicAttack_EASO
   m_EditorClassIdentifier: 
   AttackTypeEnum: 0
-  AttackIcon: {fileID: 21300000, guid: 1770df9cdf9fe044182815d7a939e7a2, type: 3}
-  AttackIconColor: {r: 0.8773585, g: 0.3738105, b: 0.3117657, a: 1}
+  AttackIcon: {fileID: 21300000, guid: c3d6f81845930684b9b25ab1ced886a9, type: 3}
   AttackTextColor: {r: 0.8773585, g: 0.3738105, b: 0.3117657, a: 1}
   AttackDamage: 3
   AttackCount: 1

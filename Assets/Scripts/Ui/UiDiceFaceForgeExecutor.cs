@@ -22,7 +22,6 @@ public class UiDiceFaceForgeExecutor : MonoBehaviour
         _attachedDiceFaceData = diceFaceToAddToForge;
 
         _uiDiceFaceImage.sprite = diceFaceToAddToForge.DiceFaceUiSprite;
-        _uiDiceFaceImage.color = diceFaceToAddToForge.DiceFaceUiColor;
     }
 
     public void ResetDiceFaceForgeExecutor()

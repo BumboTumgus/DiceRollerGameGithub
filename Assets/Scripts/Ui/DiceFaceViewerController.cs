@@ -39,12 +39,10 @@ public class DiceFaceViewerController : MonoBehaviour, IDragHandler, IBeginDragH
             if (_connectedDie.DiceFaces[faceIndex].MyTempDiceFaceData != null)
             {
                 _connectedDieFaceButtonImages[faceIndex].sprite = _connectedDie.DiceFaces[faceIndex].MyTempDiceFaceData.DiceFaceUiSprite;
-                _connectedDieFaceButtonImages[faceIndex].color = _connectedDie.DiceFaces[faceIndex].MyTempDiceFaceData.DiceFaceUiColor;
             }
             else
             {
                 _connectedDieFaceButtonImages[faceIndex].sprite = _connectedDie.DiceFaces[faceIndex].MyDiceFaceData.DiceFaceUiSprite;
-                _connectedDieFaceButtonImages[faceIndex].color = _connectedDie.DiceFaces[faceIndex].MyDiceFaceData.DiceFaceUiColor;
             }
         }
         _rotationalDieRigidbody = _connectedDie.GetComponent<Rigidbody>();

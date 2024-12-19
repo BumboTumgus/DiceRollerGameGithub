@@ -34,10 +34,10 @@ public class EventSingelton : MonoBehaviour
             Destroy(this);
     }
 
-    public void StartEvent(EventData eventData)
+    public void StartEvent(EventData eventData, float delay)
     {
-        _slideController.SetPanelOpenStatus(true);
         LoadEvent(eventData);
+        Invoke(nameof(OpenEventPanel), delay);
     }
 
     public void UiButtonPress_OptionButtonPress(int index)
@@ -48,7 +48,20 @@ public class EventSingelton : MonoBehaviour
 
     public void UiButtonPress_OutcomeContinueButtonPress()
     {
-        if(_currentOutcome.OutcomeEncounter != null)
+        PlayerInventorySingleton.Instance.UpdateGoldValue(PlayerInventorySingleton.Instance.CollectedGold + _currentOutcome.OutcomeRewardGold);
+        if (_currentOutcome.OutcomeRewardHealth > 0)
+            CombatManagerSingleton.Instance.PlayerCharacterCombatBehaviour.HealHealth(_currentOutcome.OutcomeRewardHealth);
+        else
+            CombatManagerSingleton.Instance.PlayerCharacterCombatBehaviour.TakeDamage(-_currentOutcome.OutcomeRewardHealth);
+
+        if (_currentOutcome.OutcomeRewardDiceFaceData.Count > 0)
+            foreach (DiceFaceData rewardDiceFace in _currentOutcome.OutcomeRewardDiceFaceData)
+                PlayerInventorySingleton.Instance.AddDiceFaceToInventory(rewardDiceFace);
+        if (_currentOutcome.NewFutureEventDataToAddToPool.Count > 0)
+            foreach (EventData futureEvent in _currentOutcome.NewFutureEventDataToAddToPool)
+                LevelDataSingleton.Instance.EventEncounterContinuations.Add(futureEvent);
+
+        if (_currentOutcome.OutcomeEncounter != null)
         {
             _slideController.SetPanelOpenStatus(false);
             CombatManagerSingleton.Instance.StartCombat(_currentOutcome.OutcomeEncounter);
@@ -61,7 +74,13 @@ public class EventSingelton : MonoBehaviour
         }
 
         _slideController.SetPanelOpenStatus(false);
+        MapSingleton.Instance.SetMapInteractibility(true);
         MapSingleton.Instance.UiShowMapWithDelay(1f);
+    }
+
+    public void OpenEventPanel()
+    {
+        _slideController.SetPanelOpenStatus(true);
     }
 
     private void LoadEvent(EventData eventData) 
@@ -77,18 +96,27 @@ public class EventSingelton : MonoBehaviour
         _eventSplashImage.sprite = eventData.EventImage;
 
         for(int index = 0; index < _eventOptionButtons.Length; index++) 
-        { 
+        {
             if(index >= eventData.EventOptions.Count || !OptionRequirementsAreMet(eventData.EventOptions[index]))
             {
                 _eventOptionButtons[index].gameObject.SetActive(false);
+                Debug.Log("Event button at index " + index + " should be hidden");
                 continue;
             }
 
+            _eventOptionButtons[index].gameObject.SetActive(true);
             _eventOptionButtons[index].GetComponent<TMP_Text>().text = eventData.EventOptions[index].OptionText;
-            _eventOptionButtons[index].GetComponent<RectTransform>().sizeDelta = new Vector2(_eventOptionButtons[index].GetComponent<RectTransform>().sizeDelta.x, _eventTitle.preferredHeight);
+            _eventOptionButtons[index].GetComponent<RectTransform>().sizeDelta = new Vector2(_eventOptionButtons[index].GetComponent<RectTransform>().sizeDelta.x, _eventOptionButtons[index].GetComponent<TMP_Text>().preferredHeight);
         }
 
-        _eventOptionVerticalLayoutContainer.sizeDelta = new Vector2(_eventOptionVerticalLayoutContainer.sizeDelta.x, _eventOptionVerticalLayoutContainer.GetComponent<LayoutGroup>().preferredHeight);
+        StartCoroutine(ResizeOptionContainerAfterFrame(_eventOptionVerticalLayoutContainer));
+    }
+
+    private IEnumerator ResizeOptionContainerAfterFrame(RectTransform optionContainer)
+    {
+        yield return new WaitForEndOfFrame();
+        optionContainer.sizeDelta = new Vector2(optionContainer.sizeDelta.x, optionContainer.GetComponent<LayoutGroup>().preferredHeight);
+
     }
 
     private void LoadOutcome(EventOptionOutcomeData outcomeData)
@@ -99,11 +127,11 @@ public class EventSingelton : MonoBehaviour
 
         _outcomeTitle.text = outcomeData.OutcomeTitle;
         _outcomeTitle.GetComponent<RectTransform>().sizeDelta = new Vector2(_outcomeTitle.GetComponent<RectTransform>().sizeDelta.x, _outcomeTitle.preferredHeight);
-        _eventSubtitle.text = outcomeData.OutcomeDescription;
-        _eventSubtitle.GetComponent<RectTransform>().sizeDelta = new Vector2(_eventSubtitle.GetComponent<RectTransform>().sizeDelta.x, _eventSubtitle.preferredHeight);
-        _eventSplashImage.sprite = outcomeData.OutcomeImage;
+        _outcomeSubtitle.text = outcomeData.OutcomeDescription;
+        _outcomeSubtitle.GetComponent<RectTransform>().sizeDelta = new Vector2(_outcomeSubtitle.GetComponent<RectTransform>().sizeDelta.x, _outcomeSubtitle.preferredHeight);
+        _outcomeSplashImage.sprite = outcomeData.OutcomeImage;
 
-        _outcomeVerticalLayoutContainer.sizeDelta = new Vector2(_outcomeVerticalLayoutContainer.sizeDelta.x, _outcomeVerticalLayoutContainer.GetComponent<LayoutGroup>().preferredHeight);
+        StartCoroutine(ResizeOptionContainerAfterFrame(_outcomeVerticalLayoutContainer));
     }
 
     private bool OptionRequirementsAreMet(EventOptionsData optionData)
@@ -111,7 +139,7 @@ public class EventSingelton : MonoBehaviour
         if (optionData.OptionRequirementGold > PlayerInventorySingleton.Instance.CollectedGold ||
             (optionData.OptionRequirementCharacter != PlayerInventorySingleton.Instance.SelectedCharacter && optionData.OptionRequirementCharacter != PlayerInventorySingleton.PlayableCharacters.None) ||
             (optionData.OptionRequirementGod != PlayerInventorySingleton.Instance.SelectedGod && optionData.OptionRequirementGod != PlayerInventorySingleton.PickableGods.None) ||
-            DiceRollerSingleton.Instance.DiceContainsRequiredDiceFaces(optionData.OptionRequiredDiceFaceData))
+            !DiceRollerSingleton.Instance.DiceContainsRequiredDiceFaces(optionData.OptionRequiredDiceFaceData))
             return false;
 
         return true;
@@ -124,17 +152,22 @@ public class EventSingelton : MonoBehaviour
         if (optionData.OptionOutcomes.Count == 1)
             return optionData.OptionOutcomes[0];
 
+        Debug.Log("Roling for outcome");
         int currentRoll = Random.Range(1, 21);
+        Debug.Log("our roll is " + currentRoll);
         foreach (DiceFaceData supportingFaceData in optionData.OutcomeRollBoosterDiceFaces)
             currentRoll += DiceRollerSingleton.Instance.DieFacesThatMatch(supportingFaceData);
 
+        Debug.Log("our roll after assistance from dice faces is " + currentRoll);
 
-        for(int i = 1; i < optionData.OptionOutcomes.Count; i++)
+
+        for (int i = 1; i < optionData.OptionOutcomes.Count; i++)
         {
+            Debug.Log("comparing roll of " + currentRoll + " to the DC " + optionData.OptionOutcomes[i].OutcomeRollDC);
             if (optionData.OptionOutcomes[i].OutcomeRollDC > currentRoll)
                 return optionData.OptionOutcomes[i - 1];
         }
 
-        return null;
+        return optionData.OptionOutcomes[optionData.OptionOutcomes.Count - 1];
     }
 }

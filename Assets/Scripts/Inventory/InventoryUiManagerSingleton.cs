@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class InventoryUiManagerSingleton : MonoBehaviour
 {
-    private const float UI_SLIDE_TARGET_BASE = 330f;
+    private const float UI_SLIDE_TARGET_BASE = -400f;
     private const float UI_SLIDE_TARGET_INCREMENT = 160f;
 
     public static InventoryUiManagerSingleton Instance;

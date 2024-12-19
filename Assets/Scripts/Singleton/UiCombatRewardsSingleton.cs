@@ -107,7 +107,6 @@ public class UiCombatRewardsSingleton : MonoBehaviour
     private void PopulateButtonWithData(Button button, DiceFaceData diceFaceData)
     {
         button.GetComponentInChildren<TMP_Text>().text = diceFaceData.DiceFaceEnum.ToString();
-        button.GetComponentInChildren<Image>().color = diceFaceData.DiceFaceUiColor;
         button.GetComponentInChildren<Image>().sprite = diceFaceData.DiceFaceUiSprite;
     }
 

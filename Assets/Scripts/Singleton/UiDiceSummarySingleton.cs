@@ -70,7 +70,6 @@ public class UiDiceSummarySingleton : MonoBehaviour
         for(int index = 0; index < _diceSummaryFaceIcons.Length; index++)
         {
             _diceSummaryFaceIcons[index].sprite = diceFaces[index].MyDiceFaceData.DiceFaceUiSprite;
-            _diceSummaryFaceIcons[index].color = diceFaces[index].MyDiceFaceData.DiceFaceUiColor;
         }
     }
 }

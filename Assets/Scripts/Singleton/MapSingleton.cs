@@ -359,12 +359,11 @@ public class MapSingleton : MonoBehaviour
     }
     public void UiStartEventCallback(EventData eventSO)
     {
-        EventSingelton.Instance.StartEvent(eventSO);
+        EventSingelton.Instance.StartEvent(eventSO, 1.5f);
     }
     public void UiOpenShopCallback()
     {
         ShopSingleton.Instance.OpenShopWithDelay(1.5f);
-
     }
     public void UiRollShopContents(Button nodeButton)
     {

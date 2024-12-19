@@ -33,6 +33,5 @@ public class UiDiceFaceTemperExecutor : MonoBehaviour
 
         _controller.ConnectedDie.DiceFaces[index].TemporarySwitchDiceFace(tempDiceFaceFromTemper);
         _uiDiceFaceImage.sprite = tempDiceFaceFromTemper.DiceFaceUiSprite;
-        _uiDiceFaceImage.color = tempDiceFaceFromTemper.DiceFaceUiColor;
     }
 }

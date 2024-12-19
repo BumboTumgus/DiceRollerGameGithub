@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   OptionText: Put him Out of his misery [VOID]
   OptionOutcomes:
-  - {fileID: 11400000, guid: 9647f37a178dedb45980effd2e697057, type: 2}
+  - {fileID: 11400000, guid: 126c3af4b5c12104abfefbd5d2729163, type: 2}
+  OutcomeRollBoosterDiceFaces: []
   OptionRequiredDiceFaceData: []
   OptionRequirementGold: 0
-  OptionRequirementGod: VOID
-  OptionRequirementCharacter: none
+  OptionRequirementGod: 0
+  OptionRequirementCharacter: 0

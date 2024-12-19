@@ -32,7 +32,6 @@ public class UiShopDiceFaceEntry : MonoBehaviour
         _diceFaceCost = diceFaceData.DiceFaceCost;
 
         _diceFaceImage.sprite = diceFaceData.DiceFaceUiSprite;
-        _diceFaceImage.color = diceFaceData.DiceFaceUiColor;
 
         _diceFaceCountText.text = "x" + count;
 

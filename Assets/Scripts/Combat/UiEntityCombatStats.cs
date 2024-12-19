@@ -82,7 +82,6 @@ public class UiEntityCombatStats : MonoBehaviour
 
         _enemyAttackContainerAnimation.Play("Ui_EnemyAttack_Appear");
         _enemyAttackIcon.sprite = enemyAttackSO.AttackIcon;
-        _enemyAttackIcon.color = enemyAttackSO.AttackIconColor;
         _enemyAttackText.color = enemyAttackSO.AttackTextColor;
         if(enemyAttackSO.AttackDamage > 0)
         {

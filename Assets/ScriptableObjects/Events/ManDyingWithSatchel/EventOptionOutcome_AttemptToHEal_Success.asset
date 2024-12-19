@@ -16,10 +16,7 @@ MonoBehaviour:
   OutcomeDescription: You attempt to heal the atchel man and it works. He gives you
     a high five and a dice face for it.
   OutcomeImage: {fileID: 21300000, guid: 44ffa7b528bd66c4188429bfceed37a5, type: 3}
-  OutcomeRollDC: 5
-  OutcomeRollBoosterDiceFaces:
-  - {fileID: 11400000, guid: 4c53914e9a0062748acbf1ef1d67b319, type: 2}
-  - {fileID: 11400000, guid: 8e461475cb82e8f4f92ee7b33c3e92a7, type: 2}
+  OutcomeRollDC: 45
   OutcomeRewardGold: 0
   OutcomeRewardHealth: 0
   OutcomeRewardDiceFaceData:

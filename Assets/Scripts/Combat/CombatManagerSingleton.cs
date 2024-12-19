@@ -311,7 +311,7 @@ public class CombatManagerSingleton : MonoBehaviour
 
         enemy.CombatAnimationBehaviour.PlayDefenseAnimation();
 
-        DamageNumberManagerSingleton.Instance.ShowEnemyBuff(enemy.CurrentAttackSO.AttackIcon, enemy.CurrentAttackSO.AttackIconColor);
+        DamageNumberManagerSingleton.Instance.ShowEnemyBuff(enemy.CurrentAttackSO.AttackIcon);
 
         enemy.AddDefense(enemy.CurrentAttackSO.AttackDamage);
         while (currentTimer < ATTACK_SLIDE_ANIM_LENGTH)
