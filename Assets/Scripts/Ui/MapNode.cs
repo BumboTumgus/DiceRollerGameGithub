@@ -10,7 +10,7 @@ public class MapNode
     private const int NODE_RC_SHOP = 10;
     private const int NODE_RC_REST = 10;
 
-    public enum MapNodeType { CombatNode, EliteCombatNode, EventNode, ShopNode, RestNode, BossNode, StartingNode }
+    public enum MapNodeType { CombatNode, EliteCombatNode, EventNode, ShopNode, RestNode, BossNode }
     public MapNodeType AssignedMapNodeType { get => _assignedMapNodeType; set => _assignedMapNodeType = value; }
     public List<MapNode> IncomingConnections { get => _incomingNodeConnections; set => _incomingNodeConnections = value; }
     public List<MapNode> OutgoingNodeConnections { get => _outgoingNodeConnections; set => _outgoingNodeConnections = value; }

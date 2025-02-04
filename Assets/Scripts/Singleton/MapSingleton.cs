@@ -421,9 +421,6 @@ public class MapSingleton : MonoBehaviour
             case MapNode.MapNodeType.BossNode:
                 mapNodeArt.sprite = _mapNodeArtwork[5];
                 break;
-            case MapNode.MapNodeType.StartingNode:
-                mapNodeArt.sprite = _mapNodeArtwork[6];
-                break;
             default:
                 break;
         }

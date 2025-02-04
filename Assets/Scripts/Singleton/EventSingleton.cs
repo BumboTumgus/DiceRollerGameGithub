@@ -85,6 +85,7 @@ public class EventSingelton : MonoBehaviour
 
     private void LoadEvent(EventData eventData) 
     {
+        Debug.Log("EventLoaded");
         _currentEvent = eventData;
         _eventContainer.SetActive(true);
         _outcomeContainer.SetActive(false);
