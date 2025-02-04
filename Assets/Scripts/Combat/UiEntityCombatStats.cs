@@ -8,11 +8,13 @@ public class UiEntityCombatStats : MonoBehaviour
 {
     private const string HIDE_UI_ANIM = "Ui_HideOnDeath";
     private const string SHOW_UI_ANIM = "Ui_ShowOnSpawn";
+    private const float ATTACK_DEFENSE_SPACER = 20f;
 
     public Transform ConnectedTarget;
 
     [SerializeField] private TMP_Text _attackReadout;
     [SerializeField] private TMP_Text _defenseReadout;
+    [SerializeField] private RectTransform _attackDefenseReadoutHorizontalLayout;
     [SerializeField] private TMP_Text _healthReadout;
     [SerializeField] private Image _healthBarScalingImage;
     [SerializeField] private Animation _attackAnimation;
@@ -25,6 +27,20 @@ public class UiEntityCombatStats : MonoBehaviour
     [SerializeField] private RectTransform _playerAttackMarkerCounter;
     [SerializeField] private GameObject _playerAttackMarker;
 
+    private RectTransform _attackReadoutParent;
+    private RectTransform _defenseReadoutParent;
+    private float _readoutToParentSizeDifference;
+
+    private void Awake()
+    {
+        _attackReadoutParent = _attackReadout.transform.parent.GetComponent<RectTransform>();
+        _defenseReadoutParent = _defenseReadout.transform.parent.GetComponent<RectTransform>();
+
+        _readoutToParentSizeDifference = _defenseReadoutParent.sizeDelta.x - _defenseReadout.rectTransform.sizeDelta.x;
+
+        ResetReadoutLengthAttack();
+        ResetReadoutLengthDefense();
+    }
 
     public void UpdateAttackReadout(int attackDamage, int attackCount, bool animateChange = true)
     {
@@ -32,10 +48,10 @@ public class UiEntityCombatStats : MonoBehaviour
             _attackReadout.text = attackDamage + " x " + attackCount;
         else
             _attackReadout.text = attackDamage + "";
-            
-        _attackReadout.rectTransform.sizeDelta = new Vector2(_attackReadout.preferredWidth, _attackReadout.rectTransform.sizeDelta.y);
 
-        if(!animateChange)
+        ResetReadoutLengthAttack();
+
+        if (!animateChange)
             return;
 
         _attackAnimation.Stop();
@@ -45,9 +61,10 @@ public class UiEntityCombatStats : MonoBehaviour
     public void UpdateDefenseReadout(int defense, bool defenseIncreased, bool animateChange = true)
     {
         _defenseReadout.text = defense + "";
-        _defenseReadout.rectTransform.sizeDelta = new Vector2(_defenseReadout.preferredWidth, _defenseReadout.rectTransform.sizeDelta.y);
 
-        if(!animateChange)
+        ResetReadoutLengthDefense();
+
+        if (!animateChange)
             return;
 
         _defenseAnimation.Stop();
@@ -141,5 +158,19 @@ public class UiEntityCombatStats : MonoBehaviour
         if(_playerAttackMarkerCounter.GetChild(0) != null)
             Destroy(_playerAttackMarkerCounter.GetChild(0).gameObject);
         StartCoroutine(UpdatePlayerMarkerHolderAtEndOfFrame());
+    }
+
+    private void ResetReadoutLengthAttack()
+    {
+        _attackReadout.rectTransform.sizeDelta = new Vector2(_attackReadout.preferredWidth, _attackReadout.rectTransform.sizeDelta.y);
+        _attackReadoutParent.sizeDelta = new Vector2(_attackReadout.preferredWidth + _readoutToParentSizeDifference, _attackReadoutParent.sizeDelta.y);
+        _attackDefenseReadoutHorizontalLayout.sizeDelta = new Vector2(_attackReadoutParent.sizeDelta.x + _defenseReadoutParent.sizeDelta.x + ATTACK_DEFENSE_SPACER, _attackDefenseReadoutHorizontalLayout.sizeDelta.y);
+    }
+
+    private void ResetReadoutLengthDefense()
+    {
+        _defenseReadout.rectTransform.sizeDelta = new Vector2(_defenseReadout.preferredWidth, _defenseReadout.rectTransform.sizeDelta.y);
+        _defenseReadoutParent.sizeDelta = new Vector2(_defenseReadout.preferredWidth + _readoutToParentSizeDifference + ATTACK_DEFENSE_SPACER, _defenseReadoutParent.sizeDelta.y);
+        _attackDefenseReadoutHorizontalLayout.sizeDelta = new Vector2(_attackReadoutParent.sizeDelta.x + _defenseReadoutParent.sizeDelta.x + ATTACK_DEFENSE_SPACER, _attackDefenseReadoutHorizontalLayout.sizeDelta.y);
     }
 }
