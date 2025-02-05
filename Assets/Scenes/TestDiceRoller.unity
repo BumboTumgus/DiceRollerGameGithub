@@ -13658,6 +13658,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 550006664}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &550995196 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3893870753271610900, guid: 6b47f9ed5ee49214cbfa86f7e8a8189c,
+    type: 3}
+  m_PrefabInstance: {fileID: 2073947303}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a470f75e14581e64a92a50cf9243b4e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &552145811
 GameObject:
   m_ObjectHideFlags: 0
@@ -31166,6 +31178,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1053880287}
   - component: {fileID: 1053880286}
+  - component: {fileID: 1053880288}
   m_Layer: 7
   m_Name: Player
   m_TagString: Untagged
@@ -31203,6 +31216,28 @@ Transform:
   - {fileID: 513075898}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+--- !u!114 &1053880288
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1053880285}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f643963e9cfb6049948d62df9995490, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DebugBuffs:
+  - {fileID: 11400000, guid: 9ab226044ec6e104d9eab14e47ef849b, type: 2}
+  - {fileID: 11400000, guid: 6b2f6635598d7cb4993cd01c4ebdeece, type: 2}
+  _activeBuffs: []
+  _activeBuffIncrements: 
+  _uiBuffIcons: []
+  _buffUiParent: {fileID: 1174162660}
+  _uiBuffPrefab: {fileID: 5662987108817927669, guid: f6c02d8c83bfe1044ac97632f55c52cf,
+    type: 3}
+  _uiBuffDescriptionController: {fileID: 550995196}
 --- !u!1001 &1054219229
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -34716,6 +34751,12 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1174084450}
   m_CullTransparentMesh: 1
+--- !u!224 &1174162660 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 3260627416049714339, guid: 6b47f9ed5ee49214cbfa86f7e8a8189c,
+    type: 3}
+  m_PrefabInstance: {fileID: 2073947303}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1177571523
 GameObject:
   m_ObjectHideFlags: 0
@@ -55986,11 +56027,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: PlayerStatsUi_00
-      objectReference: {fileID: 0}
-    - target: {fileID: 4265216129201944800, guid: 6b47f9ed5ee49214cbfa86f7e8a8189c,
-        type: 3}
-      propertyPath: m_PresetInfoIsWorld
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6362465065496542674, guid: 6b47f9ed5ee49214cbfa86f7e8a8189c,
         type: 3}

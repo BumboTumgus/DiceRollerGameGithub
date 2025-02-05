@@ -9,8 +9,10 @@ public class UiEntityCombatStats : MonoBehaviour
     private const string HIDE_UI_ANIM = "Ui_HideOnDeath";
     private const string SHOW_UI_ANIM = "Ui_ShowOnSpawn";
     private const float ATTACK_DEFENSE_SPACER = 20f;
+    private const float ATTACK_DEFENSE_PARENT_PADDING = 60f;
 
     public Transform ConnectedTarget;
+    public UiBuffDescriptionController UiBuffDescriptionController;
 
     [SerializeField] private TMP_Text _attackReadout;
     [SerializeField] private TMP_Text _defenseReadout;
@@ -29,14 +31,11 @@ public class UiEntityCombatStats : MonoBehaviour
 
     private RectTransform _attackReadoutParent;
     private RectTransform _defenseReadoutParent;
-    private float _readoutToParentSizeDifference;
 
     private void Awake()
     {
         _attackReadoutParent = _attackReadout.transform.parent.GetComponent<RectTransform>();
         _defenseReadoutParent = _defenseReadout.transform.parent.GetComponent<RectTransform>();
-
-        _readoutToParentSizeDifference = _defenseReadoutParent.sizeDelta.x - _defenseReadout.rectTransform.sizeDelta.x;
 
         ResetReadoutLengthAttack();
         ResetReadoutLengthDefense();
@@ -163,14 +162,18 @@ public class UiEntityCombatStats : MonoBehaviour
     private void ResetReadoutLengthAttack()
     {
         _attackReadout.rectTransform.sizeDelta = new Vector2(_attackReadout.preferredWidth, _attackReadout.rectTransform.sizeDelta.y);
-        _attackReadoutParent.sizeDelta = new Vector2(_attackReadout.preferredWidth + _readoutToParentSizeDifference, _attackReadoutParent.sizeDelta.y);
+        if (_attackReadoutParent == null)
+            return;
+        _attackReadoutParent.sizeDelta = new Vector2(_attackReadout.preferredWidth + ATTACK_DEFENSE_PARENT_PADDING, _attackReadoutParent.sizeDelta.y);
         _attackDefenseReadoutHorizontalLayout.sizeDelta = new Vector2(_attackReadoutParent.sizeDelta.x + _defenseReadoutParent.sizeDelta.x + ATTACK_DEFENSE_SPACER, _attackDefenseReadoutHorizontalLayout.sizeDelta.y);
     }
 
     private void ResetReadoutLengthDefense()
     {
         _defenseReadout.rectTransform.sizeDelta = new Vector2(_defenseReadout.preferredWidth, _defenseReadout.rectTransform.sizeDelta.y);
-        _defenseReadoutParent.sizeDelta = new Vector2(_defenseReadout.preferredWidth + _readoutToParentSizeDifference + ATTACK_DEFENSE_SPACER, _defenseReadoutParent.sizeDelta.y);
+        if (_defenseReadoutParent == null)
+            return;
+        _defenseReadoutParent.sizeDelta = new Vector2(_defenseReadout.preferredWidth + ATTACK_DEFENSE_PARENT_PADDING + ATTACK_DEFENSE_SPACER, _defenseReadoutParent.sizeDelta.y);
         _attackDefenseReadoutHorizontalLayout.sizeDelta = new Vector2(_attackReadoutParent.sizeDelta.x + _defenseReadoutParent.sizeDelta.x + ATTACK_DEFENSE_SPACER, _attackDefenseReadoutHorizontalLayout.sizeDelta.y);
     }
 }
