@@ -268,8 +268,12 @@ public class CombatManagerSingleton : MonoBehaviour
 
             if(enemy.CurrentAttackSO.AttackTypeEnum == EnemyAttackScriptableObject.AttackType.Attack)
                 yield return StartCoroutine(AllEnemyAttackRoutines(enemy));
+            else if (enemy.CurrentAttackSO.AttackTypeEnum == EnemyAttackScriptableObject.AttackType.Defense)
+                yield return StartCoroutine(EnemyDefenseRoutine(enemy));
+            else if(enemy.CurrentAttackSO.DebuffToCastOnPlayer != null)
+                yield return StartCoroutine(EnemyPlayerDebuffRoutine(enemy));
             else
-                yield return StartCoroutine(EnemyBuffRoutine(enemy));
+                yield return StartCoroutine(EnemySelfBuffRoutine(enemy));
 
         }
 
@@ -302,7 +306,7 @@ public class CombatManagerSingleton : MonoBehaviour
         yield return new WaitForSeconds(END_OF_ACTION_DELAY);
     }
 
-    private IEnumerator EnemyBuffRoutine(EnemyCombatBehaviour enemy)
+    private IEnumerator EnemyDefenseRoutine(EnemyCombatBehaviour enemy)
     {
         _dividerCanvasAnimation.Play(UI_DIVIDER_APPEAR_ANIM);
 
@@ -338,13 +342,74 @@ public class CombatManagerSingleton : MonoBehaviour
         yield return new WaitForSeconds(END_OF_ACTION_DELAY);
     }
 
+    private IEnumerator EnemySelfBuffRoutine(EnemyCombatBehaviour enemy)
+    {
+        _dividerCanvasAnimation.Play(UI_DIVIDER_APPEAR_ANIM);
+
+        enemy.transform.position = _enemyAttackStartPoint.position;
+        float currentTimer = 0f;
+
+        enemy.CombatAnimationBehaviour.PlayBuffAnimation(enemy.CurrentAttackSO.AttackCount);
+
+        DamageNumberManagerSingleton.Instance.ShowEnemyBuff(enemy.CurrentAttackSO.AttackIcon);
+
+        enemy.BuffManager.AddBuff(enemy.CurrentAttackSO.BuffToCastOnSelf, enemy.CurrentAttackSO.BuffCount);
+        while (currentTimer < ATTACK_SLIDE_ANIM_LENGTH)
+        {
+            currentTimer += Time.deltaTime;
+            enemy.transform.position = Vector3.Lerp(_enemyAttackStartPoint.position, _enemyAttackEndPoint.position, currentTimer / ATTACK_SLIDE_ANIM_LENGTH);
+            yield return _waitForEndOFrame;
+        }
+
+        enemy.CombatAnimationBehaviour.SetAnimSpeedToNormal();
+        enemy.transform.position = _enemyAttackEndPoint.position;
+        currentTimer = 0;
+        _dividerCanvasAnimation.Play(UI_DIVIDER_DISAPPEAR_ANIM);
+
+        while (currentTimer < ATTACK_RETURN_TO_START_ANIM_LENGTH)
+        {
+            currentTimer += Time.deltaTime;
+            enemy.transform.position = Vector3.Lerp(_enemyAttackEndPoint.position, enemy.OriginalPosition, currentTimer / ATTACK_RETURN_TO_START_ANIM_LENGTH);
+            yield return _waitForEndOFrame;
+        }
+
+        enemy.UiCombatStats.TriggerTurnIndicator(false);
+        enemy.HideAttackUi();
+        yield return new WaitForSeconds(END_OF_ACTION_DELAY);
+    }
+
+    private IEnumerator EnemyPlayerDebuffRoutine(EnemyCombatBehaviour aggresor)
+    {
+        _playerCharacterCombatBehaviour.transform.position = _playerAttackStartPoint.position;
+        aggresor.transform.position = _enemyAttackStartPoint.position;
+        float currentTimer = 0f;
+
+        aggresor.CombatAnimationBehaviour.PlayBuffAnimation(aggresor.CurrentAttackSO.AttackCount);
+        _playerCharacterCombatBehaviour.CombatAnimationBehaviour.PlayDebuffAnimation();
+
+        DamageNumberManagerSingleton.Instance.ShowPlayerBuff(aggresor.CurrentAttackSO.DebuffToCastOnPlayer.BuffIcon);
+
+        _playerCharacterCombatBehaviour.BuffManager.AddBuff(aggresor.CurrentAttackSO.DebuffToCastOnPlayer, aggresor.CurrentAttackSO.BuffCount);
+        while (currentTimer < ATTACK_SLIDE_ANIM_LENGTH)
+        {
+            currentTimer += Time.deltaTime;
+            _playerCharacterCombatBehaviour.transform.position = Vector3.Lerp(_playerAttackStartPoint.position, _playerAttackEndPoint.position, currentTimer / ATTACK_SLIDE_ANIM_LENGTH);
+            aggresor.transform.position = Vector3.Lerp(_enemyAttackStartPoint.position, _enemyAttackEndPoint.position, currentTimer / ATTACK_SLIDE_ANIM_LENGTH);
+            yield return _waitForEndOFrame;
+        }
+
+        aggresor.transform.position = aggresor.OriginalPosition;
+        _playerCharacterCombatBehaviour.CombatAnimationBehaviour.SetAnimSpeedToNormal();
+        aggresor.CombatAnimationBehaviour.SetAnimSpeedToNormal();
+    }
+
     private IEnumerator EnemyAttackRoutine(EnemyCombatBehaviour aggresor)
     {
         _playerCharacterCombatBehaviour.transform.position = _playerAttackStartPoint.position;
         aggresor.transform.position = _enemyAttackStartPoint.position;
         float currentTimer = 0f;
 
-        bool criticalStrike = aggresor.AttacksAreCrtiical;
+        bool criticalStrike = aggresor.AttacksAreCritical;
         int damage = aggresor.CurrentAttackSO.AttackDamage;
         if(criticalStrike)
             damage *= 2;

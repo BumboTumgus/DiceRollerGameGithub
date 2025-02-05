@@ -8,7 +8,7 @@ public class EnemyCombatBehaviour : MonoBehaviour
     public Vector3 OriginalPosition { get { return _originalPosition;}}
     public CombatAnimationBehaviour CombatAnimationBehaviour { get { return _combatAnimationBehaviour;}}
     public bool IsAlive { get { return _isAlive;}}
-    public bool AttacksAreCrtiical { get { return _attacksAreCritical;}}
+    public bool AttacksAreCritical { get { return _attacksAreCritical;}}
     public EnemyAttackScriptableObject CurrentAttackSO { get { return _currentAttackSO;} }
     public UiEntityCombatStats UiCombatStats { get { return _uiCombatStats; } }
     public BuffManager BuffManager { get => _buffManager; }

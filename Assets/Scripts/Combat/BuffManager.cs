@@ -8,29 +8,12 @@ public class BuffManager : MonoBehaviour
     [HideInInspector] public UiBuffDescriptionController UiBuffDescriptionController;
     [HideInInspector] public Transform BuffUiParent;
 
-    //[SerializeField] List<BuffScriptableObject> DebugBuffs;
-
     [SerializeField] List<BuffScriptableObject> _activeBuffs = new List<BuffScriptableObject>();
     [SerializeField] List<int> _activeBuffIncrements = new List<int>();
     [SerializeField] List<UiBuffIcon> _uiBuffIcons = new List<UiBuffIcon>();
 
     [SerializeField] GameObject _uiBuffPrefab;
 
-    //private void Update()
-    //{
-    //    if (Input.GetKeyDown(KeyCode.A))
-    //        AddBuff(DebugBuffs[0], 1);
-    //    if (Input.GetKeyDown(KeyCode.S))
-    //        AddBuff(DebugBuffs[0], 5);
-    //    if (Input.GetKeyDown(KeyCode.D))
-    //        AddBuff(DebugBuffs[1], 1);
-    //    if (Input.GetKeyDown(KeyCode.F))
-    //        AddBuff(DebugBuffs[1], 5);
-    //    if (Input.GetKeyDown(KeyCode.G))
-    //        ClearAllBuffs();
-    //    if (Input.GetKeyDown(KeyCode.H))
-    //        DecrementAllBuffs();
-    //}
 
     public void AddBuff(BuffScriptableObject buffToAdd, int buffCount)
     {

@@ -31218,9 +31218,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   UiBuffDescriptionController: {fileID: 0}
   BuffUiParent: {fileID: 0}
-  DebugBuffs:
-  - {fileID: 11400000, guid: 9ab226044ec6e104d9eab14e47ef849b, type: 2}
-  - {fileID: 11400000, guid: 6b2f6635598d7cb4993cd01c4ebdeece, type: 2}
   _activeBuffs: []
   _activeBuffIncrements: 
   _uiBuffIcons: []
@@ -35711,7 +35708,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Mesh
       value: 
-      objectReference: {fileID: -5495902117074765545, guid: dc7f4760092871447b986d9dd741bcfe,
+      objectReference: {fileID: -5495902117074765545, guid: f20e258cbfd7f7c4fb9ba126a2382215,
         type: 3}
     - target: {fileID: 9096121415853805145, guid: a41110e3949e229429bd534a9bdf7819,
         type: 3}

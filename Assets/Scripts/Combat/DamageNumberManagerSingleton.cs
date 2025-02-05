@@ -82,10 +82,9 @@ public class DamageNumberManagerSingleton : MonoBehaviour
         _enemyBuffIconMovementRoutine = StartCoroutine(LerpToPosition(_enemyDamageStartPosition.position, _enemyDamageEndPosition.position, _enemyBuffIcon.gameObject));
     }
 
-    public void ShowPlayerBuff(Sprite buffIcon, Color buffColor)
+    public void ShowPlayerBuff(Sprite buffIcon)
     {
         _playerBuffIcon.sprite = buffIcon;
-        _playerBuffIcon.color = buffColor;
         _playerBuffIcon.GetComponent<Animation>().Play(BUFF_ANIM);
 
         if(_playerBuffIconMovementRoutine != null)

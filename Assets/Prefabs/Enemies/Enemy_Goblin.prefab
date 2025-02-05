@@ -54,6 +54,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 9522ef4975c43074fa448e891a37ed5f, type: 2}
   - {fileID: 11400000, guid: 24fc899e78fb4ed45bc5756041a54d78, type: 2}
   - {fileID: 11400000, guid: 9522ef4975c43074fa448e891a37ed5f, type: 2}
+  - {fileID: 11400000, guid: ba8ea5ca040ff4c43bef363b8a3b90dc, type: 2}
+  - {fileID: 11400000, guid: bef1894382d2d1e46a70a2621c5597c7, type: 2}
   _enemyStatsUiPrefab: {fileID: 3191014285041173642, guid: 6b47f9ed5ee49214cbfa86f7e8a8189c,
     type: 3}
   _statsUiSpawnTarget: {fileID: 211870058357592560}
@@ -108,16 +110,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f643963e9cfb6049948d62df9995490, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DebugBuffs:
-  - {fileID: 11400000, guid: 9ab226044ec6e104d9eab14e47ef849b, type: 2}
-  - {fileID: 11400000, guid: 6b2f6635598d7cb4993cd01c4ebdeece, type: 2}
+  UiBuffDescriptionController: {fileID: 0}
+  BuffUiParent: {fileID: 0}
   _activeBuffs: []
   _activeBuffIncrements: 
   _uiBuffIcons: []
-  _buffUiParent: {fileID: 0}
   _uiBuffPrefab: {fileID: 5662987108817927669, guid: f6c02d8c83bfe1044ac97632f55c52cf,
     type: 3}
-  _uiBuffDescriptionController: {fileID: 0}
 --- !u!1 &8093338154814140139
 GameObject:
   m_ObjectHideFlags: 0
