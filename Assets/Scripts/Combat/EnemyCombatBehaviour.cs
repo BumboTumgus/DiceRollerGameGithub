@@ -11,6 +11,7 @@ public class EnemyCombatBehaviour : MonoBehaviour
     public bool AttacksAreCrtiical { get { return _attacksAreCritical;}}
     public EnemyAttackScriptableObject CurrentAttackSO { get { return _currentAttackSO;} }
     public UiEntityCombatStats UiCombatStats { get { return _uiCombatStats; } }
+    public BuffManager BuffManager { get => _buffManager; }
 
     [SerializeField] private EnemyAttackScriptableObject[] _availableEnemyAttacks;
     [SerializeField] private GameObject _enemyStatsUiPrefab;
@@ -28,6 +29,7 @@ public class EnemyCombatBehaviour : MonoBehaviour
     private EnemyAttackScriptableObject _currentAttackSO;
     private bool _attacksAreCritical = false;
     private UiEntityCombatStats _uiCombatStats;
+    private BuffManager _buffManager;
 
     private void Awake()
     {
@@ -39,6 +41,10 @@ public class EnemyCombatBehaviour : MonoBehaviour
 
         _uiCombatStats = Instantiate(_enemyStatsUiPrefab, _statsUiSpawnTarget.position, Quaternion.identity ).GetComponent<UiEntityCombatStats>();
         _uiCombatStats.ShowUi();
+
+        _buffManager = GetComponent<BuffManager>();
+        _buffManager.BuffUiParent = _uiCombatStats.BuffUiParent;
+        _buffManager.UiBuffDescriptionController = _uiCombatStats.UiBuffDescriptionController;
 
         _combatAnimationBehaviour = GetComponentInChildren<CombatAnimationBehaviour>();
         _isAlive = true;

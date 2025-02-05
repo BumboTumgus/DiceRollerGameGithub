@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 785835691311699773}
   - component: {fileID: 3209638515251581755}
   - component: {fileID: 8532688667088943149}
+  - component: {fileID: 4607237040982409700}
   m_Layer: 6
   m_Name: Enemy_Goblin
   m_TagString: Untagged
@@ -95,6 +96,28 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 1, z: 0}
+--- !u!114 &4607237040982409700
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6925904800109600643}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f643963e9cfb6049948d62df9995490, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DebugBuffs:
+  - {fileID: 11400000, guid: 9ab226044ec6e104d9eab14e47ef849b, type: 2}
+  - {fileID: 11400000, guid: 6b2f6635598d7cb4993cd01c4ebdeece, type: 2}
+  _activeBuffs: []
+  _activeBuffIncrements: 
+  _uiBuffIcons: []
+  _buffUiParent: {fileID: 0}
+  _uiBuffPrefab: {fileID: 5662987108817927669, guid: f6c02d8c83bfe1044ac97632f55c52cf,
+    type: 3}
+  _uiBuffDescriptionController: {fileID: 0}
 --- !u!1 &8093338154814140139
 GameObject:
   m_ObjectHideFlags: 0

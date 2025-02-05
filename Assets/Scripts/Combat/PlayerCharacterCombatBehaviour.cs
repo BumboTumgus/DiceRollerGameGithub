@@ -12,6 +12,7 @@ public class PlayerCharacterCombatBehaviour : MonoBehaviour
     public int VamperismCurrent { get { return _vamperismCurrent;}}
     public Vector3 OriginalPosition { get { return _originalPosition;}}
     public CombatAnimationBehaviour CombatAnimationBehaviour { get { return _combatAnimationBehaviour;}}
+    public BuffManager BuffManager { get => _buffManager;}
 
     private int _healthCurrent;
     private int _healthMax;
@@ -27,6 +28,7 @@ public class PlayerCharacterCombatBehaviour : MonoBehaviour
     private int _vamperismCurrent;
     private Vector3 _originalPosition;
     private CombatAnimationBehaviour _combatAnimationBehaviour;
+    private BuffManager _buffManager;
 
     private void Awake()
     {
@@ -36,6 +38,10 @@ public class PlayerCharacterCombatBehaviour : MonoBehaviour
         _defenseBase = 2;
         _luckBase = 1;
         _vamperismBase = 0;
+
+        _buffManager = GetComponent<BuffManager>();
+        _buffManager.BuffUiParent = _uiCombatStats.BuffUiParent;
+        _buffManager.UiBuffDescriptionController = _uiCombatStats.UiBuffDescriptionController;
 
         _healthCurrent = _healthMax;
         _originalPosition = transform.position;

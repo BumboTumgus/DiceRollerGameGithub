@@ -5,31 +5,32 @@ using UnityEngine;
 
 public class BuffManager : MonoBehaviour
 {
-    [SerializeField] List<BuffScriptableObject> DebugBuffs;
+    [HideInInspector] public UiBuffDescriptionController UiBuffDescriptionController;
+    [HideInInspector] public Transform BuffUiParent;
+
+    //[SerializeField] List<BuffScriptableObject> DebugBuffs;
 
     [SerializeField] List<BuffScriptableObject> _activeBuffs = new List<BuffScriptableObject>();
     [SerializeField] List<int> _activeBuffIncrements = new List<int>();
     [SerializeField] List<UiBuffIcon> _uiBuffIcons = new List<UiBuffIcon>();
 
-    [SerializeField] Transform _buffUiParent;
     [SerializeField] GameObject _uiBuffPrefab;
-    [SerializeField] UiBuffDescriptionController _uiBuffDescriptionController;
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.A))
-            AddBuff(DebugBuffs[0], 1);
-        if (Input.GetKeyDown(KeyCode.S))
-            AddBuff(DebugBuffs[0], 5);
-        if (Input.GetKeyDown(KeyCode.D))
-            AddBuff(DebugBuffs[1], 1);
-        if (Input.GetKeyDown(KeyCode.F))
-            AddBuff(DebugBuffs[1], 5);
-        if (Input.GetKeyDown(KeyCode.G))
-            ClearAllBuffs();
-        if (Input.GetKeyDown(KeyCode.H))
-            DecrementAllBuffs();
-    }
+    //private void Update()
+    //{
+    //    if (Input.GetKeyDown(KeyCode.A))
+    //        AddBuff(DebugBuffs[0], 1);
+    //    if (Input.GetKeyDown(KeyCode.S))
+    //        AddBuff(DebugBuffs[0], 5);
+    //    if (Input.GetKeyDown(KeyCode.D))
+    //        AddBuff(DebugBuffs[1], 1);
+    //    if (Input.GetKeyDown(KeyCode.F))
+    //        AddBuff(DebugBuffs[1], 5);
+    //    if (Input.GetKeyDown(KeyCode.G))
+    //        ClearAllBuffs();
+    //    if (Input.GetKeyDown(KeyCode.H))
+    //        DecrementAllBuffs();
+    //}
 
     public void AddBuff(BuffScriptableObject buffToAdd, int buffCount)
     {
@@ -46,9 +47,9 @@ public class BuffManager : MonoBehaviour
         _activeBuffs.Add(buffToAdd);
         _activeBuffIncrements.Add(buffCount);
 
-        UiBuffIcon uiBuffIcon = Instantiate(_uiBuffPrefab, _buffUiParent.position, _buffUiParent.rotation, _buffUiParent).GetComponent<UiBuffIcon>();
+        UiBuffIcon uiBuffIcon = Instantiate(_uiBuffPrefab, BuffUiParent.position, BuffUiParent.rotation, BuffUiParent).GetComponent<UiBuffIcon>();
         _uiBuffIcons.Add(uiBuffIcon);
-        uiBuffIcon.InitializeWithBuff(buffToAdd, buffCount, _uiBuffDescriptionController);
+        uiBuffIcon.InitializeWithBuff(buffToAdd, buffCount, UiBuffDescriptionController);
     }
 
     public void ClearAllBuffs()

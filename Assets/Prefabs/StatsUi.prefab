@@ -1018,7 +1018,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ConnectedTarget: {fileID: 0}
-  UiBuffDescriptionController: {fileID: 0}
+  UiBuffDescriptionController: {fileID: 3893870753271610900}
+  BuffUiParent: {fileID: 3260627416049714339}
   _attackReadout: {fileID: 7190291444747629559}
   _defenseReadout: {fileID: 3777579319159257983}
   _attackDefenseReadoutHorizontalLayout: {fileID: 45963011630058403}

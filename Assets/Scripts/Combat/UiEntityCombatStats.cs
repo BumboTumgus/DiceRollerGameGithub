@@ -13,6 +13,7 @@ public class UiEntityCombatStats : MonoBehaviour
 
     public Transform ConnectedTarget;
     public UiBuffDescriptionController UiBuffDescriptionController;
+    public Transform BuffUiParent;
 
     [SerializeField] private TMP_Text _attackReadout;
     [SerializeField] private TMP_Text _defenseReadout;
