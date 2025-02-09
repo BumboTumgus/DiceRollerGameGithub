@@ -7,7 +7,7 @@ public class DiceRollingBehaviour : MonoBehaviour
 {
     private const float RANDOM_ROLL_FORCE_MULTIPLIER = 10f;
     private const float RANDOM_ROLL_FORCE_FLOOR = 0.3f;
-    private const float RANDOM_ROLL_TORQUE_MULTIPLIER = 8000f;
+    private const float RANDOM_ROLL_TORQUE_MULTIPLIER = 16000f;
     private const float RANDOM_ROLL_TORQUE_FLOOR = 0.4f;
     private const string SPAWN_FROM_DORMANT_ANIM_STRING = "DiceAppearFromDormant";
     private const string DISSAPPEAR_TO_DORMANT_ANIM_STRING = "DiceDisappearToDormant";

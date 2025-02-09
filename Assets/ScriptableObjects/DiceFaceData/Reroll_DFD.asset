@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a9c2c5867ad90043a1a1469836ad26e, type: 3}
+  m_Name: Reroll_DFD
+  m_EditorClassIdentifier: 
+  DiceFaceMat: {fileID: 2100000, guid: bc5eedbcdbda5344581a6bb7ca4d6311, type: 2}
+  RolledDiceParticles: {fileID: 7388351367591524682, guid: 71a064628f168164cb1437236c64bb26,
+    type: 3}
+  PlayerPowerUpParticles: {fileID: 2019851624137785080, guid: 9431969c02b1e1f44bbc105590b2d1d7,
+    type: 3}
+  DiceFaceEnum: 8
+  DiceFaceUiSprite: {fileID: 21300000, guid: ce122b4c2e5d5fb4cb423c54e86a0bcf, type: 3}
+  DiceFaceCost: 20

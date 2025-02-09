@@ -6,7 +6,7 @@ using UnityEngine;
 [CreateAssetMenu]
 public class DiceFaceData : ScriptableObject
 {
-    public enum DiceFace { Attack, Defense, Strike, Lucky, Vamperism, Heal }
+    public enum DiceFace { Attack, Defense, Strike, Lucky, Vamperism, Heal, Evade, Thorns, Reroll, RerollAttack, RerollDefense, Brace, Bleed, Regen, Plunder, Strength, Tenacity, Sunder }
     public Material DiceFaceMat;
     public GameObject RolledDiceParticles;
     public GameObject PlayerPowerUpParticles;
