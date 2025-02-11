@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8051575514531422401}
   - component: {fileID: 5596401146204576895}
   - component: {fileID: 910346566156037341}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: HorizontalGlowRing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4955,7 +4955,7 @@ GameObject:
   - component: {fileID: 5521215436059031263}
   - component: {fileID: 4377069476089805485}
   - component: {fileID: 6467588288053194222}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RolledDiceParticle_Regen
   m_TagString: Untagged
   m_Icon: {fileID: 0}

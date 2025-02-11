@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Weaken_BSO
   m_EditorClassIdentifier: 
   MyBuffType: 3
-  BuffIcon: {fileID: 82721183, guid: e1e75d52ac49ed64187ef4c5af97a4ae, type: 3}
+  BuffIcon: {fileID: 21300000, guid: 02f26a4a3ce3922428a6379a8855ca35, type: 3}
   BuffDescription: Reduces Damage Dealt by 50%
   BuffStackingAllowed: 1
   BuffIsPermanent: 0

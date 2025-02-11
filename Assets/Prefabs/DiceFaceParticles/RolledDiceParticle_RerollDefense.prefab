@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3247146958078533060}
   - component: {fileID: 8506881112799717278}
   - component: {fileID: 6243064103276911188}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Spikes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4918,7 +4918,7 @@ GameObject:
   - component: {fileID: 7396286171823518106}
   - component: {fileID: 7914406735786567363}
   - component: {fileID: 3420910897977409602}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: HorizontalGlowRing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9862,7 +9862,7 @@ GameObject:
   - component: {fileID: 5521215436059031263}
   - component: {fileID: 4377069476089805485}
   - component: {fileID: 6467588288053194222}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RolledDiceParticle_RerollDefense
   m_TagString: Untagged
   m_Icon: {fileID: 0}

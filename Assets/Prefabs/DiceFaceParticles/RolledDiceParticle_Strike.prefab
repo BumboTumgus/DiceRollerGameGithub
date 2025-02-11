@@ -531,7 +531,7 @@ PrefabInstance:
     - target: {fileID: 7698782438158763098, guid: 47a404ad82385fc48bfc3ae628720d93,
         type: 3}
       propertyPath: m_Name
-      value: RolledDiceParticle_Strike Variant
+      value: RolledDiceParticle_Strike
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

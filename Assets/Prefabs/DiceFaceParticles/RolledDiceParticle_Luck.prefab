@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6433389116220105469}
   - component: {fileID: 3739696547293633415}
   - component: {fileID: 5438886052192707476}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Treasure
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4926,7 +4926,7 @@ GameObject:
   - component: {fileID: 6928118095683882408}
   - component: {fileID: 2401003767546459554}
   - component: {fileID: 5793863916219038689}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: RolledDiceParticle_Luck
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9893,7 +9893,7 @@ GameObject:
   - component: {fileID: 8209606732097447225}
   - component: {fileID: 6186048339105406669}
   - component: {fileID: 8477965962671260095}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: EndGlow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14836,7 +14836,7 @@ GameObject:
   - component: {fileID: 8919033742092038480}
   - component: {fileID: 6635894351098250339}
   - component: {fileID: 3539767456153838653}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: EndSpark
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -19779,7 +19779,7 @@ GameObject:
   - component: {fileID: 4642383397796875141}
   - component: {fileID: 7164045608861386508}
   - component: {fileID: 7952377369998048760}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Sparks
   m_TagString: Untagged
   m_Icon: {fileID: 0}

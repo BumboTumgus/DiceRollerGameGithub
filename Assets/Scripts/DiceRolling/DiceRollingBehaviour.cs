@@ -7,7 +7,7 @@ public class DiceRollingBehaviour : MonoBehaviour
 {
     private const float RANDOM_ROLL_FORCE_MULTIPLIER = 10f;
     private const float RANDOM_ROLL_FORCE_FLOOR = 0.3f;
-    private const float RANDOM_ROLL_TORQUE_MULTIPLIER = 16000f;
+    private const float RANDOM_ROLL_TORQUE_MULTIPLIER = 100000;
     private const float RANDOM_ROLL_TORQUE_FLOOR = 0.4f;
     private const string SPAWN_FROM_DORMANT_ANIM_STRING = "DiceAppearFromDormant";
     private const string DISSAPPEAR_TO_DORMANT_ANIM_STRING = "DiceDisappearToDormant";
@@ -59,7 +59,7 @@ public class DiceRollingBehaviour : MonoBehaviour
         SetSelectionStatus(false);
         float upwardsForceMultiplier = transform.position.y < 0 ? 5 : 1;
         _rigidbody.AddForce(new Vector3(GetRandomFloatWithFloor(RANDOM_ROLL_FORCE_FLOOR) * RANDOM_ROLL_FORCE_MULTIPLIER, GetRandomFloatWithFloor(RANDOM_ROLL_FORCE_FLOOR) * RANDOM_ROLL_FORCE_MULTIPLIER, RANDOM_ROLL_FORCE_MULTIPLIER / -10 * upwardsForceMultiplier), ForceMode.Impulse);
-        _rigidbody.AddTorque(new Vector3(GetRandomFloatWithFloor(RANDOM_ROLL_TORQUE_FLOOR) * RANDOM_ROLL_TORQUE_MULTIPLIER, GetRandomFloatWithFloor(RANDOM_ROLL_TORQUE_FLOOR) * RANDOM_ROLL_TORQUE_MULTIPLIER, GetRandomFloatWithFloor(RANDOM_ROLL_TORQUE_FLOOR) * RANDOM_ROLL_TORQUE_MULTIPLIER));
+        _rigidbody.AddTorque(new Vector3(GetRandomFloatWithFloor(RANDOM_ROLL_TORQUE_FLOOR) * RANDOM_ROLL_TORQUE_MULTIPLIER, GetRandomFloatWithFloor(RANDOM_ROLL_TORQUE_FLOOR) * RANDOM_ROLL_TORQUE_MULTIPLIER, GetRandomFloatWithFloor(RANDOM_ROLL_TORQUE_FLOOR) * RANDOM_ROLL_TORQUE_MULTIPLIER), ForceMode.Impulse);
         StartCoroutine(WaitForDiceToStopRolling());
     }
 

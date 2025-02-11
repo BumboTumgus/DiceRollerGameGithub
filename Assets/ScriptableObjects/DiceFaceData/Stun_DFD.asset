@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a9c2c5867ad90043a1a1469836ad26e, type: 3}
+  m_Name: Stun_DFD
+  m_EditorClassIdentifier: 
+  DiceFaceMat: {fileID: 2100000, guid: 353700d80cf447d4ca3745dcf0af6290, type: 2}
+  RolledDiceParticles: {fileID: 7388351367591524682, guid: f1c52ee90fd70fc45811361f99e23b11,
+    type: 3}
+  PlayerPowerUpParticles: {fileID: 2019851624137785080, guid: b5fa01b239a17a04ab4c01113f09ae5f,
+    type: 3}
+  DiceFaceEnum: 19
+  DiceFaceUiSprite: {fileID: 21300000, guid: 0460108a4ea73db40b310aadc9f5f7f3, type: 3}
+  DiceFaceCost: 30

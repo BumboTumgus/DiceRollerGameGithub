@@ -380,6 +380,8 @@ public class CombatManagerSingleton : MonoBehaviour
 
     private IEnumerator EnemyPlayerDebuffRoutine(EnemyCombatBehaviour aggresor)
     {
+        _dividerCanvasAnimation.Play(UI_DIVIDER_APPEAR_ANIM);
+
         _playerCharacterCombatBehaviour.transform.position = _playerAttackStartPoint.position;
         aggresor.transform.position = _enemyAttackStartPoint.position;
         float currentTimer = 0f;
@@ -398,9 +400,26 @@ public class CombatManagerSingleton : MonoBehaviour
             yield return _waitForEndOFrame;
         }
 
-        aggresor.transform.position = aggresor.OriginalPosition;
+        aggresor.transform.position = _enemyAttackEndPoint.position;
         _playerCharacterCombatBehaviour.CombatAnimationBehaviour.SetAnimSpeedToNormal();
         aggresor.CombatAnimationBehaviour.SetAnimSpeedToNormal();
+        _playerCharacterCombatBehaviour.transform.position = _playerAttackEndPoint.position;
+
+        currentTimer = 0;
+        _dividerCanvasAnimation.Play(UI_DIVIDER_DISAPPEAR_ANIM);
+
+        while (currentTimer < ATTACK_RETURN_TO_START_ANIM_LENGTH)
+        {
+            currentTimer += Time.deltaTime;
+            aggresor.transform.position = Vector3.Lerp(_enemyAttackEndPoint.position, aggresor.OriginalPosition, currentTimer / ATTACK_RETURN_TO_START_ANIM_LENGTH);
+            _playerCharacterCombatBehaviour.transform.position = Vector3.Lerp(_playerAttackEndPoint.position, _playerCharacterCombatBehaviour.OriginalPosition, currentTimer / ATTACK_RETURN_TO_START_ANIM_LENGTH);
+
+            yield return _waitForEndOFrame;
+        }
+
+        aggresor.UiCombatStats.TriggerTurnIndicator(false);
+        aggresor.HideAttackUi();
+        yield return new WaitForSeconds(END_OF_ACTION_DELAY);
     }
 
     private IEnumerator EnemyAttackRoutine(EnemyCombatBehaviour aggresor)

@@ -14815,6 +14815,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1284364984098723957}
     m_Modifications:
+    - target: {fileID: 3874959687100166627, guid: e75ba6fac4369fb419ea161de15799e6,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 4522632814285787217, guid: e75ba6fac4369fb419ea161de15799e6,
         type: 3}
       propertyPath: m_Materials.Array.size
@@ -15119,6 +15124,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: ShieldAuraGreen
+      objectReference: {fileID: 0}
+    - target: {fileID: 8525505213111709677, guid: e75ba6fac4369fb419ea161de15799e6,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:

@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 54e21caa6f14e894dbdfffbd2ffab931, type: 3}
-  m_Name: Strength_BSO
+  m_Name: Luck_BSO
   m_EditorClassIdentifier: 
-  MyBuffType: 1
-  BuffIcon: {fileID: 21300000, guid: 36f5d92d6bfa633469c62e6a23149cb9, type: 3}
-  BuffDescription: Increases Physical Damage Done
+  MyBuffType: 6
+  BuffIcon: {fileID: -723862371, guid: e1e75d52ac49ed64187ef4c5af97a4ae, type: 3}
+  BuffDescription: This unit gains crit chance and higher rolls on some effects.
   BuffStackingAllowed: 1
-  BuffIsPermanent: 0
+  BuffIsPermanent: 1
