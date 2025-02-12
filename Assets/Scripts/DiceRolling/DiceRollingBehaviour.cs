@@ -134,7 +134,15 @@ public class DiceRollingBehaviour : MonoBehaviour
         _rigidbody.isKinematic = true;
 
         yield return new WaitForSeconds(2f);
-        DiceRollerSingleton.Instance.IncrementDiceFinishedRollingCount();
+
+        if(_rolledDiceFace.MyDiceFaceData == DiceFaceDataSingleton.Instance.GetDiceFaceDataByType(DiceFaceData.DiceFace.Reroll))
+        {
+            _currentlyAllowsRolls = true;
+            DiceRollerSingleton.Instance.AddDiceRerolls(1);
+            DiceRollerSingleton.Instance.RackAndRerollSelectDice(this);
+        }
+        else
+            DiceRollerSingleton.Instance.IncrementDiceFinishedRollingCount();
     }
 
     private bool CheckForSingleValidUpwardFacingDiceFace()

@@ -9,7 +9,6 @@ public class PlayerCharacterCombatBehaviour : MonoBehaviour
     public int AttackCountCurrent { get { return _attackCountCurrent;}}
     public int AttackDamageCurrent { get { return _attackDamageCurrent;}}
     public int DefenseCurrent { get { return _defenseCurrent;}}
-    public int VamperismCurrent { get { return _vamperismCurrent;}}
     public Vector3 OriginalPosition { get { return _originalPosition;}}
     public CombatAnimationBehaviour CombatAnimationBehaviour { get { return _combatAnimationBehaviour;}}
     public BuffManager BuffManager { get => _buffManager;}
@@ -22,10 +21,6 @@ public class PlayerCharacterCombatBehaviour : MonoBehaviour
     private int _attackCountCurrent;
     private int _defenseBase;
     private int _defenseCurrent;
-    private int _luckBase;
-    private int _luckCurrent;
-    private int _vamperismBase;
-    private int _vamperismCurrent;
     private Vector3 _originalPosition;
     private CombatAnimationBehaviour _combatAnimationBehaviour;
     private BuffManager _buffManager;
@@ -35,9 +30,7 @@ public class PlayerCharacterCombatBehaviour : MonoBehaviour
         _healthMax = 20;
         _attackDamageBase = 2;
         _attackCountBase = 1;
-        _defenseBase = 2;
-        _luckBase = 1;
-        _vamperismBase = 0;
+        _defenseBase = 0;
 
         _buffManager = GetComponent<BuffManager>();
         _buffManager.BuffUiParent = _uiCombatStats.BuffUiParent;
@@ -67,9 +60,7 @@ public class PlayerCharacterCombatBehaviour : MonoBehaviour
     {
         _attackDamageCurrent = _attackDamageBase;
         _attackCountCurrent = _attackCountBase;
-        _defenseCurrent = _defenseBase;
-        _luckCurrent = _luckBase;
-        _vamperismCurrent = _vamperismBase;
+        //_defenseCurrent = _defenseBase;
 
         _uiCombatStats.UpdateHealthReadout(_healthCurrent, _healthMax, true, false);
         _uiCombatStats.UpdateAttackReadout(_attackDamageCurrent, _attackCountCurrent, false);
@@ -138,34 +129,100 @@ public class PlayerCharacterCombatBehaviour : MonoBehaviour
     public bool IsAttackCritical()
     {
         int randomNum = Random.Range(0, 10);
-        return randomNum < _luckCurrent;
+        return randomNum < 1 + BuffManager.GetBuffStackCount(BuffScriptableObject.BuffType.Luck);
     }
 
-    public void AddAttackDamage(int value)
+    public void AddAttackDamage(int v)
     {
-        _attackDamageCurrent += value;
+        _attackDamageCurrent += v;
         _uiCombatStats.UpdateAttackReadout(_attackDamageCurrent, _attackCountCurrent);
     }
 
-    public void AddAttackCount( int value)
+    public void AddAttackCount( int v)
     {
-        _attackCountCurrent += value;
+        _attackCountCurrent += v;
         _uiCombatStats.UpdateAttackReadout(_attackDamageCurrent, _attackCountCurrent);
     }
 
-    public void AddDefense(int value)
+    public void AddDefense(int v)
     {
-        _defenseCurrent += value;
+        _defenseCurrent += v;
         _uiCombatStats.UpdateDefenseReadout(_defenseCurrent, true);
     }
 
-    public void AddLuck(int value)
+    public void AddLuck(int v)
     {
-        _luckCurrent += value;
+        BuffManager.AddBuff(BuffSingleton.Instance.GetBuffDataByType(BuffScriptableObject.BuffType.Luck), v);
     }
 
-    public void AddVamperism(int value)
+    public void AddVamperism(int v)
     {
-        _vamperismCurrent += value;
+        BuffManager.AddBuff(BuffSingleton.Instance.GetBuffDataByType(BuffScriptableObject.BuffType.Vamperism), v);
+    }
+
+    public void AddBleed(int v)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void AddRerollAttack(int v)
+    {
+        BuffManager.AddBuff(BuffSingleton.Instance.GetBuffDataByType(BuffScriptableObject.BuffType.RerollAttack), v);
+    }
+
+    public void AddRerollDefense(int v)
+    {
+        BuffManager.AddBuff(BuffSingleton.Instance.GetBuffDataByType(BuffScriptableObject.BuffType.RerollDefense), v);
+    }
+
+    public void AddThorns(int v)
+    {
+        BuffManager.AddBuff(BuffSingleton.Instance.GetBuffDataByType(BuffScriptableObject.BuffType.Thorns), v);
+    }
+
+    public void AddBrace(int v)
+    {
+        BuffManager.AddBuff(BuffSingleton.Instance.GetBuffDataByType(BuffScriptableObject.BuffType.Brace), v);
+    }
+
+    public void AddEvade(int v)
+    {
+        BuffManager.AddBuff(BuffSingleton.Instance.GetBuffDataByType(BuffScriptableObject.BuffType.Evade), v);
+    }
+
+    public void AddPlunder(int v)
+    {
+        for (int i = 0; i < v; i++)
+            PlayerInventorySingleton.Instance.UpdateGoldValue(PlayerInventorySingleton.Instance.CollectedGold + Random.Range(1, 7));
+    }
+
+    public void AddRegen(int v)
+    {
+        BuffManager.AddBuff(BuffSingleton.Instance.GetBuffDataByType(BuffScriptableObject.BuffType.Regen), v);
+    }
+
+    public void AddStrength(int v)
+    {
+        BuffManager.AddBuff(BuffSingleton.Instance.GetBuffDataByType(BuffScriptableObject.BuffType.Stun), v);
+    }
+
+    public void AddStun(int v)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void AddSunder(int v)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void AddTenacity(int v)
+    {
+        BuffManager.AddBuff(BuffSingleton.Instance.GetBuffDataByType(BuffScriptableObject.BuffType.Tenacity), v);
+    }
+
+    public void AddWeaken(int v)
+    {
+        throw new System.NotImplementedException();
     }
 }

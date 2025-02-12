@@ -156,6 +156,14 @@ public class DiceRollerSingleton : MonoBehaviour
         SwitchToDiceState(DiceRollingState.Rolling);
     }
 
+    public void RackAndRerollSelectDice(DiceRollingBehaviour diceToForceReroll)
+    {
+        DicePrerollPlacerSingleton.Instance.PlaceSelectedDiceInPattern(new List<Transform> { diceToForceReroll.transform });
+        //foreach (DiceRollingBehaviour die in _currentDice)
+        //    die.GetComponent<DiceHighlightingBehaviour>().ClearStatus();
+        SwitchToDiceState(DiceRollingState.Rolling);
+    }
+
     public void AddDieToArsenal(DiceRollingBehaviour dieToAdd)
     {
         _currentDice.Add(dieToAdd);
@@ -270,5 +278,10 @@ public class DiceRollerSingleton : MonoBehaviour
             UiDiceRerollSingleton.Instance.OnSetRerollCounter(_rerollCount);
             UiDiceRollSingleton.Instance.OnSetPlayerActivelyRerolling(_diceFinishedRollingCount != _currentDice.Count);
         }
+    }
+
+    public void AddDiceRerolls(int v)
+    {
+        _rerollCount += v;
     }
 }

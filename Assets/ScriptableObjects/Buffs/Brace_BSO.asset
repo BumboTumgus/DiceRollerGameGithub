@@ -16,4 +16,4 @@ MonoBehaviour:
   BuffIcon: {fileID: 21300000, guid: 752c4b245f635404f849b838f9407c6c, type: 3}
   BuffDescription: Reduces all damage taken by a flat amount
   BuffStackingAllowed: 1
-  BuffIsPermanent: 0
+  BuffIsPermanent: 1

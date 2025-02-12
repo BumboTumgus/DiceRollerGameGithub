@@ -16,4 +16,4 @@ MonoBehaviour:
   BuffIcon: {fileID: 21300000, guid: e32b8a09bc86393499c3d86d2d9e8df3, type: 3}
   BuffDescription: Heal a flat amount on turn start
   BuffStackingAllowed: 1
-  BuffIsPermanent: 0
+  BuffIsPermanent: 1

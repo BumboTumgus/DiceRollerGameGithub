@@ -16,4 +16,4 @@ MonoBehaviour:
   BuffIcon: {fileID: 21300000, guid: 09fdfb456a961d44ab5fb6bd62042abc, type: 3}
   BuffDescription: Reflect damage upon taking damage
   BuffStackingAllowed: 1
-  BuffIsPermanent: 0
+  BuffIsPermanent: 1

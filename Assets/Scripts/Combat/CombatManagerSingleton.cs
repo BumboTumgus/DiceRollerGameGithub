@@ -239,8 +239,8 @@ public class CombatManagerSingleton : MonoBehaviour
             target.CombatAnimationBehaviour.PlayDefenseAnimation();
             
         DamageNumberManagerSingleton.Instance.ShowEnemyDamageNumber(damage, damage <= target.DefenseCurrent, criticalStrike);
-        if(damage > target.DefenseCurrent && PlayerCharacterCombatBehaviour.VamperismCurrent > 0)
-            PlayerCharacterCombatBehaviour.HealHealth(PlayerCharacterCombatBehaviour.VamperismCurrent);
+        if(damage > target.DefenseCurrent && PlayerCharacterCombatBehaviour.BuffManager.IsBuffActive(BuffScriptableObject.BuffType.Vamperism))
+            PlayerCharacterCombatBehaviour.HealHealth(PlayerCharacterCombatBehaviour.BuffManager.GetBuffStackCount(BuffScriptableObject.BuffType.Vamperism));
 
         target.TakeDamage(damage);
         while (currentTimer < ATTACK_SLIDE_ANIM_LENGTH)

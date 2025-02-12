@@ -99,4 +99,14 @@ public class BuffManager : MonoBehaviour
         }
         return false;
     }
+
+    public int GetBuffStackCount(BuffScriptableObject.BuffType buffType)
+    {
+        for (int buffIndex = 0; buffIndex < _activeBuffIncrements.Count; buffIndex++)
+        {
+            if (_activeBuffs[buffIndex].MyBuffType == buffType)
+                return _activeBuffIncrements[buffIndex];
+        }
+        return 0;
+    }
 }
