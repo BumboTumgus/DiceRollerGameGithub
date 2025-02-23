@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Luck_BSO
   m_EditorClassIdentifier: 
   MyBuffType: 6
-  BuffIcon: {fileID: -723862371, guid: e1e75d52ac49ed64187ef4c5af97a4ae, type: 3}
+  BuffIcon: {fileID: 21300000, guid: 1ac034c6d78b18d43a30497c18fbe9f1, type: 3}
   BuffDescription: This unit gains crit chance and higher rolls on some effects.
   BuffStackingAllowed: 1
   BuffIsPermanent: 1

@@ -11,7 +11,8 @@ public class PlayerCharacterCombatBehaviour : MonoBehaviour
     public int DefenseCurrent { get { return _defenseCurrent;}}
     public Vector3 OriginalPosition { get { return _originalPosition;}}
     public CombatAnimationBehaviour CombatAnimationBehaviour { get { return _combatAnimationBehaviour;}}
-    public BuffManager BuffManager { get => _buffManager;}
+    public BuffManager BuffManager { get => _buffManager; }
+    public PlayerDebuffsToInflictManager DebuffInflictionManager { get => _debuffInflictionManager; }
 
     private int _healthCurrent;
     private int _healthMax;
@@ -24,6 +25,7 @@ public class PlayerCharacterCombatBehaviour : MonoBehaviour
     private Vector3 _originalPosition;
     private CombatAnimationBehaviour _combatAnimationBehaviour;
     private BuffManager _buffManager;
+    private PlayerDebuffsToInflictManager _debuffInflictionManager;
 
     private void Awake()
     {
@@ -35,6 +37,8 @@ public class PlayerCharacterCombatBehaviour : MonoBehaviour
         _buffManager = GetComponent<BuffManager>();
         _buffManager.BuffUiParent = _uiCombatStats.BuffUiParent;
         _buffManager.UiBuffDescriptionController = _uiCombatStats.UiBuffDescriptionController;
+
+        _debuffInflictionManager = GetComponent<PlayerDebuffsToInflictManager>();
 
         _healthCurrent = _healthMax;
         _originalPosition = transform.position;
@@ -162,7 +166,7 @@ public class PlayerCharacterCombatBehaviour : MonoBehaviour
 
     public void AddBleed(int v)
     {
-        throw new System.NotImplementedException();
+        DebuffInflictionManager.AddDebuffToInflict(BuffSingleton.Instance.GetBuffDataByType(BuffScriptableObject.BuffType.Bleed), v);
     }
 
     public void AddRerollAttack(int v)
@@ -208,12 +212,12 @@ public class PlayerCharacterCombatBehaviour : MonoBehaviour
 
     public void AddStun(int v)
     {
-        throw new System.NotImplementedException();
+        DebuffInflictionManager.AddDebuffToInflict(BuffSingleton.Instance.GetBuffDataByType(BuffScriptableObject.BuffType.Stun), v);
     }
 
     public void AddSunder(int v)
     {
-        throw new System.NotImplementedException();
+        DebuffInflictionManager.AddDebuffToInflict(BuffSingleton.Instance.GetBuffDataByType(BuffScriptableObject.BuffType.Sunder), v);
     }
 
     public void AddTenacity(int v)
@@ -223,6 +227,6 @@ public class PlayerCharacterCombatBehaviour : MonoBehaviour
 
     public void AddWeaken(int v)
     {
-        throw new System.NotImplementedException();
+        DebuffInflictionManager.AddDebuffToInflict(BuffSingleton.Instance.GetBuffDataByType(BuffScriptableObject.BuffType.Weaken), v);
     }
 }

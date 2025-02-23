@@ -20,4 +20,4 @@ MonoBehaviour:
   BuffToCastOnSelf: {fileID: 0}
   DebuffToCastOnPlayer: {fileID: 11400000, guid: 4a8caf33cc011ce48ba480702e947980,
     type: 2}
-  BuffCount: 1
+  BuffCount: 2

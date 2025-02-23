@@ -78,6 +78,7 @@ public class DiceRollerSingleton : MonoBehaviour
                 {
                     diceRollingBehaviour.SetSelectionStatus(false);
                     diceRollingBehaviour.OnDissappearToDormant(delay);
+                    diceRollingBehaviour.DiceRerollCount = 0;
                     delay += HIDE_TO_DORMANT_DELAY_INCREMENT;
                 }
                 CombatManagerSingleton.Instance.EnablePlayerControlOfCombat(delay + PARTICLE_TO_STAT_ADDDITION_DELAY);
@@ -159,9 +160,7 @@ public class DiceRollerSingleton : MonoBehaviour
     public void RackAndRerollSelectDice(DiceRollingBehaviour diceToForceReroll)
     {
         DicePrerollPlacerSingleton.Instance.PlaceSelectedDiceInPattern(new List<Transform> { diceToForceReroll.transform });
-        //foreach (DiceRollingBehaviour die in _currentDice)
-        //    die.GetComponent<DiceHighlightingBehaviour>().ClearStatus();
-        SwitchToDiceState(DiceRollingState.Rolling);
+        diceToForceReroll.OnRollDice();
     }
 
     public void AddDieToArsenal(DiceRollingBehaviour dieToAdd)

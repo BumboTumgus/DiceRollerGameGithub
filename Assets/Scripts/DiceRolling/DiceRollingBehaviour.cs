@@ -7,7 +7,7 @@ public class DiceRollingBehaviour : MonoBehaviour
 {
     private const float RANDOM_ROLL_FORCE_MULTIPLIER = 10f;
     private const float RANDOM_ROLL_FORCE_FLOOR = 0.3f;
-    private const float RANDOM_ROLL_TORQUE_MULTIPLIER = 100000;
+    private const float RANDOM_ROLL_TORQUE_MULTIPLIER = 1000000;
     private const float RANDOM_ROLL_TORQUE_FLOOR = 0.4f;
     private const string SPAWN_FROM_DORMANT_ANIM_STRING = "DiceAppearFromDormant";
     private const string DISSAPPEAR_TO_DORMANT_ANIM_STRING = "DiceDisappearToDormant";
@@ -15,10 +15,12 @@ public class DiceRollingBehaviour : MonoBehaviour
     private const float DICE_FACE_MINIMUM_DOT_PRODUCT = 0.025f;
     private const float DICE_BOTTOM_OF_ROLLBOX_HEIGHT = -0.2f;
     private const int IDLE_ANIM_COUNT = 3;
+    private const int MAXIMUM_REROLL_COUNT = 3;
 
     public bool SelectedForReroll { get { return _diceCurrentlySelected;}}
     public bool CurrentlyAllowsRolls { get { return _currentlyAllowsRolls;}}
     public DiceFaceBehaviour[] DiceFaces { get { return _diceFaces;}}
+    public int DiceRerollCount { get => _diceRerollCount; set => _diceRerollCount = value; }
 
     [SerializeField] private DiceFaceBehaviour[] _diceFaces;
 
@@ -28,6 +30,7 @@ public class DiceRollingBehaviour : MonoBehaviour
     private DiceFaceBehaviour _rolledDiceFace;
     private bool _diceCurrentlySelected = false;
     private bool _currentlyAllowsRolls = true;
+    private int _diceRerollCount = 0;
 
     private void Awake()
     {
@@ -42,6 +45,7 @@ public class DiceRollingBehaviour : MonoBehaviour
         _currentlyAllowsRolls = true;
         transform.rotation = Quaternion.identity;
         _animation.Play(SPAWN_FROM_DORMANT_ANIM_STRING);
+        CombatManagerSingleton.Instance.PlayerCharacterCombatBehaviour.BuffManager.DecrementAllBuffs();
     }
 
     public void OnDissappearToDormant(float delay)
@@ -135,11 +139,12 @@ public class DiceRollingBehaviour : MonoBehaviour
 
         yield return new WaitForSeconds(2f);
 
-        if(_rolledDiceFace.MyDiceFaceData == DiceFaceDataSingleton.Instance.GetDiceFaceDataByType(DiceFaceData.DiceFace.Reroll))
+        if(_rolledDiceFace.MyDiceFaceData == DiceFaceDataSingleton.Instance.GetDiceFaceDataByType(DiceFaceData.DiceFace.Reroll) && _diceRerollCount < MAXIMUM_REROLL_COUNT)
         {
             _currentlyAllowsRolls = true;
             DiceRollerSingleton.Instance.AddDiceRerolls(1);
             DiceRollerSingleton.Instance.RackAndRerollSelectDice(this);
+            _diceRerollCount++;
         }
         else
             DiceRollerSingleton.Instance.IncrementDiceFinishedRollingCount();

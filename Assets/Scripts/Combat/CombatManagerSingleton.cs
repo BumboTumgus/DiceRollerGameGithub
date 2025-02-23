@@ -19,7 +19,7 @@ public class CombatManagerSingleton : MonoBehaviour
     public TMP_Text temporaryStateText;
     public PlayerCharacterCombatBehaviour PlayerCharacterCombatBehaviour { get { return _playerCharacterCombatBehaviour;}}
     public List<EnemyCombatBehaviour> EnemyCombatBehaviours { get { return _enemyCombatBehaviours;}}
-    public enum CombatState { PlayerPickingTargets, PlayerExecutingAttacks, EnemyExecutingAttacks, Idle, NewCombatRound }  
+    public enum CombatState { PlayerPickingAttackTargets, PlayerExecutingAttacks, EnemyExecutingAttacks, Idle, NewCombatRound, PlayerPickingDebuffTargets, PlayerApplyingDebuff }  
 
     [SerializeField] private PlayerCharacterCombatBehaviour _playerCharacterCombatBehaviour;
     [SerializeField] private List<EnemyCombatBehaviour> _enemyCombatBehaviours;
@@ -37,6 +37,9 @@ public class CombatManagerSingleton : MonoBehaviour
     private List<EnemyCombatBehaviour> _targettedEnemies;
     private WaitForEndOfFrame _waitForEndOFrame = new WaitForEndOfFrame();
 
+    private BuffScriptableObject _playerDebuffToInflict;
+    private int _playerDebuffToInflictCount = 0;
+
     private void Awake()
     {
         if (Instance == null)
@@ -51,13 +54,19 @@ public class CombatManagerSingleton : MonoBehaviour
         {
             case CombatState.Idle:
                 break;
-            case CombatState.PlayerPickingTargets:
+            case CombatState.PlayerPickingAttackTargets:
                 HighlightHoveredEnemy();
                 AddHoveredEnemyAsAttackTarget();
+                break;
+            case CombatState.PlayerPickingDebuffTargets:
+                HighlightHoveredEnemy();
+                SetHoveredEnemyAsDebuffTarget();
                 break;
             case CombatState.PlayerExecutingAttacks:
                 break;
             case CombatState.EnemyExecutingAttacks:
+                break;
+            case CombatState.PlayerApplyingDebuff:
                 break;
         }
     }
@@ -88,16 +97,13 @@ public class CombatManagerSingleton : MonoBehaviour
 
     private void PayoutCombatRewards()
     {
-        Debug.Log("Payout combat rewards here and show the continue button");
         UiCombatRewardsSingleton.Instance.SetWindowVisibility(true);
         UiCombatRewardsSingleton.Instance.PopulateWindowWithRewards(_currentEncounter);
-        //TODO: add a ui single call - show the ui for the rewards and populate the buttons
-        // We get this rewards from our current chopsen encoutner.
     }
 
     private void GivePlayerControlOfTurn()
     {
-        SwapToCombatState(CombatState.PlayerPickingTargets);
+        SwapToCombatState(CombatState.PlayerPickingDebuffTargets);
     }
 
     private void SwapToCombatState(CombatState state)
@@ -110,9 +116,27 @@ public class CombatManagerSingleton : MonoBehaviour
                 temporaryStateText.text = "COMBAT STATE: IDLE";
                 break;
 
-            case CombatState.PlayerPickingTargets:
-                temporaryStateText.text = "COMBAT STATE: PICK TARGETS";
+            case CombatState.PlayerPickingAttackTargets:
+                temporaryStateText.text = "COMBAT STATE: PICK ATTACK TARGETS";
+                Debug.Log("WE should now be prompted to attack targets");
                 _targettedEnemies = new List<EnemyCombatBehaviour>();
+                break;
+
+            case CombatState.PlayerPickingDebuffTargets:
+                temporaryStateText.text = "COMBAT STATE: PICK DEBUFF TARGETS";
+                Debug.Log("WE should now be prompted to debuff targets");
+                if (PlayerCharacterCombatBehaviour.DebuffInflictionManager.DebuffsToInflict.Count >= 1)
+                {
+                    Debug.Log("WE have the count we should show a tooltip here");
+                    _playerDebuffToInflict = PlayerCharacterCombatBehaviour.DebuffInflictionManager.DebuffsToInflict[0];
+                    _playerDebuffToInflictCount = PlayerCharacterCombatBehaviour.DebuffInflictionManager.DebuffsToInflictCount[0];
+                    UiCombatDebuffPickTargetTooltipSingleton.Instance.ShowTooltip(_playerDebuffToInflict, _playerDebuffToInflictCount);
+                }
+                else
+                {
+                    SwapToCombatState(CombatState.PlayerPickingAttackTargets);
+                    UiCombatDebuffPickTargetTooltipSingleton.Instance.HideTooltip();
+                }
                 break;
 
             case CombatState.PlayerExecutingAttacks:
@@ -122,13 +146,22 @@ public class CombatManagerSingleton : MonoBehaviour
                     StartCoroutine(AllPlayerAttackRoutines());
                 break;
 
+            case CombatState.PlayerApplyingDebuff:
+                temporaryStateText.text = "COMBAT STATE: EXECUTING PLAYER DEBUFF";
+                foreach (EnemyCombatBehaviour enemyCombatBehaviour in _enemyCombatBehaviours)
+                    enemyCombatBehaviour.GetComponent<PlayerToEnemyTargettingBehaviour>().SetHighlightStatus(false);
+                StartCoroutine(PlayerDebuffEnemyRoutine(_targettedEnemies[0]));
+                break;
+
             case CombatState.EnemyExecutingAttacks:
                 temporaryStateText.text = "COMBAT STATE: EXECUTING ENEMY ATTACK";
                 foreach (EnemyCombatBehaviour enemy in _enemyCombatBehaviours)
                 {
                     enemy.NewTurnStatInitialization();
+                    enemy.BuffManager.DecrementAllBuffs();
                 }
                 StartCoroutine(AllEnemyTurns());
+
                 break;
 
             case CombatState.NewCombatRound:
@@ -172,6 +205,17 @@ public class CombatManagerSingleton : MonoBehaviour
 
             if (_targettedEnemies.Count == PlayerCharacterCombatBehaviour.AttackCountCurrent)
                 SwapToCombatState(CombatState.PlayerExecutingAttacks);
+        }
+    }
+
+    private void SetHoveredEnemyAsDebuffTarget()
+    {
+        if (Input.GetMouseButtonDown(0) && _currentHoveredEnemy != null)
+        {
+            EnemyCombatBehaviour enemyCombatBehaviour = _currentHoveredEnemy.GetComponent<EnemyCombatBehaviour>();
+            _targettedEnemies = new List<EnemyCombatBehaviour> { enemyCombatBehaviour };
+
+            SwapToCombatState(CombatState.PlayerApplyingDebuff);
         }
     }
 
@@ -254,6 +298,51 @@ public class CombatManagerSingleton : MonoBehaviour
         target.transform.position = target.OriginalPosition;
         _playerCharacterCombatBehaviour.CombatAnimationBehaviour.SetAnimSpeedToNormal();
         target.CombatAnimationBehaviour.SetAnimSpeedToNormal();
+    }
+
+    private IEnumerator PlayerDebuffEnemyRoutine(EnemyCombatBehaviour target)
+    {
+        _dividerCanvasAnimation.Play(UI_DIVIDER_APPEAR_ANIM);
+
+        _playerCharacterCombatBehaviour.transform.position = _playerAttackStartPoint.position;
+        target.transform.position = _enemyAttackStartPoint.position;
+        float currentTimer = 0f;
+
+        target.CombatAnimationBehaviour.PlayDebuffAnimation();
+        _playerCharacterCombatBehaviour.CombatAnimationBehaviour.PlayAttackAnimation();
+
+        DamageNumberManagerSingleton.Instance.ShowEnemyBuff(_playerDebuffToInflict.BuffIcon);
+
+        target.BuffManager.AddBuff(_playerDebuffToInflict, _playerDebuffToInflictCount);
+        while (currentTimer < ATTACK_SLIDE_ANIM_LENGTH)
+        {
+            currentTimer += Time.deltaTime;
+            _playerCharacterCombatBehaviour.transform.position = Vector3.Lerp(_playerAttackStartPoint.position, _playerAttackEndPoint.position, currentTimer / ATTACK_SLIDE_ANIM_LENGTH);
+            target.transform.position = Vector3.Lerp(_enemyAttackStartPoint.position, _enemyAttackEndPoint.position, currentTimer / ATTACK_SLIDE_ANIM_LENGTH);
+            yield return _waitForEndOFrame;
+        }
+
+        target.transform.position = _enemyAttackEndPoint.position;
+        _playerCharacterCombatBehaviour.CombatAnimationBehaviour.SetAnimSpeedToNormal();
+        target.CombatAnimationBehaviour.SetAnimSpeedToNormal();
+        _playerCharacterCombatBehaviour.transform.position = _playerAttackEndPoint.position;
+
+        currentTimer = 0;
+        _dividerCanvasAnimation.Play(UI_DIVIDER_DISAPPEAR_ANIM);
+
+        while (currentTimer < ATTACK_RETURN_TO_START_ANIM_LENGTH)
+        {
+            currentTimer += Time.deltaTime;
+            target.transform.position = Vector3.Lerp(_enemyAttackEndPoint.position, target.OriginalPosition, currentTimer / ATTACK_RETURN_TO_START_ANIM_LENGTH);
+            _playerCharacterCombatBehaviour.transform.position = Vector3.Lerp(_playerAttackEndPoint.position, _playerCharacterCombatBehaviour.OriginalPosition, currentTimer / ATTACK_RETURN_TO_START_ANIM_LENGTH);
+
+            yield return _waitForEndOFrame;
+        }
+
+        yield return new WaitForSeconds(END_OF_ACTION_DELAY / 3);
+
+        PlayerCharacterCombatBehaviour.DebuffInflictionManager.RemoveFirstDebuffFromList();
+        SwapToCombatState(CombatState.PlayerPickingDebuffTargets);
     }
 
     private IEnumerator AllEnemyTurns()
