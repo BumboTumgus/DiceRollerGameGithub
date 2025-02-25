@@ -97,6 +97,7 @@ public class DiceRollerSingleton : MonoBehaviour
                     diceRollingBehaviour.gameObject.SetActive(true);
                     diceRollingBehaviour.OnSnapAndAppearFromDormant();
                 }
+                CombatManagerSingleton.Instance.PlayerCharacterCombatBehaviour.BuffManager.DecrementAllBuffs();
 
                 DiceBonusCalculatorSingleton.Instance.ResetRolledDiceBonuses();
                 _rerollCount = _currentDice.Count / 2;
@@ -110,7 +111,7 @@ public class DiceRollerSingleton : MonoBehaviour
             case DiceRollingState.Rolling:
                 foreach(DiceRollingBehaviour diceRollingBehaviour in _currentDice)
                     if(diceRollingBehaviour.CurrentlyAllowsRolls)
-                        diceRollingBehaviour.OnRollDice();
+                        diceRollingBehaviour.OnRollDice(diceRollingBehaviour.SelectedForReroll);
                 
                 UiDiceSummarySingleton.Instance.SetWindowVisibility(false);
                 break;
@@ -160,7 +161,7 @@ public class DiceRollerSingleton : MonoBehaviour
     public void RackAndRerollSelectDice(DiceRollingBehaviour diceToForceReroll)
     {
         DicePrerollPlacerSingleton.Instance.PlaceSelectedDiceInPattern(new List<Transform> { diceToForceReroll.transform });
-        diceToForceReroll.OnRollDice();
+        diceToForceReroll.OnRollDice(true);
     }
 
     public void AddDieToArsenal(DiceRollingBehaviour dieToAdd)

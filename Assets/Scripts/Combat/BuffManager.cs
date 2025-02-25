@@ -55,11 +55,13 @@ public class BuffManager : MonoBehaviour
             if (_activeBuffs[buffIndex].BuffIsPermanent)
                 continue;
 
+            Debug.LogFormat("a buff at index {0} was decremented here. Its type is {1} and the count is ", buffIndex, _activeBuffs[buffIndex].MyBuffType.ToString(), _activeBuffIncrements[buffIndex]);
             _activeBuffIncrements[buffIndex]--;
             _uiBuffIcons[buffIndex].IncrementBuffCount(_activeBuffIncrements[buffIndex]);
 
             if (_activeBuffIncrements[buffIndex] <= 0)
             {
+                Debug.Log("Our count is now lower than 0, kill this buff");
                 _activeBuffs.RemoveAt(buffIndex);
                 _activeBuffIncrements.RemoveAt(buffIndex);
                 Destroy(_uiBuffIcons[buffIndex].gameObject);

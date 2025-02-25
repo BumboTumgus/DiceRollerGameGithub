@@ -114,6 +114,8 @@ public class CombatManagerSingleton : MonoBehaviour
         {
             case CombatState.Idle:
                 temporaryStateText.text = "COMBAT STATE: IDLE";
+                PlayerCharacterCombatBehaviour.BuffManager.ClearAllBuffs();
+                PlayerCharacterCombatBehaviour.NewTurnStatInitialization();
                 break;
 
             case CombatState.PlayerPickingAttackTargets:
@@ -124,10 +126,8 @@ public class CombatManagerSingleton : MonoBehaviour
 
             case CombatState.PlayerPickingDebuffTargets:
                 temporaryStateText.text = "COMBAT STATE: PICK DEBUFF TARGETS";
-                Debug.Log("WE should now be prompted to debuff targets");
                 if (PlayerCharacterCombatBehaviour.DebuffInflictionManager.DebuffsToInflict.Count >= 1)
                 {
-                    Debug.Log("WE have the count we should show a tooltip here");
                     _playerDebuffToInflict = PlayerCharacterCombatBehaviour.DebuffInflictionManager.DebuffsToInflict[0];
                     _playerDebuffToInflictCount = PlayerCharacterCombatBehaviour.DebuffInflictionManager.DebuffsToInflictCount[0];
                     UiCombatDebuffPickTargetTooltipSingleton.Instance.ShowTooltip(_playerDebuffToInflict, _playerDebuffToInflictCount);
@@ -155,13 +155,25 @@ public class CombatManagerSingleton : MonoBehaviour
 
             case CombatState.EnemyExecutingAttacks:
                 temporaryStateText.text = "COMBAT STATE: EXECUTING ENEMY ATTACK";
-                foreach (EnemyCombatBehaviour enemy in _enemyCombatBehaviours)
+                for (int enemyIndex = 0; enemyIndex < _enemyCombatBehaviours.Count; enemyIndex++)
                 {
-                    enemy.NewTurnStatInitialization();
-                    enemy.BuffManager.DecrementAllBuffs();
-                }
-                StartCoroutine(AllEnemyTurns());
+                    _enemyCombatBehaviours[enemyIndex].NewTurnStatInitialization();
+                    if (_enemyCombatBehaviours[enemyIndex].BuffManager.IsBuffActive(BuffScriptableObject.BuffType.Bleed))
+                        _enemyCombatBehaviours[enemyIndex].TakeDamage(_enemyCombatBehaviours[enemyIndex].BuffManager.GetBuffStackCount(BuffScriptableObject.BuffType.Bleed));
 
+                    _enemyCombatBehaviours[enemyIndex].BuffManager.DecrementAllBuffs();
+
+                    if (!_enemyCombatBehaviours[enemyIndex].IsAlive)
+                    {
+                        _enemyCombatBehaviours[enemyIndex].CharacterDeath();
+                        _enemyCombatBehaviours.Remove(_enemyCombatBehaviours[enemyIndex]);
+                        enemyIndex--;
+                        Debug.Log("enemy died to bleed");
+                    }
+                }
+
+                if (IsAnyEnemyIsAlive())
+                    StartCoroutine(AllEnemyTurns());
                 break;
 
             case CombatState.NewCombatRound:
@@ -255,13 +267,21 @@ public class CombatManagerSingleton : MonoBehaviour
 
         yield return new WaitForSeconds(END_OF_ACTION_DELAY);
 
-        if(_enemyCombatBehaviours.Count > 0)
+        if(IsAnyEnemyIsAlive())
             SwapToCombatState(CombatState.EnemyExecutingAttacks);
-        else
+    }
+
+    private bool IsAnyEnemyIsAlive()
+    {
+        Debug.Log("are all enemies dead?");
+        if (_enemyCombatBehaviours.Count <= 0)
         {
+            Debug.Log("all enemies are dead, move on");
             SwapToCombatState(CombatState.Idle);
             PayoutCombatRewards();
         }
+
+        return _enemyCombatBehaviours.Count > 0;
     }
 
     private IEnumerator PlayerAttackRoutine(EnemyCombatBehaviour target)
@@ -347,27 +367,37 @@ public class CombatManagerSingleton : MonoBehaviour
 
     private IEnumerator AllEnemyTurns()
     {
-        foreach(EnemyCombatBehaviour enemy in _enemyCombatBehaviours)
+        for(int enemyIndex = 0; enemyIndex < _enemyCombatBehaviours.Count; enemyIndex++)
         {
-            if(!enemy.IsAlive)
+            if (!_enemyCombatBehaviours[enemyIndex].IsAlive)
                 continue;
 
-            enemy.UiCombatStats.TriggerTurnIndicator(true);
+            _enemyCombatBehaviours[enemyIndex].UiCombatStats.TriggerTurnIndicator(true);
+
             yield return new WaitForSeconds(END_OF_ACTION_DELAY);
 
-            if(enemy.CurrentAttackSO.AttackTypeEnum == EnemyAttackScriptableObject.AttackType.Attack)
-                yield return StartCoroutine(AllEnemyAttackRoutines(enemy));
-            else if (enemy.CurrentAttackSO.AttackTypeEnum == EnemyAttackScriptableObject.AttackType.Defense)
-                yield return StartCoroutine(EnemyDefenseRoutine(enemy));
-            else if(enemy.CurrentAttackSO.DebuffToCastOnPlayer != null)
-                yield return StartCoroutine(EnemyPlayerDebuffRoutine(enemy));
+            if(_enemyCombatBehaviours[enemyIndex].CurrentAttackSO.AttackTypeEnum == EnemyAttackScriptableObject.AttackType.Attack)
+                yield return StartCoroutine(AllEnemyAttackRoutines(_enemyCombatBehaviours[enemyIndex]));
+            else if (_enemyCombatBehaviours[enemyIndex].CurrentAttackSO.AttackTypeEnum == EnemyAttackScriptableObject.AttackType.Defense)
+                yield return StartCoroutine(EnemyDefenseRoutine(_enemyCombatBehaviours[enemyIndex]));
+            else if(_enemyCombatBehaviours[enemyIndex].CurrentAttackSO.DebuffToCastOnPlayer != null)
+                yield return StartCoroutine(EnemyPlayerDebuffRoutine(_enemyCombatBehaviours[enemyIndex]));
             else
-                yield return StartCoroutine(EnemySelfBuffRoutine(enemy));
+                yield return StartCoroutine(EnemySelfBuffRoutine(_enemyCombatBehaviours[enemyIndex]));
 
+            if (!_enemyCombatBehaviours[enemyIndex].IsAlive)
+            {
+                _enemyCombatBehaviours[enemyIndex].CharacterDeath();
+                _enemyCombatBehaviours.Remove(_enemyCombatBehaviours[enemyIndex]);
+                enemyIndex--;
+            }
         }
 
-        SwapToCombatState(CombatState.NewCombatRound);
-        DiceRollerSingleton.Instance.SwitchToDiceState(DiceRollerSingleton.DiceRollingState.ClickToRoll);
+        if (IsAnyEnemyIsAlive())
+        {
+            SwapToCombatState(CombatState.NewCombatRound);
+            DiceRollerSingleton.Instance.SwitchToDiceState(DiceRollerSingleton.DiceRollingState.ClickToRoll);
+        }
     }
 
     private IEnumerator AllEnemyAttackRoutines(EnemyCombatBehaviour enemy)
@@ -516,6 +546,7 @@ public class CombatManagerSingleton : MonoBehaviour
         _playerCharacterCombatBehaviour.transform.position = _playerAttackStartPoint.position;
         aggresor.transform.position = _enemyAttackStartPoint.position;
         float currentTimer = 0f;
+        bool attackEvaded = false;
 
         bool criticalStrike = aggresor.AttacksAreCritical;
         int damage = aggresor.CurrentAttackSO.AttackDamage;
@@ -523,14 +554,30 @@ public class CombatManagerSingleton : MonoBehaviour
             damage *= 2;
 
         aggresor.CombatAnimationBehaviour.PlayAttackAnimation();
-        if(_playerCharacterCombatBehaviour.DefenseCurrent < damage)
-            _playerCharacterCombatBehaviour.CombatAnimationBehaviour.PlayHitAnimation();
-        else
+        if (_playerCharacterCombatBehaviour.DefenseCurrent >= damage)
             _playerCharacterCombatBehaviour.CombatAnimationBehaviour.PlayDefenseAnimation();
-            
-        DamageNumberManagerSingleton.Instance.ShowPlayerDamageNumber(damage, damage <= _playerCharacterCombatBehaviour.DefenseCurrent, criticalStrike);
+        else if (_playerCharacterCombatBehaviour.BuffManager.IsBuffActive(BuffScriptableObject.BuffType.Evade))
+        {
+            _playerCharacterCombatBehaviour.CombatAnimationBehaviour.PlayDefenseAnimation();
+            _playerCharacterCombatBehaviour.BuffManager.DecrementBuff(BuffScriptableObject.BuffType.Evade);
+            damage = 0;
+            attackEvaded = true;
+        }
+        else
+            _playerCharacterCombatBehaviour.CombatAnimationBehaviour.PlayHitAnimation();
+        
+        if (!attackEvaded)
+            DamageNumberManagerSingleton.Instance.ShowPlayerDamageNumber(damage, damage <= _playerCharacterCombatBehaviour.DefenseCurrent, criticalStrike);
 
         _playerCharacterCombatBehaviour.TakeDamage(damage);
+
+        if(_playerCharacterCombatBehaviour.BuffManager.IsBuffActive(BuffScriptableObject.BuffType.Thorns))
+        {
+            int thornDamage = _playerCharacterCombatBehaviour.BuffManager.GetBuffStackCount(BuffScriptableObject.BuffType.Thorns);
+            aggresor.TakeDamage(thornDamage);
+            DamageNumberManagerSingleton.Instance.ShowEnemyDamageNumber(thornDamage, thornDamage <= aggresor.DefenseCurrent, false);
+        }
+
         while (currentTimer < ATTACK_SLIDE_ANIM_LENGTH)
         {
             currentTimer += Time.deltaTime;
@@ -538,7 +585,7 @@ public class CombatManagerSingleton : MonoBehaviour
             aggresor.transform.position = Vector3.Lerp(_enemyAttackStartPoint.position, _enemyAttackEndPoint.position, currentTimer / ATTACK_SLIDE_ANIM_LENGTH);
             yield return _waitForEndOFrame;
         }
-        
+
         aggresor.transform.position = aggresor.OriginalPosition;
         _playerCharacterCombatBehaviour.CombatAnimationBehaviour.SetAnimSpeedToNormal();
         aggresor.CombatAnimationBehaviour.SetAnimSpeedToNormal();

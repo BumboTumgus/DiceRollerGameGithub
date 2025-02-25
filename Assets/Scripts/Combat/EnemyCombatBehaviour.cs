@@ -64,7 +64,7 @@ public class EnemyCombatBehaviour : MonoBehaviour
 
     public void NewTurnStatInitialization()
     {
-        _defenseCurrent = _defenseBase;
+        //_defenseCurrent = _defenseBase;
 
         _uiCombatStats.UpdateHealthReadout(_healthCurrent, _healthMax, true, false);
         _uiCombatStats.UpdateDefenseReadout(_defenseCurrent, true, false);

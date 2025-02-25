@@ -13,7 +13,6 @@ public class PlayerDebuffsToInflictManager : MonoBehaviour
 
     public void AddDebuffToInflict(BuffScriptableObject debuff, int value)
     {
-        Debug.Log("addijg the debuff of " + debuff.name + " to the players aresenal for them to use");
         if(_debuffsToInflict.Count == 0)
         {
             _debuffsToInflict.Add(debuff);

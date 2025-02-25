@@ -50,8 +50,8 @@ MonoBehaviour:
     m_Unicode: 65534
     m_GlyphIndex: 1
     m_Scale: 1
-    m_Name: Wound
-    m_HashCode: 104312935
+    m_Name: Bleed
+    m_HashCode: 82184810
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 2

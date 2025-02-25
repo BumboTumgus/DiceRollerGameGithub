@@ -108,7 +108,7 @@ public class DiceBonusCalculatorSingleton : MonoBehaviour
 
             case DiceFaceData.DiceFace.Thorns:
                 _rolledThornsFaces++;
-                CombatManagerSingleton.Instance.PlayerCharacterCombatBehaviour.AddThorns(_rolledTenacityFaces > 2 ? 2 : 1);
+                CombatManagerSingleton.Instance.PlayerCharacterCombatBehaviour.AddThorns(_rolledThornsFaces > 2 ? 2 : 1);
                 break;
 
             //------------ PAIRS ------------------------------------------------------------------------------------------

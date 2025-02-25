@@ -73,6 +73,8 @@ public class PlayerCharacterCombatBehaviour : MonoBehaviour
 
     public void TakeDamage(int value)
     {
+        value -= BuffManager.GetBuffStackCount(BuffScriptableObject.BuffType.Brace);
+
         if(value < 0)
             return;
         

@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -45,7 +46,6 @@ public class DiceRollingBehaviour : MonoBehaviour
         _currentlyAllowsRolls = true;
         transform.rotation = Quaternion.identity;
         _animation.Play(SPAWN_FROM_DORMANT_ANIM_STRING);
-        CombatManagerSingleton.Instance.PlayerCharacterCombatBehaviour.BuffManager.DecrementAllBuffs();
     }
 
     public void OnDissappearToDormant(float delay)
@@ -53,8 +53,16 @@ public class DiceRollingBehaviour : MonoBehaviour
         Invoke(nameof(DissapearToDormant), delay);
     }
 
-    public void OnRollDice()
+    public void OnRollDice(bool diceRerolled)
     {
+        if(diceRerolled)
+        {
+            if(CombatManagerSingleton.Instance.PlayerCharacterCombatBehaviour.BuffManager.IsBuffActive(BuffScriptableObject.BuffType.RerollAttack))
+                CombatManagerSingleton.Instance.PlayerCharacterCombatBehaviour.AddAttackDamage(CombatManagerSingleton.Instance.PlayerCharacterCombatBehaviour.BuffManager.GetBuffStackCount(BuffScriptableObject.BuffType.RerollAttack));
+            if (CombatManagerSingleton.Instance.PlayerCharacterCombatBehaviour.BuffManager.IsBuffActive(BuffScriptableObject.BuffType.RerollDefense))
+                CombatManagerSingleton.Instance.PlayerCharacterCombatBehaviour.AddDefense(CombatManagerSingleton.Instance.PlayerCharacterCombatBehaviour.BuffManager.GetBuffStackCount(BuffScriptableObject.BuffType.RerollDefense));
+        }
+
         _animation.Stop();
         _rolledDiceFace = null;
         transform.localScale = _startingScale;
