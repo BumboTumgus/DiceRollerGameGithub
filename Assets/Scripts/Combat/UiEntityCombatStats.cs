@@ -89,7 +89,7 @@ public class UiEntityCombatStats : MonoBehaviour
             _healthAnimation.Play("Ui_HealthDecrease");
     }
 
-    public void ShowEnemyAttack(EnemyAttackScriptableObject enemyAttackSO)
+    public void ShowEnemyAttack(EnemyAttackScriptableObject enemyAttackSO, int strengthBonus, bool weakenedPenalty)
     {
         if(enemyAttackSO == null)
         {
@@ -103,10 +103,14 @@ public class UiEntityCombatStats : MonoBehaviour
         if(enemyAttackSO.AttackDamage > 0)
         {
             _enemyAttackText.gameObject.SetActive(true);
+            int damageDealt = enemyAttackSO.AttackDamage + strengthBonus;
+            if(weakenedPenalty)
+                damageDealt /= 2;
+
             if(enemyAttackSO.AttackCount > 1)
-                _enemyAttackText.text = enemyAttackSO.AttackDamage + " x " + enemyAttackSO.AttackCount;
+                _enemyAttackText.text = damageDealt + " x " + enemyAttackSO.AttackCount;
             else
-                _enemyAttackText.text = enemyAttackSO.AttackDamage + "";
+                _enemyAttackText.text = damageDealt + "";
         }
         else
             _enemyAttackText.gameObject.SetActive(false);

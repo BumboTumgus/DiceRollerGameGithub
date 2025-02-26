@@ -45,13 +45,15 @@ public class EnemyCombatBehaviour : MonoBehaviour
         _buffManager = GetComponent<BuffManager>();
         _buffManager.BuffUiParent = _uiCombatStats.BuffUiParent;
         _buffManager.UiBuffDescriptionController = _uiCombatStats.UiBuffDescriptionController;
+        _buffManager.OnBuffAffectsCombatDamage += DrawActionUi;
 
         _combatAnimationBehaviour = GetComponentInChildren<CombatAnimationBehaviour>();
         _isAlive = true;
+
         NewTurnStatInitialization();
         if(_randomizeStartingAttack)
             _currentAttackIndex = Random.Range(0, _availableEnemyAttacks.Length);
-        LoadNextAttack();
+        LoadNextAction();
     }
 
     private void Update()
@@ -118,17 +120,31 @@ public class EnemyCombatBehaviour : MonoBehaviour
     public void HideAttackUi()
     {
         _currentAttackSO = null;
-        _uiCombatStats.ShowEnemyAttack(_currentAttackSO);
+        DrawActionUi();
     }
 
-    public void LoadNextAttack()
+    public void LoadNextAction()
     {
         _currentAttackSO = _availableEnemyAttacks[_currentAttackIndex];
-        _uiCombatStats.ShowEnemyAttack(_currentAttackSO);
+        DrawActionUi();
 
         _currentAttackIndex ++;
         if(_currentAttackIndex == _availableEnemyAttacks.Length)
             _currentAttackIndex = 0;
+    }
+
+    private void DrawActionUi()
+    {
+        if (CurrentAttackSO == null)
+        {
+            _uiCombatStats.ShowEnemyAttack(_currentAttackSO, 0, false);
+            return;
+        }
+
+        if (CurrentAttackSO.AttackTypeEnum == EnemyAttackScriptableObject.AttackType.Attack)
+            _uiCombatStats.ShowEnemyAttack(_currentAttackSO, BuffManager.GetBuffStackCount(BuffScriptableObject.BuffType.Strength), BuffManager.IsBuffActive(BuffScriptableObject.BuffType.Weaken));
+        else
+            _uiCombatStats.ShowEnemyAttack(_currentAttackSO, 0, false);
     }
 
     public void AddDefense(int value)

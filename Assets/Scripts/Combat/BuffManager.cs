@@ -2,11 +2,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class BuffManager : MonoBehaviour
 {
     [HideInInspector] public UiBuffDescriptionController UiBuffDescriptionController;
     [HideInInspector] public Transform BuffUiParent;
+    public UnityAction OnBuffAffectsCombatDamage;
 
     [SerializeField] List<BuffScriptableObject> _activeBuffs = new List<BuffScriptableObject>();
     [SerializeField] List<int> _activeBuffIncrements = new List<int>();
@@ -24,6 +26,9 @@ public class BuffManager : MonoBehaviour
 
             _activeBuffIncrements[buffIndex] += buffCount;
             _uiBuffIcons[buffIndex].IncrementBuffCount(_activeBuffIncrements[buffIndex]);
+
+            if (buffToAdd.MyBuffType == BuffScriptableObject.BuffType.Strength || buffToAdd.MyBuffType == BuffScriptableObject.BuffType.Weaken)
+                OnBuffAffectsCombatDamage?.Invoke();
             return;
         }
 
@@ -33,6 +38,9 @@ public class BuffManager : MonoBehaviour
         UiBuffIcon uiBuffIcon = Instantiate(_uiBuffPrefab, BuffUiParent.position, BuffUiParent.rotation, BuffUiParent).GetComponent<UiBuffIcon>();
         _uiBuffIcons.Add(uiBuffIcon);
         uiBuffIcon.InitializeWithBuff(buffToAdd, buffCount, UiBuffDescriptionController);
+
+        if(buffToAdd.MyBuffType == BuffScriptableObject.BuffType.Strength || buffToAdd.MyBuffType == BuffScriptableObject.BuffType.Weaken)
+            OnBuffAffectsCombatDamage?.Invoke();
     }
 
     public void ClearAllBuffs()

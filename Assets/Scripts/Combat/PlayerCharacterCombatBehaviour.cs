@@ -37,6 +37,7 @@ public class PlayerCharacterCombatBehaviour : MonoBehaviour
         _buffManager = GetComponent<BuffManager>();
         _buffManager.BuffUiParent = _uiCombatStats.BuffUiParent;
         _buffManager.UiBuffDescriptionController = _uiCombatStats.UiBuffDescriptionController;
+        _buffManager.OnBuffAffectsCombatDamage += DrawAttackReadout;
 
         _debuffInflictionManager = GetComponent<PlayerDebuffsToInflictManager>();
 
@@ -66,9 +67,12 @@ public class PlayerCharacterCombatBehaviour : MonoBehaviour
         _attackCountCurrent = _attackCountBase;
         //_defenseCurrent = _defenseBase;
 
-        _uiCombatStats.UpdateHealthReadout(_healthCurrent, _healthMax, true, false);
-        _uiCombatStats.UpdateAttackReadout(_attackDamageCurrent, _attackCountCurrent, false);
+        _uiCombatStats.UpdateHealthReadout(_healthCurrent, _healthMax, true, false);;
         _uiCombatStats.UpdateDefenseReadout(_defenseCurrent, true, false);
+        int attackDamage = _attackDamageCurrent + BuffManager.GetBuffStackCount(BuffScriptableObject.BuffType.Strength);
+        if (BuffManager.IsBuffActive(BuffScriptableObject.BuffType.Weaken))
+            attackDamage /= 2;
+        _uiCombatStats.UpdateAttackReadout(attackDamage, _attackCountCurrent, false);
     }
 
     public void TakeDamage(int value)
@@ -141,19 +145,27 @@ public class PlayerCharacterCombatBehaviour : MonoBehaviour
     public void AddAttackDamage(int v)
     {
         _attackDamageCurrent += v;
-        _uiCombatStats.UpdateAttackReadout(_attackDamageCurrent, _attackCountCurrent);
+        DrawAttackReadout();
     }
 
     public void AddAttackCount( int v)
     {
         _attackCountCurrent += v;
-        _uiCombatStats.UpdateAttackReadout(_attackDamageCurrent, _attackCountCurrent);
+        DrawAttackReadout();
     }
 
     public void AddDefense(int v)
     {
         _defenseCurrent += v;
         _uiCombatStats.UpdateDefenseReadout(_defenseCurrent, true);
+    }
+
+    private void DrawAttackReadout()
+    {
+        int attackDamage = _attackDamageCurrent + BuffManager.GetBuffStackCount(BuffScriptableObject.BuffType.Strength);
+        if (BuffManager.IsBuffActive(BuffScriptableObject.BuffType.Weaken))
+            attackDamage /= 2;
+        _uiCombatStats.UpdateAttackReadout(attackDamage, _attackCountCurrent);
     }
 
     public void AddLuck(int v)
@@ -209,7 +221,7 @@ public class PlayerCharacterCombatBehaviour : MonoBehaviour
 
     public void AddStrength(int v)
     {
-        BuffManager.AddBuff(BuffSingleton.Instance.GetBuffDataByType(BuffScriptableObject.BuffType.Stun), v);
+        BuffManager.AddBuff(BuffSingleton.Instance.GetBuffDataByType(BuffScriptableObject.BuffType.Strength), v);
     }
 
     public void AddStun(int v)

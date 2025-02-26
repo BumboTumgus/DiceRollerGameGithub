@@ -103,6 +103,9 @@ public class CombatManagerSingleton : MonoBehaviour
 
     private void GivePlayerControlOfTurn()
     {
+        //TODO PLAYER DOES NOTHING IF STUNNED
+
+        PlayerCharacterCombatBehaviour.BuffManager.DecrementAllBuffs();
         SwapToCombatState(CombatState.PlayerPickingDebuffTargets);
     }
 
@@ -114,7 +117,6 @@ public class CombatManagerSingleton : MonoBehaviour
         {
             case CombatState.Idle:
                 temporaryStateText.text = "COMBAT STATE: IDLE";
-                PlayerCharacterCombatBehaviour.BuffManager.ClearAllBuffs();
                 PlayerCharacterCombatBehaviour.NewTurnStatInitialization();
                 break;
 
@@ -161,8 +163,6 @@ public class CombatManagerSingleton : MonoBehaviour
                     if (_enemyCombatBehaviours[enemyIndex].BuffManager.IsBuffActive(BuffScriptableObject.BuffType.Bleed))
                         _enemyCombatBehaviours[enemyIndex].TakeDamage(_enemyCombatBehaviours[enemyIndex].BuffManager.GetBuffStackCount(BuffScriptableObject.BuffType.Bleed));
 
-                    _enemyCombatBehaviours[enemyIndex].BuffManager.DecrementAllBuffs();
-
                     if (!_enemyCombatBehaviours[enemyIndex].IsAlive)
                     {
                         _enemyCombatBehaviours[enemyIndex].CharacterDeath();
@@ -180,7 +180,7 @@ public class CombatManagerSingleton : MonoBehaviour
                 temporaryStateText.text = "COMBAT STATE: NEW COMBAT ROUND";
                 foreach (EnemyCombatBehaviour enemy in _enemyCombatBehaviours)
                 {
-                    enemy.LoadNextAttack();
+                    enemy.LoadNextAction();
                 }
                 SwapToCombatState(CombatState.Idle);
                 break;
@@ -273,10 +273,8 @@ public class CombatManagerSingleton : MonoBehaviour
 
     private bool IsAnyEnemyIsAlive()
     {
-        Debug.Log("are all enemies dead?");
         if (_enemyCombatBehaviours.Count <= 0)
         {
-            Debug.Log("all enemies are dead, move on");
             SwapToCombatState(CombatState.Idle);
             PayoutCombatRewards();
         }
@@ -292,8 +290,10 @@ public class CombatManagerSingleton : MonoBehaviour
         target.UiCombatStats.RemovePlayerAttackMarker();
 
         bool criticalStrike = _playerCharacterCombatBehaviour.IsAttackCritical();
-        int damage = _playerCharacterCombatBehaviour.AttackDamageCurrent;
-        if(criticalStrike)
+        int damage = _playerCharacterCombatBehaviour.AttackDamageCurrent  + _playerCharacterCombatBehaviour.BuffManager.GetBuffStackCount(BuffScriptableObject.BuffType.Strength);
+        if (_playerCharacterCombatBehaviour.BuffManager.IsBuffActive(BuffScriptableObject.BuffType.Weaken))
+            damage /= 2;
+        if (criticalStrike)
             damage *= 2;
 
         _playerCharacterCombatBehaviour.CombatAnimationBehaviour.PlayAttackAnimation();
@@ -391,6 +391,8 @@ public class CombatManagerSingleton : MonoBehaviour
                 _enemyCombatBehaviours.Remove(_enemyCombatBehaviours[enemyIndex]);
                 enemyIndex--;
             }
+            else
+                _enemyCombatBehaviours[enemyIndex].BuffManager.DecrementAllBuffs();
         }
 
         if (IsAnyEnemyIsAlive())
@@ -549,9 +551,14 @@ public class CombatManagerSingleton : MonoBehaviour
         bool attackEvaded = false;
 
         bool criticalStrike = aggresor.AttacksAreCritical;
-        int damage = aggresor.CurrentAttackSO.AttackDamage;
+        int damage = aggresor.CurrentAttackSO.AttackDamage + aggresor.BuffManager.GetBuffStackCount(BuffScriptableObject.BuffType.Strength);
+        if (aggresor.BuffManager.IsBuffActive(BuffScriptableObject.BuffType.Weaken))
+            damage /= 2;
         if(criticalStrike)
             damage *= 2;
+        Debug.LogFormat("Our base damage is {0} | strength bonus is {1} | and weaken multiplier is set to {2} for a totall damage of {3}",
+            aggresor.CurrentAttackSO.AttackDamage, aggresor.BuffManager.GetBuffStackCount(BuffScriptableObject.BuffType.Strength), aggresor.BuffManager.IsBuffActive(BuffScriptableObject.BuffType.Weaken),
+            damage);
 
         aggresor.CombatAnimationBehaviour.PlayAttackAnimation();
         if (_playerCharacterCombatBehaviour.DefenseCurrent >= damage)

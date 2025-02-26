@@ -97,7 +97,6 @@ public class DiceRollerSingleton : MonoBehaviour
                     diceRollingBehaviour.gameObject.SetActive(true);
                     diceRollingBehaviour.OnSnapAndAppearFromDormant();
                 }
-                CombatManagerSingleton.Instance.PlayerCharacterCombatBehaviour.BuffManager.DecrementAllBuffs();
 
                 DiceBonusCalculatorSingleton.Instance.ResetRolledDiceBonuses();
                 _rerollCount = _currentDice.Count / 2;
