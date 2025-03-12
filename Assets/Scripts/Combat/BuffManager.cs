@@ -17,6 +17,12 @@ public class BuffManager : MonoBehaviour
     [SerializeField] GameObject _uiBuffPrefab;
 
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.G))
+            AddBuff(BuffSingleton.Instance.GetBuffDataByType(BuffScriptableObject.BuffType.Tenacity), 1);
+    }
+
     public void AddBuff(BuffScriptableObject buffToAdd, int buffCount)
     {
         for (int buffIndex = 0; buffIndex < _activeBuffs.Count; buffIndex++)

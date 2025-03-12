@@ -9,6 +9,9 @@ public class CombatManagerSingleton : MonoBehaviour
 {
     private const float ATTACK_SLIDE_ANIM_LENGTH = 1.5f;
     private const float ATTACK_RETURN_TO_START_ANIM_LENGTH = 0.5f;
+    private const float STUN_OSCILLATION_COUNT = 14;
+    private const float STUN_OSCILLATION_DISTANCE = 0.2f;
+    private const float STUN_TWEEN_DURATION = 1f;
     private const float ENEMY_SPAWN_DELAY = 0.25f;
     private const float END_OF_ACTION_DELAY = 1.5f;
     private const string UI_DIVIDER_APPEAR_ANIM = "Ui_DividerCanvas_AttackAppear";
@@ -101,12 +104,20 @@ public class CombatManagerSingleton : MonoBehaviour
         UiCombatRewardsSingleton.Instance.PopulateWindowWithRewards(_currentEncounter);
     }
 
+
     private void GivePlayerControlOfTurn()
     {
-        //TODO PLAYER DOES NOTHING IF STUNNED
+        if (PlayerCharacterCombatBehaviour.BuffManager.IsBuffActive(BuffScriptableObject.BuffType.Regen))
+            PlayerCharacterCombatBehaviour.HealHealth(PlayerCharacterCombatBehaviour.BuffManager.GetBuffStackCount(BuffScriptableObject.BuffType.Regen));
+        if (PlayerCharacterCombatBehaviour.BuffManager.IsBuffActive(BuffScriptableObject.BuffType.Tenacity))
+            PlayerCharacterCombatBehaviour.AddDefense(PlayerCharacterCombatBehaviour.BuffManager.GetBuffStackCount(BuffScriptableObject.BuffType.Tenacity));
+
+        if (PlayerCharacterCombatBehaviour.BuffManager.IsBuffActive(BuffScriptableObject.BuffType.Stun))
+            StartCoroutine(PlayerStunnedRoutine());
+        else
+            SwapToCombatState(CombatState.PlayerPickingDebuffTargets);
 
         PlayerCharacterCombatBehaviour.BuffManager.DecrementAllBuffs();
-        SwapToCombatState(CombatState.PlayerPickingDebuffTargets);
     }
 
     private void SwapToCombatState(CombatState state)
@@ -160,15 +171,11 @@ public class CombatManagerSingleton : MonoBehaviour
                 for (int enemyIndex = 0; enemyIndex < _enemyCombatBehaviours.Count; enemyIndex++)
                 {
                     _enemyCombatBehaviours[enemyIndex].NewTurnStatInitialization();
-                    if (_enemyCombatBehaviours[enemyIndex].BuffManager.IsBuffActive(BuffScriptableObject.BuffType.Bleed))
-                        _enemyCombatBehaviours[enemyIndex].TakeDamage(_enemyCombatBehaviours[enemyIndex].BuffManager.GetBuffStackCount(BuffScriptableObject.BuffType.Bleed));
-
                     if (!_enemyCombatBehaviours[enemyIndex].IsAlive)
                     {
                         _enemyCombatBehaviours[enemyIndex].CharacterDeath();
                         _enemyCombatBehaviours.Remove(_enemyCombatBehaviours[enemyIndex]);
                         enemyIndex--;
-                        Debug.Log("enemy died to bleed");
                     }
                 }
 
@@ -268,6 +275,39 @@ public class CombatManagerSingleton : MonoBehaviour
         yield return new WaitForSeconds(END_OF_ACTION_DELAY);
 
         if(IsAnyEnemyIsAlive())
+            SwapToCombatState(CombatState.EnemyExecutingAttacks);
+    }
+
+    private IEnumerator PlayerStunnedRoutine()
+    {
+        float currentTimer = 0;
+        int oscilllationCount = 0;
+        Vector3 leftPos = _playerCharacterCombatBehaviour.OriginalPosition + Vector3.left * STUN_OSCILLATION_DISTANCE;
+        Vector3 rightPos = _playerCharacterCombatBehaviour.OriginalPosition + Vector3.right * STUN_OSCILLATION_DISTANCE;
+        Vector3 currentTarget;
+
+        while (oscilllationCount < STUN_OSCILLATION_COUNT)
+        {
+            if (oscilllationCount % 2 > 0)
+                currentTarget = leftPos;
+            else
+                currentTarget = rightPos;
+
+            while (currentTimer < STUN_TWEEN_DURATION / STUN_OSCILLATION_COUNT)
+            {
+                currentTimer += Time.deltaTime;
+                _playerCharacterCombatBehaviour.transform.position = Vector3.Lerp(_playerCharacterCombatBehaviour.transform.position, currentTarget, currentTimer / STUN_TWEEN_DURATION);
+                yield return _waitForEndOFrame;
+            }
+            currentTimer = 0;
+            oscilllationCount++;
+        }
+
+        _playerCharacterCombatBehaviour.transform.position = _playerCharacterCombatBehaviour.OriginalPosition;
+
+        yield return new WaitForSeconds(END_OF_ACTION_DELAY);
+
+        if (IsAnyEnemyIsAlive())
             SwapToCombatState(CombatState.EnemyExecutingAttacks);
     }
 
@@ -372,18 +412,29 @@ public class CombatManagerSingleton : MonoBehaviour
             if (!_enemyCombatBehaviours[enemyIndex].IsAlive)
                 continue;
 
+            if (_enemyCombatBehaviours[enemyIndex].BuffManager.IsBuffActive(BuffScriptableObject.BuffType.Regen))
+                _enemyCombatBehaviours[enemyIndex].HealHealth(_enemyCombatBehaviours[enemyIndex].BuffManager.GetBuffStackCount(BuffScriptableObject.BuffType.Regen));
+            if (_enemyCombatBehaviours[enemyIndex].BuffManager.IsBuffActive(BuffScriptableObject.BuffType.Tenacity))
+                _enemyCombatBehaviours[enemyIndex].AddDefense(_enemyCombatBehaviours[enemyIndex].BuffManager.GetBuffStackCount(BuffScriptableObject.BuffType.Tenacity));
+            if (_enemyCombatBehaviours[enemyIndex].BuffManager.IsBuffActive(BuffScriptableObject.BuffType.Bleed))
+                _enemyCombatBehaviours[enemyIndex].TakeDamage(_enemyCombatBehaviours[enemyIndex].BuffManager.GetBuffStackCount(BuffScriptableObject.BuffType.Bleed));
+
             _enemyCombatBehaviours[enemyIndex].UiCombatStats.TriggerTurnIndicator(true);
 
             yield return new WaitForSeconds(END_OF_ACTION_DELAY);
-
-            if(_enemyCombatBehaviours[enemyIndex].CurrentAttackSO.AttackTypeEnum == EnemyAttackScriptableObject.AttackType.Attack)
-                yield return StartCoroutine(AllEnemyAttackRoutines(_enemyCombatBehaviours[enemyIndex]));
-            else if (_enemyCombatBehaviours[enemyIndex].CurrentAttackSO.AttackTypeEnum == EnemyAttackScriptableObject.AttackType.Defense)
-                yield return StartCoroutine(EnemyDefenseRoutine(_enemyCombatBehaviours[enemyIndex]));
-            else if(_enemyCombatBehaviours[enemyIndex].CurrentAttackSO.DebuffToCastOnPlayer != null)
-                yield return StartCoroutine(EnemyPlayerDebuffRoutine(_enemyCombatBehaviours[enemyIndex]));
-            else
-                yield return StartCoroutine(EnemySelfBuffRoutine(_enemyCombatBehaviours[enemyIndex]));
+            if (_enemyCombatBehaviours[enemyIndex].IsAlive)
+            {
+                if (_enemyCombatBehaviours[enemyIndex].BuffManager.IsBuffActive(BuffScriptableObject.BuffType.Stun))
+                    yield return StartCoroutine(EnemyStunnedRoutine(_enemyCombatBehaviours[enemyIndex]));
+                else if (_enemyCombatBehaviours[enemyIndex].CurrentAttackSO.AttackTypeEnum == EnemyAttackScriptableObject.AttackType.Attack)
+                    yield return StartCoroutine(AllEnemyAttackRoutines(_enemyCombatBehaviours[enemyIndex]));
+                else if (_enemyCombatBehaviours[enemyIndex].CurrentAttackSO.AttackTypeEnum == EnemyAttackScriptableObject.AttackType.Defense)
+                    yield return StartCoroutine(EnemyDefenseRoutine(_enemyCombatBehaviours[enemyIndex]));
+                else if (_enemyCombatBehaviours[enemyIndex].CurrentAttackSO.DebuffToCastOnPlayer != null)
+                    yield return StartCoroutine(EnemyPlayerDebuffRoutine(_enemyCombatBehaviours[enemyIndex]));
+                else
+                    yield return StartCoroutine(EnemySelfBuffRoutine(_enemyCombatBehaviours[enemyIndex]));
+            }
 
             if (!_enemyCombatBehaviours[enemyIndex].IsAlive)
             {
@@ -556,9 +607,6 @@ public class CombatManagerSingleton : MonoBehaviour
             damage /= 2;
         if(criticalStrike)
             damage *= 2;
-        Debug.LogFormat("Our base damage is {0} | strength bonus is {1} | and weaken multiplier is set to {2} for a totall damage of {3}",
-            aggresor.CurrentAttackSO.AttackDamage, aggresor.BuffManager.GetBuffStackCount(BuffScriptableObject.BuffType.Strength), aggresor.BuffManager.IsBuffActive(BuffScriptableObject.BuffType.Weaken),
-            damage);
 
         aggresor.CombatAnimationBehaviour.PlayAttackAnimation();
         if (_playerCharacterCombatBehaviour.DefenseCurrent >= damage)
@@ -596,5 +644,36 @@ public class CombatManagerSingleton : MonoBehaviour
         aggresor.transform.position = aggresor.OriginalPosition;
         _playerCharacterCombatBehaviour.CombatAnimationBehaviour.SetAnimSpeedToNormal();
         aggresor.CombatAnimationBehaviour.SetAnimSpeedToNormal();
+    }
+
+    private IEnumerator EnemyStunnedRoutine(EnemyCombatBehaviour stunnedUnit)
+    {
+        float currentTimer = 0;
+        int oscilllationCount = 0;
+        Vector3 leftPos = stunnedUnit.OriginalPosition + Vector3.left * STUN_OSCILLATION_DISTANCE;
+        Vector3 rightPos = stunnedUnit.OriginalPosition + Vector3.right * STUN_OSCILLATION_DISTANCE;
+        Vector3 currentTarget;
+
+        while (oscilllationCount < STUN_OSCILLATION_COUNT)
+        {
+            if (oscilllationCount % 2 > 0)
+                currentTarget = leftPos;
+            else
+                currentTarget = rightPos;
+
+            while (currentTimer < STUN_TWEEN_DURATION / STUN_OSCILLATION_COUNT)
+            {
+                currentTimer += Time.deltaTime;
+                stunnedUnit.transform.position = Vector3.Lerp(stunnedUnit.transform.position, currentTarget, currentTimer / STUN_TWEEN_DURATION);
+                yield return _waitForEndOFrame;
+            }
+            currentTimer = 0;
+            oscilllationCount++;
+        }
+
+        stunnedUnit.transform.position = stunnedUnit.OriginalPosition;
+        stunnedUnit.UiCombatStats.TriggerTurnIndicator(false);
+        stunnedUnit.HideAttackUi();
+        yield return new WaitForSeconds(END_OF_ACTION_DELAY);
     }
 }
