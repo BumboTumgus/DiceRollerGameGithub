@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd58961b0e809d1469b3aae1956f0c50, type: 3}
   m_Name: EventOption_ManDyingWithSatchel_AttemptToHeal
   m_EditorClassIdentifier: 
-  OptionText: Attempt To Stop the bleeding [DEFENSE,ATTACK]
+  OptionText: Attempt To Stop the bleeding.
   OptionOutcomes:
   - {fileID: 11400000, guid: d4ae3dd7d2398fb4f98e180ccef6499a, type: 2}
   - {fileID: 11400000, guid: 6151d5752c720a74d9a20bb6ff07088c, type: 2}
@@ -21,5 +21,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8e461475cb82e8f4f92ee7b33c3e92a7, type: 2}
   OptionRequiredDiceFaceData: []
   OptionRequirementGold: 0
-  OptionRequirementGod: none
-  OptionRequirementCharacter: none
+  OptionRequirementGod: 0
+  OptionRequirementCharacter: 0

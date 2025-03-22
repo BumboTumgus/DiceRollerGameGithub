@@ -18,5 +18,5 @@ MonoBehaviour:
   OutcomeRollBoosterDiceFaces: []
   OptionRequiredDiceFaceData: []
   OptionRequirementGold: 0
-  OptionRequirementGod: 0
+  OptionRequirementGod: 1
   OptionRequirementCharacter: 0

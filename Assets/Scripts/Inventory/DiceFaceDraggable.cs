@@ -19,8 +19,6 @@ public class DiceFaceDraggable : MonoBehaviour, IDragHandler, IBeginDragHandler,
         transform.SetParent(transform.root);
         transform.SetAsLastSibling();
 
-        InventoryUiManagerSingleton.Instance.SetGarbagePanelOpenStatus(true);
-
         GetComponent<CanvasGroup>().blocksRaycasts = false;
     }
 
@@ -47,7 +45,5 @@ public class DiceFaceDraggable : MonoBehaviour, IDragHandler, IBeginDragHandler,
 
         MyInventorySlotParent = transform.parent;
         GetComponent<CanvasGroup>().blocksRaycasts = true;
-
-        InventoryUiManagerSingleton.Instance.SetGarbagePanelOpenStatus(false);
     }
 }

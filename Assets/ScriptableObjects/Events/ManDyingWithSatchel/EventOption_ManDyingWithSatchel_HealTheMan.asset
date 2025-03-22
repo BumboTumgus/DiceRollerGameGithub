@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd58961b0e809d1469b3aae1956f0c50, type: 3}
   m_Name: EventOption_ManDyingWithSatchel_HealTheMan
   m_EditorClassIdentifier: 
-  OptionText: Heal the man. [HEAL]
+  OptionText: Heal the man. [<sprite name="Heal">]
   OptionOutcomes:
   - {fileID: 11400000, guid: 9647f37a178dedb45980effd2e697057, type: 2}
+  OutcomeRollBoosterDiceFaces: []
   OptionRequiredDiceFaceData:
   - {fileID: 11400000, guid: 304e14101f24d8a4c9e5c9f45ab6f4b2, type: 2}
   OptionRequirementGold: 0
-  OptionRequirementGod: none
-  OptionRequirementCharacter: none
+  OptionRequirementGod: 0
+  OptionRequirementCharacter: 0

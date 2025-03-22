@@ -245,13 +245,20 @@ public class MapSingleton : MonoBehaviour
                 foreach (MapNode outgoingConnectedNode in currentNode.OutgoingNodeConnections)
                 {
                     RectTransform connectionRectTransform = Instantiate(_mapNodeConnectionToInstantiate, _mapNodeParent).GetComponent<RectTransform>();
-                    UILineRenderer lineRenderer = connectionRectTransform.GetComponent<UILineRenderer>();
+                    //UILineRenderer lineRenderer = connectionRectTransform.GetComponent<UILineRenderer>();
 
-                    connectionRectTransform.localPosition = new Vector2(0, 0);
+                    connectionRectTransform.localPosition = (currentNode.MapNodeUI.localPosition + outgoingConnectedNode.MapNodeUI.localPosition) / 2;
                     connectionRectTransform.SetAsFirstSibling();
 
-                    lineRenderer.points[0] = currentNode.MapNodeUI.localPosition + Vector3.Normalize(outgoingConnectedNode.MapNodeUI.localPosition - currentNode.MapNodeUI.localPosition) * MAP_CONNECTION_EDGE_TRIM;
-                    lineRenderer.points[1] = outgoingConnectedNode.MapNodeUI.localPosition + Vector3.Normalize(currentNode.MapNodeUI.localPosition - outgoingConnectedNode.MapNodeUI.localPosition) * MAP_CONNECTION_EDGE_TRIM;
+                    float hypotenuseLength = (currentNode.MapNodeUI.localPosition - outgoingConnectedNode.MapNodeUI.localPosition).magnitude;
+                    float oppositeLength = Mathf.Abs(currentNode.MapNodeUI.localPosition.y - outgoingConnectedNode.MapNodeUI.localPosition.y);
+                    connectionRectTransform.sizeDelta = new Vector2(connectionRectTransform.sizeDelta.x, hypotenuseLength - MAP_CONNECTION_EDGE_TRIM * 2);
+                    float angle = Mathf.Asin(oppositeLength / hypotenuseLength) * Mathf.Rad2Deg;
+
+                    if (currentNode.MapNodeUI.localPosition.x - outgoingConnectedNode.MapNodeUI.localPosition.x < 0)
+                        connectionRectTransform.rotation = Quaternion.Euler(0, 0, (90 - angle) * -1);
+                    else
+                        connectionRectTransform.rotation = Quaternion.Euler(0, 0, 90 - angle);
                 }
             }
         }

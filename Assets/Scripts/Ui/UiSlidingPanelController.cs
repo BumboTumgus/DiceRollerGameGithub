@@ -42,12 +42,14 @@ public class UiSlidingPanelController : MonoBehaviour
         if (_panelOpened)
         {
             _panelSlideTargetDistance = _slideTargetShown;
-            if(triggerCallbacks)
+            Debug.Log("our target was set to for open " + _panelSlideTargetDistance);
+            if (triggerCallbacks)
                 OnPanelSuccessfullyOpened_Callback.Invoke();
         }
         else
         {
             _panelSlideTargetDistance = _slideTargetHidden;
+            Debug.Log("our target was set to for close " + _panelSlideTargetDistance);
             if (triggerCallbacks)
                 OnPanelSuccessfullyClosed_Callback.Invoke();
         }

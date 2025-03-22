@@ -10,6 +10,7 @@ public class UiCombatRewardsSingleton : MonoBehaviour
 
     private const string WINDOW_APPEAR_ANIM_CODE = "Ui_RewardScreen_Appear";
     private const string WINDOW_DISSAPEAR_ANIM_CODE = "Ui_RewardScreen_Disappear";
+    private const float INVENTORY_APPEAR_DELAY = 2f;
 
     [SerializeField] private GameObject _combatRewardWindow;
     [SerializeField] private Button[] _dieFaceButtons;
@@ -42,7 +43,7 @@ public class UiCombatRewardsSingleton : MonoBehaviour
         {
             _takeAllButton.gameObject.SetActive(true);
             _discardButton.gameObject.SetActive(true);
-            InventoryUiManagerSingleton.Instance.UiButtonPress_OpenInventory();
+            InventoryUiManagerSingleton.Instance.UiShowInventoryWithDelay(INVENTORY_APPEAR_DELAY);
         }
         if (!ignoreAnimation)
         {

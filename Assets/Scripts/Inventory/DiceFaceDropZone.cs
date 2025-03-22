@@ -43,7 +43,6 @@ public class DiceFaceDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandle
                 movedDiceFaceDraggable.GetComponent<CanvasGroup>().blocksRaycasts = true;
 
                 PlayerInventorySingleton.Instance.RemoveDiceFaceAtIndex(movedDiceFaceDraggable.MyInventorySlotParent.parent.GetComponent<DiceFaceDropZone>().SlotIndex);
-                InventoryUiManagerSingleton.Instance.SetGarbagePanelOpenStatus(false);
                 return;    
             }
 
@@ -73,7 +72,6 @@ public class DiceFaceDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandle
                 movedDiceFaceDraggable.GetComponent<CanvasGroup>().blocksRaycasts = true;
 
                 PlayerInventorySingleton.Instance.RemoveDiceFaceAtIndex(movedDiceFaceDraggable.MyInventorySlotParent.parent.GetComponent<DiceFaceDropZone>().SlotIndex);
-                InventoryUiManagerSingleton.Instance.SetGarbagePanelOpenStatus(false);
             }
 
             // add this diceface to the list of dice face to add onto our new forged dice if we confirm the forging.
@@ -88,10 +86,7 @@ public class DiceFaceDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandle
                 movedDiceFaceDraggable.GetComponent<CanvasGroup>().blocksRaycasts = true;
 
                 PlayerInventorySingleton.Instance.RemoveDiceFaceAtIndex(movedDiceFaceDraggable.MyInventorySlotParent.parent.GetComponent<DiceFaceDropZone>().SlotIndex);
-                InventoryUiManagerSingleton.Instance.SetGarbagePanelOpenStatus(false);
             }
         }
-
-        InventoryUiManagerSingleton.Instance.SetGarbagePanelOpenStatus(false);
     }
 }

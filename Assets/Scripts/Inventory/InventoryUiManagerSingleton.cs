@@ -6,18 +6,12 @@ using UnityEngine.UI;
 
 public class InventoryUiManagerSingleton : MonoBehaviour
 {
-    private const float UI_SLIDE_TARGET_BASE = -400f;
-    private const float UI_SLIDE_TARGET_INCREMENT = 160f;
-
     public static InventoryUiManagerSingleton Instance;
 
     public DiceFaceInventorySlot[] DiceFaceDataInventorySlots;
 
     [SerializeField] private TMP_Text _goldReadout;
     [SerializeField] private UiSlidingPanelController _inventorySlidingPanelController;
-    [SerializeField] private UiSlidingPanelController _garbageSlidingPanelController;
-
-    private int _inventoryColumnCount = 3;
 
     private void Awake()
     {
@@ -46,9 +40,23 @@ public class InventoryUiManagerSingleton : MonoBehaviour
     }
 
     #region Open Close Menu Logic
+
+    public IEnumerator SetInventoryShowStatusDelayed(bool showStatus, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        _inventorySlidingPanelController.SetPanelOpenStatus(showStatus);
+    }
     public void UiButtonPress_OpenInventory()
     {
         _inventorySlidingPanelController.SetPanelOpenStatus(true);
+    }
+    public void UiHideInventoryWithDelay(float delayInSeconds)
+    {
+        StartCoroutine(SetInventoryShowStatusDelayed(false, delayInSeconds));
+    }
+    public void UiShowInventoryWithDelay(float delayInSeconds)
+    {
+        StartCoroutine(SetInventoryShowStatusDelayed(true, delayInSeconds));
     }
 
     public void UiButtonPress_CloseInventory()
@@ -58,11 +66,6 @@ public class InventoryUiManagerSingleton : MonoBehaviour
     public void UiButtonPress_CloseInventoryNoCallbacks()
     {
         _inventorySlidingPanelController.SetPanelOpenStatus(false, false);
-    }
-
-    public void SetGarbagePanelOpenStatus(bool open)
-    {
-        _garbageSlidingPanelController.SetPanelOpenStatus(open);
     }
 
 
@@ -75,15 +78,6 @@ public class InventoryUiManagerSingleton : MonoBehaviour
         {
             DiceFaceDataInventorySlots[inventorySlotIndex].transform.parent.gameObject.SetActive(false);
         }
-
-        if (inventorySpaceMax < 6)
-            _inventoryColumnCount = 1;
-        else if (inventorySpaceMax < 11)
-            _inventoryColumnCount = 2;
-        else if (inventorySpaceMax < 16)
-            _inventoryColumnCount = 3;
-
-        _inventorySlidingPanelController.SlideTargetShown = UI_SLIDE_TARGET_BASE - (_inventoryColumnCount - 1) * UI_SLIDE_TARGET_INCREMENT;
     }
 
     public void SetGoldReadoutValue(int value)

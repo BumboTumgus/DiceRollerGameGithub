@@ -2,10 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 public class EventSingelton : MonoBehaviour
 {
+    private const float SUBTITLE_PADDING = 90f;
+    private const float EVENT_BUTTON_PADDING = 50f;
+
+    private const string CHARACTER_EVENT_OPTION_BUTTON_COLOR = "#C8382F";
+    private const string GOD_EVENT_OPTION_BUTTON_COLOR = "#577CCF";
+
     public static EventSingelton Instance;
 
     [SerializeField] private UiSlidingPanelController _slideController;
@@ -93,7 +100,7 @@ public class EventSingelton : MonoBehaviour
         _eventTitle.text = eventData.EventTitle;
         _eventTitle.GetComponent<RectTransform>().sizeDelta = new Vector2(_eventTitle.GetComponent<RectTransform>().sizeDelta.x, _eventTitle.preferredHeight);
         _eventSubtitle.text = eventData.EventDescription;
-        _eventSubtitle.GetComponent<RectTransform>().sizeDelta = new Vector2(_eventSubtitle.GetComponent<RectTransform>().sizeDelta.x, _eventSubtitle.preferredHeight);
+        _eventSubtitle.GetComponent<RectTransform>().sizeDelta = new Vector2(_eventSubtitle.GetComponent<RectTransform>().sizeDelta.x, _eventSubtitle.preferredHeight + SUBTITLE_PADDING);
         _eventSplashImage.sprite = eventData.EventImage;
 
         for(int index = 0; index < _eventOptionButtons.Length; index++) 
@@ -106,8 +113,25 @@ public class EventSingelton : MonoBehaviour
             }
 
             _eventOptionButtons[index].gameObject.SetActive(true);
-            _eventOptionButtons[index].GetComponent<TMP_Text>().text = eventData.EventOptions[index].OptionText;
-            _eventOptionButtons[index].GetComponent<RectTransform>().sizeDelta = new Vector2(_eventOptionButtons[index].GetComponent<RectTransform>().sizeDelta.x, _eventOptionButtons[index].GetComponent<TMP_Text>().preferredHeight);
+            _eventOptionButtons[index].GetComponent<TMP_Text>().text = "";
+            if (eventData.EventOptions[index].OptionRequirementCharacter != PlayerInventorySingleton.PlayableCharacters.None)
+                _eventOptionButtons[index].GetComponent<TMP_Text>().text += "<color=" + CHARACTER_EVENT_OPTION_BUTTON_COLOR + ">[" + eventData.EventOptions[index].OptionRequirementCharacter.ToString() + "]</color>";
+            if (eventData.EventOptions[index].OptionRequirementGod != PlayerInventorySingleton.PickableGods.None)
+                _eventOptionButtons[index].GetComponent<TMP_Text>().text += "<color=" + GOD_EVENT_OPTION_BUTTON_COLOR + ">[" + eventData.EventOptions[index].OptionRequirementGod.ToString() + "]</color>";
+            if (_eventOptionButtons[index].GetComponent<TMP_Text>().text.Length > 0)
+                _eventOptionButtons[index].GetComponent<TMP_Text>().text += " ";
+
+            _eventOptionButtons[index].GetComponent<TMP_Text>().text += eventData.EventOptions[index].OptionText;
+            if (eventData.EventOptions[index].OutcomeRollBoosterDiceFaces.Count > 0)
+            {
+                _eventOptionButtons[index].GetComponent<TMP_Text>().text += " [Aided by: ";
+                foreach (DiceFaceData diceFace in eventData.EventOptions[index].OutcomeRollBoosterDiceFaces)
+                {
+                    _eventOptionButtons[index].GetComponent<TMP_Text>().text += "<sprite name=\"" + diceFace.DiceFaceEnum.ToString() + "\">";
+                }
+                _eventOptionButtons[index].GetComponent<TMP_Text>().text += "]";
+            }
+            _eventOptionButtons[index].GetComponent<RectTransform>().sizeDelta = new Vector2(_eventOptionButtons[index].GetComponent<RectTransform>().sizeDelta.x, _eventOptionButtons[index].GetComponent<TMP_Text>().preferredHeight + EVENT_BUTTON_PADDING);
         }
 
         StartCoroutine(ResizeOptionContainerAfterFrame(_eventOptionVerticalLayoutContainer));
@@ -127,9 +151,9 @@ public class EventSingelton : MonoBehaviour
         _outcomeContainer.SetActive(true);
 
         _outcomeTitle.text = outcomeData.OutcomeTitle;
-        _outcomeTitle.GetComponent<RectTransform>().sizeDelta = new Vector2(_outcomeTitle.GetComponent<RectTransform>().sizeDelta.x, _outcomeTitle.preferredHeight);
+        _outcomeTitle.GetComponent<RectTransform>().sizeDelta = new Vector2(_outcomeTitle.GetComponent<RectTransform>().sizeDelta.x, _outcomeTitle.preferredHeight + EVENT_BUTTON_PADDING);
         _outcomeSubtitle.text = outcomeData.OutcomeDescription;
-        _outcomeSubtitle.GetComponent<RectTransform>().sizeDelta = new Vector2(_outcomeSubtitle.GetComponent<RectTransform>().sizeDelta.x, _outcomeSubtitle.preferredHeight);
+        _outcomeSubtitle.GetComponent<RectTransform>().sizeDelta = new Vector2(_outcomeSubtitle.GetComponent<RectTransform>().sizeDelta.x, _outcomeSubtitle.preferredHeight + EVENT_BUTTON_PADDING);
         _outcomeSplashImage.sprite = outcomeData.OutcomeImage;
 
         StartCoroutine(ResizeOptionContainerAfterFrame(_outcomeVerticalLayoutContainer));
