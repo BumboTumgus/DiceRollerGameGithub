@@ -13,7 +13,7 @@ public class PlayerInventorySingleton : MonoBehaviour
     public int CollectedGold { get => _collectedGold; }
 
     public enum PlayableCharacters { None, Warrior }
-    public enum PickableGods { None, TheVoid, TheWanderer, TheOracle, TheJester, TheFool }
+    public enum PickableGods { None, Void, Wanderer, Oracle, Jester, Fool }
     public PlayableCharacters SelectedCharacter;
     public PickableGods SelectedGod;
 

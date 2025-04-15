@@ -8,6 +8,7 @@ using UnityEngine;
 public class CombatManagerSingleton : MonoBehaviour
 {
     private const float ATTACK_SLIDE_ANIM_LENGTH = 1.5f;
+    private const float ACTION_SPEED_INCREASE_PERCENTAGE = 1.15f;
     private const float ATTACK_RETURN_TO_START_ANIM_LENGTH = 0.5f;
     private const float STUN_OSCILLATION_COUNT = 14;
     private const float STUN_OSCILLATION_DISTANCE = 0.2f;
@@ -22,7 +23,7 @@ public class CombatManagerSingleton : MonoBehaviour
     public TMP_Text temporaryStateText;
     public PlayerCharacterCombatBehaviour PlayerCharacterCombatBehaviour { get { return _playerCharacterCombatBehaviour;}}
     public List<EnemyCombatBehaviour> EnemyCombatBehaviours { get { return _enemyCombatBehaviours;}}
-    public enum CombatState { PlayerPickingAttackTargets, PlayerExecutingAttacks, EnemyExecutingAttacks, Idle, NewCombatRound, PlayerPickingDebuffTargets, PlayerApplyingDebuff }  
+    public enum CombatState { PlayerPickingAttackTargets, PlayerExecutingAllActions, EnemyExecutingAttacks, Idle, NewCombatRound, PlayerPickingDebuffTargets }  
 
     [SerializeField] private PlayerCharacterCombatBehaviour _playerCharacterCombatBehaviour;
     [SerializeField] private List<EnemyCombatBehaviour> _enemyCombatBehaviours;
@@ -37,11 +38,13 @@ public class CombatManagerSingleton : MonoBehaviour
 
     private CombatState _currentCombatState = CombatState.Idle;
     private Transform _currentHoveredEnemy;
-    private List<EnemyCombatBehaviour> _targettedEnemies;
-    private WaitForEndOfFrame _waitForEndOFrame = new WaitForEndOfFrame();
+    private List<EnemyCombatBehaviour> _attackTargettedEnemies;
+    private List<EnemyCombatBehaviour> _debuffTargettedEnemies;
+    private List<BuffScriptableObject> _debuffsToInflict;
+    private List<int> _debuffsToInflictCount;
+    private float _currentActionSpeedMultiplier = 1f;
 
-    private BuffScriptableObject _playerDebuffToInflict;
-    private int _playerDebuffToInflictCount = 0;
+    private WaitForEndOfFrame _waitForEndOFrame = new WaitForEndOfFrame();
 
     private void Awake()
     {
@@ -63,13 +66,11 @@ public class CombatManagerSingleton : MonoBehaviour
                 break;
             case CombatState.PlayerPickingDebuffTargets:
                 HighlightHoveredEnemy();
-                SetHoveredEnemyAsDebuffTarget();
+                AddHoveredEnemyAsDebuffTarget();
                 break;
-            case CombatState.PlayerExecutingAttacks:
+            case CombatState.PlayerExecutingAllActions:
                 break;
             case CombatState.EnemyExecutingAttacks:
-                break;
-            case CombatState.PlayerApplyingDebuff:
                 break;
         }
     }
@@ -123,6 +124,7 @@ public class CombatManagerSingleton : MonoBehaviour
     private void SwapToCombatState(CombatState state)
     {
         _currentCombatState = state;
+        Debug.Log("Swapped to combat state " + state);
 
         switch(state)
         {
@@ -133,17 +135,18 @@ public class CombatManagerSingleton : MonoBehaviour
 
             case CombatState.PlayerPickingAttackTargets:
                 temporaryStateText.text = "COMBAT STATE: PICK ATTACK TARGETS";
-                Debug.Log("WE should now be prompted to attack targets");
-                _targettedEnemies = new List<EnemyCombatBehaviour>();
+                Debug.Log("CLEARED");
+                _attackTargettedEnemies = new List<EnemyCombatBehaviour>();
                 break;
 
             case CombatState.PlayerPickingDebuffTargets:
                 temporaryStateText.text = "COMBAT STATE: PICK DEBUFF TARGETS";
+                _debuffTargettedEnemies = new List<EnemyCombatBehaviour>();
+                _debuffsToInflict = PlayerCharacterCombatBehaviour.DebuffInflictionManager.DebuffsToInflict;
+                _debuffsToInflictCount = PlayerCharacterCombatBehaviour.DebuffInflictionManager.DebuffsToInflictCount;
                 if (PlayerCharacterCombatBehaviour.DebuffInflictionManager.DebuffsToInflict.Count >= 1)
                 {
-                    _playerDebuffToInflict = PlayerCharacterCombatBehaviour.DebuffInflictionManager.DebuffsToInflict[0];
-                    _playerDebuffToInflictCount = PlayerCharacterCombatBehaviour.DebuffInflictionManager.DebuffsToInflictCount[0];
-                    UiCombatDebuffPickTargetTooltipSingleton.Instance.ShowTooltip(_playerDebuffToInflict, _playerDebuffToInflictCount);
+                    UiCombatDebuffPickTargetTooltipSingleton.Instance.ShowTooltip(PlayerCharacterCombatBehaviour.DebuffInflictionManager.DebuffsToInflict[0], PlayerCharacterCombatBehaviour.DebuffInflictionManager.DebuffsToInflictCount[0]);
                 }
                 else
                 {
@@ -152,22 +155,18 @@ public class CombatManagerSingleton : MonoBehaviour
                 }
                 break;
 
-            case CombatState.PlayerExecutingAttacks:
+            case CombatState.PlayerExecutingAllActions:
                 temporaryStateText.text = "COMBAT STATE: EXECUTING PLAYER ATTACK";
                 foreach(EnemyCombatBehaviour enemyCombatBehaviour in _enemyCombatBehaviours)
                     enemyCombatBehaviour.GetComponent<PlayerToEnemyTargettingBehaviour>().SetHighlightStatus(false);
-                    StartCoroutine(AllPlayerAttackRoutines());
-                break;
-
-            case CombatState.PlayerApplyingDebuff:
-                temporaryStateText.text = "COMBAT STATE: EXECUTING PLAYER DEBUFF";
-                foreach (EnemyCombatBehaviour enemyCombatBehaviour in _enemyCombatBehaviours)
-                    enemyCombatBehaviour.GetComponent<PlayerToEnemyTargettingBehaviour>().SetHighlightStatus(false);
-                StartCoroutine(PlayerDebuffEnemyRoutine(_targettedEnemies[0]));
+                _currentActionSpeedMultiplier = 1f;
+                StartCoroutine(AllPlayerActionsRoutine());
                 break;
 
             case CombatState.EnemyExecutingAttacks:
-                temporaryStateText.text = "COMBAT STATE: EXECUTING ENEMY ATTACK";
+                temporaryStateText.text = "COMBAT STATE: EXECUTING ENEMY ATTACK"; 
+                PlayerCharacterCombatBehaviour.DebuffInflictionManager.DebuffsToInflict.Clear();
+                PlayerCharacterCombatBehaviour.DebuffInflictionManager.DebuffsToInflictCount.Clear();
                 for (int enemyIndex = 0; enemyIndex < _enemyCombatBehaviours.Count; enemyIndex++)
                 {
                     _enemyCombatBehaviours[enemyIndex].NewTurnStatInitialization();
@@ -219,42 +218,58 @@ public class CombatManagerSingleton : MonoBehaviour
         if(Input.GetMouseButtonDown(0) && _currentHoveredEnemy != null)
         {
             EnemyCombatBehaviour enemyCombatBehaviour = _currentHoveredEnemy.GetComponent<EnemyCombatBehaviour>();
-            _targettedEnemies.Add(enemyCombatBehaviour);
-            enemyCombatBehaviour.UiCombatStats.AddPlayerAttackMarker();
+            _attackTargettedEnemies.Add(enemyCombatBehaviour);
+            enemyCombatBehaviour.UiCombatStats.AddPlayerActionMarker();
 
-            if (_targettedEnemies.Count == PlayerCharacterCombatBehaviour.AttackCountCurrent)
-                SwapToCombatState(CombatState.PlayerExecutingAttacks);
+            if (_attackTargettedEnemies.Count == PlayerCharacterCombatBehaviour.AttackCountCurrent)
+                SwapToCombatState(CombatState.PlayerExecutingAllActions);
         }
     }
 
-    private void SetHoveredEnemyAsDebuffTarget()
+    private void AddHoveredEnemyAsDebuffTarget()
     {
         if (Input.GetMouseButtonDown(0) && _currentHoveredEnemy != null)
         {
             EnemyCombatBehaviour enemyCombatBehaviour = _currentHoveredEnemy.GetComponent<EnemyCombatBehaviour>();
-            _targettedEnemies = new List<EnemyCombatBehaviour> { enemyCombatBehaviour };
+            enemyCombatBehaviour.UiCombatStats.AddPlayerActionMarker(_debuffsToInflict[_debuffTargettedEnemies.Count]);
+            _debuffTargettedEnemies.Add(enemyCombatBehaviour);
 
-            SwapToCombatState(CombatState.PlayerApplyingDebuff);
+            if (_debuffTargettedEnemies.Count == PlayerCharacterCombatBehaviour.DebuffInflictionManager.DebuffsToInflict.Count)
+            {
+                SwapToCombatState(CombatState.PlayerPickingAttackTargets);
+                UiCombatDebuffPickTargetTooltipSingleton.Instance.HideTooltip();
+            }
+            else
+            {
+                UiCombatDebuffPickTargetTooltipSingleton.Instance.ShowTooltip(PlayerCharacterCombatBehaviour.DebuffInflictionManager.DebuffsToInflict[_debuffTargettedEnemies.Count]
+                , PlayerCharacterCombatBehaviour.DebuffInflictionManager.DebuffsToInflictCount[_debuffTargettedEnemies.Count]);
+            }
+
         }
     }
 
-    private IEnumerator AllPlayerAttackRoutines()
+    private IEnumerator AllPlayerActionsRoutine()
     {
         _dividerCanvasAnimation.Play(UI_DIVIDER_APPEAR_ANIM);
 
+        Debug.LogFormat("our count for debuffs on ememies is {0} and our count for attacks targttted on enemies is {1} ", _debuffTargettedEnemies.Count, _attackTargettedEnemies.Count);
+        for(int index = 0; index < _debuffTargettedEnemies.Count; index++)
+        {
+            yield return PlayerDebuffEnemyRoutine(_debuffTargettedEnemies[index], _debuffsToInflict[index], _debuffsToInflictCount[index]);
+        }
 
-        foreach(EnemyCombatBehaviour target in _targettedEnemies)
+        foreach (EnemyCombatBehaviour target in _attackTargettedEnemies)
         {
             yield return PlayerAttackRoutine(target);
         }
-
-        EnemyCombatBehaviour lastTarget = _targettedEnemies[_targettedEnemies.Count - 1];
+        Debug.Log("The enenmy attackl count is now " + _attackTargettedEnemies.Count);
+        EnemyCombatBehaviour lastTarget = _attackTargettedEnemies[_attackTargettedEnemies.Count - 1];
         _playerCharacterCombatBehaviour.transform.position = _playerAttackEndPoint.position;
         lastTarget.transform.position = _enemyAttackEndPoint.position;
         float currentTimer = 0;
         _dividerCanvasAnimation.Play(UI_DIVIDER_DISAPPEAR_ANIM);
 
-        while(currentTimer < ATTACK_RETURN_TO_START_ANIM_LENGTH)
+        while (currentTimer < ATTACK_RETURN_TO_START_ANIM_LENGTH)
         {
             currentTimer += Time.deltaTime;
             _playerCharacterCombatBehaviour.transform.position = Vector3.Lerp(_playerAttackEndPoint.position, _playerCharacterCombatBehaviour.OriginalPosition, currentTimer / ATTACK_RETURN_TO_START_ANIM_LENGTH);
@@ -274,7 +289,7 @@ public class CombatManagerSingleton : MonoBehaviour
 
         yield return new WaitForSeconds(END_OF_ACTION_DELAY);
 
-        if(IsAnyEnemyIsAlive())
+        if (IsAnyEnemyIsAlive())
             SwapToCombatState(CombatState.EnemyExecutingAttacks);
     }
 
@@ -327,7 +342,8 @@ public class CombatManagerSingleton : MonoBehaviour
         _playerCharacterCombatBehaviour.transform.position = _playerAttackStartPoint.position;
         target.transform.position = _enemyAttackStartPoint.position;
         float currentTimer = 0f;
-        target.UiCombatStats.RemovePlayerAttackMarker();
+        _currentActionSpeedMultiplier *= ACTION_SPEED_INCREASE_PERCENTAGE;
+        target.UiCombatStats.RemovePlayerActionMarker();
 
         bool criticalStrike = _playerCharacterCombatBehaviour.IsAttackCritical();
         int damage = _playerCharacterCombatBehaviour.AttackDamageCurrent  + _playerCharacterCombatBehaviour.BuffManager.GetBuffStackCount(BuffScriptableObject.BuffType.Strength);
@@ -347,7 +363,7 @@ public class CombatManagerSingleton : MonoBehaviour
             PlayerCharacterCombatBehaviour.HealHealth(PlayerCharacterCombatBehaviour.BuffManager.GetBuffStackCount(BuffScriptableObject.BuffType.Vamperism));
 
         target.TakeDamage(damage);
-        while (currentTimer < ATTACK_SLIDE_ANIM_LENGTH)
+        while (currentTimer < ATTACK_SLIDE_ANIM_LENGTH / _currentActionSpeedMultiplier)
         {
             currentTimer += Time.deltaTime;
             _playerCharacterCombatBehaviour.transform.position = Vector3.Lerp(_playerAttackStartPoint.position, _playerAttackEndPoint.position, currentTimer / ATTACK_SLIDE_ANIM_LENGTH);
@@ -360,21 +376,23 @@ public class CombatManagerSingleton : MonoBehaviour
         target.CombatAnimationBehaviour.SetAnimSpeedToNormal();
     }
 
-    private IEnumerator PlayerDebuffEnemyRoutine(EnemyCombatBehaviour target)
+    private IEnumerator PlayerDebuffEnemyRoutine(EnemyCombatBehaviour target, BuffScriptableObject debuff, int debuffCount)
     {
         _dividerCanvasAnimation.Play(UI_DIVIDER_APPEAR_ANIM);
 
         _playerCharacterCombatBehaviour.transform.position = _playerAttackStartPoint.position;
         target.transform.position = _enemyAttackStartPoint.position;
         float currentTimer = 0f;
+        _currentActionSpeedMultiplier *= ACTION_SPEED_INCREASE_PERCENTAGE;
+        target.UiCombatStats.RemovePlayerActionMarker(debuff);
 
         target.CombatAnimationBehaviour.PlayDebuffAnimation();
         _playerCharacterCombatBehaviour.CombatAnimationBehaviour.PlayAttackAnimation();
 
-        DamageNumberManagerSingleton.Instance.ShowEnemyBuff(_playerDebuffToInflict.BuffIcon);
+        DamageNumberManagerSingleton.Instance.ShowEnemyBuff(debuff.BuffIcon);
 
-        target.BuffManager.AddBuff(_playerDebuffToInflict, _playerDebuffToInflictCount);
-        while (currentTimer < ATTACK_SLIDE_ANIM_LENGTH)
+        target.BuffManager.AddBuff(debuff, debuffCount);
+        while (currentTimer < ATTACK_SLIDE_ANIM_LENGTH / _currentActionSpeedMultiplier)
         {
             currentTimer += Time.deltaTime;
             _playerCharacterCombatBehaviour.transform.position = Vector3.Lerp(_playerAttackStartPoint.position, _playerAttackEndPoint.position, currentTimer / ATTACK_SLIDE_ANIM_LENGTH);
@@ -382,27 +400,32 @@ public class CombatManagerSingleton : MonoBehaviour
             yield return _waitForEndOFrame;
         }
 
-        target.transform.position = _enemyAttackEndPoint.position;
+        target.transform.position = target.OriginalPosition;
         _playerCharacterCombatBehaviour.CombatAnimationBehaviour.SetAnimSpeedToNormal();
         target.CombatAnimationBehaviour.SetAnimSpeedToNormal();
-        _playerCharacterCombatBehaviour.transform.position = _playerAttackEndPoint.position;
 
-        currentTimer = 0;
-        _dividerCanvasAnimation.Play(UI_DIVIDER_DISAPPEAR_ANIM);
+        //target.transform.position = _enemyAttackEndPoint.position;
+        //_playerCharacterCombatBehaviour.CombatAnimationBehaviour.SetAnimSpeedToNormal();
+        //target.CombatAnimationBehaviour.SetAnimSpeedToNormal();
+        //_playerCharacterCombatBehaviour.transform.position = _playerAttackEndPoint.position;
 
-        while (currentTimer < ATTACK_RETURN_TO_START_ANIM_LENGTH)
-        {
-            currentTimer += Time.deltaTime;
-            target.transform.position = Vector3.Lerp(_enemyAttackEndPoint.position, target.OriginalPosition, currentTimer / ATTACK_RETURN_TO_START_ANIM_LENGTH);
-            _playerCharacterCombatBehaviour.transform.position = Vector3.Lerp(_playerAttackEndPoint.position, _playerCharacterCombatBehaviour.OriginalPosition, currentTimer / ATTACK_RETURN_TO_START_ANIM_LENGTH);
+        //currentTimer = 0;
+        //_dividerCanvasAnimation.Play(UI_DIVIDER_DISAPPEAR_ANIM);
 
-            yield return _waitForEndOFrame;
-        }
+        //while (currentTimer < ATTACK_RETURN_TO_START_ANIM_LENGTH)
+        //{
+        //    currentTimer += Time.deltaTime;
+        //    target.transform.position = Vector3.Lerp(_enemyAttackEndPoint.position, target.OriginalPosition, currentTimer / ATTACK_RETURN_TO_START_ANIM_LENGTH);
+        //    _playerCharacterCombatBehaviour.transform.position = Vector3.Lerp(_playerAttackEndPoint.position, _playerCharacterCombatBehaviour.OriginalPosition, currentTimer / ATTACK_RETURN_TO_START_ANIM_LENGTH);
 
-        yield return new WaitForSeconds(END_OF_ACTION_DELAY / 3);
+        //    yield return _waitForEndOFrame;
+        //}
 
-        PlayerCharacterCombatBehaviour.DebuffInflictionManager.RemoveFirstDebuffFromList();
-        SwapToCombatState(CombatState.PlayerPickingDebuffTargets);
+        //yield return new WaitForSeconds(END_OF_ACTION_DELAY / 3);
+
+        //TODO MAKE THIS NOT REMOVE THE DEBUFF FROM THE LISTZ AND RETURN TO TARGETTING, ALL TARGETTING SHALL BE DOEN BEFORE HAND AND REMOVAL AFTER.
+        // WE KNOW OUR CURRENT DEBUFF TO APPLY BASED ON HOPW MANY TARGETS ARE IN OUR LIST.
+        //PlayerCharacterCombatBehaviour.DebuffInflictionManager.RemoveFirstDebuffFromList();
     }
 
     private IEnumerator AllEnemyTurns()
@@ -411,6 +434,8 @@ public class CombatManagerSingleton : MonoBehaviour
         {
             if (!_enemyCombatBehaviours[enemyIndex].IsAlive)
                 continue;
+
+            _currentActionSpeedMultiplier = 1f;
 
             if (_enemyCombatBehaviours[enemyIndex].BuffManager.IsBuffActive(BuffScriptableObject.BuffType.Regen))
                 _enemyCombatBehaviours[enemyIndex].HealHealth(_enemyCombatBehaviours[enemyIndex].BuffManager.GetBuffStackCount(BuffScriptableObject.BuffType.Regen));
@@ -599,6 +624,7 @@ public class CombatManagerSingleton : MonoBehaviour
         _playerCharacterCombatBehaviour.transform.position = _playerAttackStartPoint.position;
         aggresor.transform.position = _enemyAttackStartPoint.position;
         float currentTimer = 0f;
+        _currentActionSpeedMultiplier *= ACTION_SPEED_INCREASE_PERCENTAGE;
         bool attackEvaded = false;
 
         bool criticalStrike = aggresor.AttacksAreCritical;
@@ -633,7 +659,7 @@ public class CombatManagerSingleton : MonoBehaviour
             DamageNumberManagerSingleton.Instance.ShowEnemyDamageNumber(thornDamage, thornDamage <= aggresor.DefenseCurrent, false);
         }
 
-        while (currentTimer < ATTACK_SLIDE_ANIM_LENGTH)
+        while (currentTimer < ATTACK_SLIDE_ANIM_LENGTH / _currentActionSpeedMultiplier)
         {
             currentTimer += Time.deltaTime;
             _playerCharacterCombatBehaviour.transform.position = Vector3.Lerp(_playerAttackStartPoint.position, _playerAttackEndPoint.position, currentTimer / ATTACK_SLIDE_ANIM_LENGTH);

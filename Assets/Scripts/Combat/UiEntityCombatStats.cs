@@ -11,6 +11,9 @@ public class UiEntityCombatStats : MonoBehaviour
     private const float ATTACK_DEFENSE_SPACER = 20f;
     private const float ATTACK_DEFENSE_PARENT_PADDING = 60f;
 
+    private const string PLAYER_ACTION_MARKER_TITLE = "Ui_PlayerActionMarker_";
+    private const string PLAYER_ACTION_MARKER_ATTACK_SUFFIX = "Attack";
+
     public Transform ConnectedTarget;
     public UiBuffDescriptionController UiBuffDescriptionController;
     public Transform BuffUiParent;
@@ -144,9 +147,18 @@ public class UiEntityCombatStats : MonoBehaviour
         }
     }
 
-    public void AddPlayerAttackMarker()
+    public void AddPlayerActionMarker(BuffScriptableObject buffAdded = null)
     {
-        Instantiate(_playerAttackMarker, _playerAttackMarkerCounter);
+        Image playerActionMarker = Instantiate(_playerAttackMarker, _playerAttackMarkerCounter).GetComponent<Image>();
+
+        if(buffAdded)
+        {
+            playerActionMarker.sprite = buffAdded.BuffIcon;
+            playerActionMarker.gameObject.name = PLAYER_ACTION_MARKER_TITLE + buffAdded.MyBuffType.ToString();
+        }
+        else
+            playerActionMarker.gameObject.name = PLAYER_ACTION_MARKER_TITLE + PLAYER_ACTION_MARKER_ATTACK_SUFFIX;
+
         StartCoroutine(UpdatePlayerMarkerHolderAtEndOfFrame());
     }
 
@@ -157,10 +169,21 @@ public class UiEntityCombatStats : MonoBehaviour
 
     }
 
-    public void RemovePlayerAttackMarker()
+    public void RemovePlayerActionMarker(BuffScriptableObject buffActionToRemove = null)
     {
-        if(_playerAttackMarkerCounter.GetChild(0) != null)
-            Destroy(_playerAttackMarkerCounter.GetChild(0).gameObject);
+        string nameOfActionToRemove = PLAYER_ACTION_MARKER_TITLE + PLAYER_ACTION_MARKER_ATTACK_SUFFIX;
+        if (buffActionToRemove)
+            nameOfActionToRemove = PLAYER_ACTION_MARKER_TITLE + buffActionToRemove.MyBuffType.ToString();
+
+        for(int index = 0; index < _playerAttackMarkerCounter.childCount; index++) 
+        { 
+            if(_playerAttackMarkerCounter.GetChild(index).name == nameOfActionToRemove)
+            {
+                Destroy(_playerAttackMarkerCounter.GetChild(index).gameObject);
+                break;
+            }
+        }
+
         StartCoroutine(UpdatePlayerMarkerHolderAtEndOfFrame());
     }
 

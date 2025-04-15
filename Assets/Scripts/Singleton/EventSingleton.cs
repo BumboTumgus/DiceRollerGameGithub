@@ -117,7 +117,7 @@ public class EventSingelton : MonoBehaviour
             if (eventData.EventOptions[index].OptionRequirementCharacter != PlayerInventorySingleton.PlayableCharacters.None)
                 _eventOptionButtons[index].GetComponent<TMP_Text>().text += "<color=" + CHARACTER_EVENT_OPTION_BUTTON_COLOR + ">[" + eventData.EventOptions[index].OptionRequirementCharacter.ToString() + "]</color>";
             if (eventData.EventOptions[index].OptionRequirementGod != PlayerInventorySingleton.PickableGods.None)
-                _eventOptionButtons[index].GetComponent<TMP_Text>().text += "<color=" + GOD_EVENT_OPTION_BUTTON_COLOR + ">[" + eventData.EventOptions[index].OptionRequirementGod.ToString() + "]</color>";
+                _eventOptionButtons[index].GetComponent<TMP_Text>().text += "<color=" + GOD_EVENT_OPTION_BUTTON_COLOR + ">[The " + eventData.EventOptions[index].OptionRequirementGod.ToString() + "]</color>";
             if (_eventOptionButtons[index].GetComponent<TMP_Text>().text.Length > 0)
                 _eventOptionButtons[index].GetComponent<TMP_Text>().text += " ";
 
@@ -132,6 +132,8 @@ public class EventSingelton : MonoBehaviour
                 _eventOptionButtons[index].GetComponent<TMP_Text>().text += "]";
             }
             _eventOptionButtons[index].GetComponent<RectTransform>().sizeDelta = new Vector2(_eventOptionButtons[index].GetComponent<RectTransform>().sizeDelta.x, _eventOptionButtons[index].GetComponent<TMP_Text>().preferredHeight + EVENT_BUTTON_PADDING);
+
+            _eventOptionButtons[index].transform.Find("Highlight").gameObject.SetActive(false);
         }
 
         StartCoroutine(ResizeOptionContainerAfterFrame(_eventOptionVerticalLayoutContainer));
