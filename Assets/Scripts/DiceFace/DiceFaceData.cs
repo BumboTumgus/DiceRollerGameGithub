@@ -7,7 +7,9 @@ using UnityEngine;
 public class DiceFaceData : ScriptableObject
 {
     public enum DiceFace { Attack, Defense, Strike, Lucky, Vamperism, Heal, Evade, Thorns, Reroll, RerollAttack, RerollDefense, Brace, Bleed, Regen, Plunder, Strength,
-        Tenacity, Sunder, Weaken, Stun }
+        Tenacity, Sunder, Weaken, Stun, Prayer, Grow, Lock, Sacrifice, Exsanguinate, Wither, Tithe, Wane, Still, Echo, Rust, Anoint, Command, Cleanse, Mirror, Omniscience,
+        Windfall, Restoration, Smite, Exalt, Ward, Shackle, Whisper}
+
     public Material DiceFaceMat;
     public GameObject RolledDiceParticles;
     public GameObject PlayerPowerUpParticles;

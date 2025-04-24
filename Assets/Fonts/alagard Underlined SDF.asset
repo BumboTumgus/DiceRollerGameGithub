@@ -70,7 +70,7 @@ Material:
     - _OutlineSoftness: 0
     - _OutlineUVSpeedX: 0
     - _OutlineUVSpeedY: 0
-    - _OutlineWidth: 0
+    - _OutlineWidth: 0.072
     - _PerspectiveFilter: 0.875
     - _Reflectivity: 10
     - _ScaleRatioA: 0.9
@@ -166,11 +166,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
-  m_Name: alagard SDF
+  m_Name: alagard Underlined SDF
   m_EditorClassIdentifier: 
-  hashCode: -1616901139
+  hashCode: -1038928417
   material: {fileID: -2082520497728394174}
-  materialHashCode: 986527789
+  materialHashCode: -1282862945
   m_Version: 1.1.0
   m_SourceFontFileGUID: 8ffd956b1f4ced54c8ec28f0586e237b
   m_SourceFontFile_EditorRef: {fileID: 12800000, guid: 8ffd956b1f4ced54c8ec28f0586e237b,

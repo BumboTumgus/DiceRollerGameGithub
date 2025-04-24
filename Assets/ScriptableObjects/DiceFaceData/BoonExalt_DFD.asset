@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a9c2c5867ad90043a1a1469836ad26e, type: 3}
+  m_Name: BoonExalt_DFD
+  m_EditorClassIdentifier: 
+  DiceFaceMat: {fileID: 2100000, guid: 32344b4f63d62604baf12d005ebee21e, type: 2}
+  RolledDiceParticles: {fileID: 7698782438158763098, guid: 47a404ad82385fc48bfc3ae628720d93,
+    type: 3}
+  PlayerPowerUpParticles: {fileID: 2112066996366332082, guid: f598e6c15c834a74dbf84e0e342833bc,
+    type: 3}
+  DiceFaceEnum: 39
+  DiceFaceUiSprite: {fileID: 21300000, guid: 1c0cb839de592394b85e6231a664dd8b, type: 3}
+  DiceFaceCost: 100
