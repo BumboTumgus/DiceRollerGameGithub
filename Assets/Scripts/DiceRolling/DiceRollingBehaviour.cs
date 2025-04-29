@@ -22,8 +22,12 @@ public class DiceRollingBehaviour : MonoBehaviour
     public bool CurrentlyAllowsRolls { get { return _currentlyAllowsRolls;}}
     public DiceFaceBehaviour[] DiceFaces { get { return _diceFaces;}}
     public int DiceRerollCount { get => _diceRerollCount; set => _diceRerollCount = value; }
+    public bool RemovedFromActiveCombat { get => _removedFromActiveCombat; }
+    public bool TemporaryDie { get => _temporaryDie; set => _temporaryDie = value; }
+    public bool DiceFinishedRolling { get => _diceFinishedRolling; }
 
     [SerializeField] private DiceFaceBehaviour[] _diceFaces;
+    [SerializeField] private GameObject _diceSacrificeParticleFx;
 
     private Rigidbody _rigidbody;
     private Vector3 _startingScale;
@@ -32,6 +36,9 @@ public class DiceRollingBehaviour : MonoBehaviour
     private bool _diceCurrentlySelected = false;
     private bool _currentlyAllowsRolls = true;
     private int _diceRerollCount = 0;
+    private bool _removedFromActiveCombat = false;
+    private bool _temporaryDie = false;
+    private bool _diceFinishedRolling = false;
 
     private void Awake()
     {
@@ -65,6 +72,7 @@ public class DiceRollingBehaviour : MonoBehaviour
 
         _animation.Stop();
         _rolledDiceFace = null;
+        _diceFinishedRolling = false;
         transform.localScale = _startingScale;
         _rigidbody.isKinematic = false;
         _currentlyAllowsRolls = false;
@@ -144,10 +152,30 @@ public class DiceRollingBehaviour : MonoBehaviour
         }
         _rolledDiceFace.PopupDiceFace(0.1f);
         _rigidbody.isKinematic = true;
+        _diceFinishedRolling = true;
 
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(1f);
 
-        if(_rolledDiceFace.MyDiceFaceData == DiceFaceDataSingleton.Instance.GetDiceFaceDataByType(DiceFaceData.DiceFace.Reroll) && _diceRerollCount < MAXIMUM_REROLL_COUNT)
+        if (DiceRollerSingleton.Instance.RerollsLockedByCurse)
+            DiceRollerSingleton.Instance.SpawnRerollLockChains(transform);
+
+        yield return new WaitForSeconds(1f);
+
+
+
+        if (_rolledDiceFace.MyTempDiceFaceData == null && _rolledDiceFace.MyDiceFaceData == DiceFaceDataSingleton.Instance.GetDiceFaceDataByType(DiceFaceData.DiceFace.Ward))
+        {
+            Debug.Log("WARDED");
+            CurseManagerSingleton.Instance.WardedFromCurses = true;
+            DiceRollerSingleton.Instance.UnlockRerollsByCurse();
+        }
+        if (_rolledDiceFace.MyTempDiceFaceData != null && _rolledDiceFace.MyTempDiceFaceData == DiceFaceDataSingleton.Instance.GetDiceFaceDataByType(DiceFaceData.DiceFace.Lock) && !CurseManagerSingleton.Instance.WardedFromCurses)
+        {
+            Debug.Log("LOCKED");
+            DiceRollerSingleton.Instance.LockRerollsByCurse();
+        }
+
+        if (_rolledDiceFace.MyTempDiceFaceData == null && _rolledDiceFace.MyDiceFaceData == DiceFaceDataSingleton.Instance.GetDiceFaceDataByType(DiceFaceData.DiceFace.Reroll) && _diceRerollCount < MAXIMUM_REROLL_COUNT && !DiceRollerSingleton.Instance.RerollsLockedByCurse)
         {
             _currentlyAllowsRolls = true;
             DiceRollerSingleton.Instance.AddDiceRerolls(1);
@@ -174,9 +202,17 @@ public class DiceRollingBehaviour : MonoBehaviour
     private void DissapearToDormant()
     {
         _animation.Play(DISSAPPEAR_TO_DORMANT_ANIM_STRING);
-        GameObject spawnedParticle;
+        GameObject spawnedParticle = null;
         if (_rolledDiceFace.MyTempDiceFaceData != null)
-            spawnedParticle = Instantiate(_rolledDiceFace.MyTempDiceFaceData.PlayerPowerUpParticles, transform.position, Quaternion.identity);
+            if(!CurseManagerSingleton.Instance.WardedFromCurses && _rolledDiceFace.MyTempDiceFaceData == DiceFaceDataSingleton.Instance.GetDiceFaceDataByType(DiceFaceData.DiceFace.Sacrifice))
+            {
+                _removedFromActiveCombat = true;
+                DiceRollerSingleton.Instance.DiesRemovedFromCombat++;
+                Instantiate(_diceSacrificeParticleFx, transform.position, Quaternion.Euler(-90,0,0));
+                return;
+            }
+            else
+                spawnedParticle = Instantiate(_rolledDiceFace.MyTempDiceFaceData.PlayerPowerUpParticles, transform.position, Quaternion.identity);
         else
             spawnedParticle = Instantiate(_rolledDiceFace.MyDiceFaceData.PlayerPowerUpParticles, transform.position, Quaternion.identity);
 
@@ -190,5 +226,34 @@ public class DiceRollingBehaviour : MonoBehaviour
             DiceBonusCalculatorSingleton.Instance.CalculateBonusForRolledDiceFace(_rolledDiceFace.MyTempDiceFaceData.DiceFaceEnum);
         else
             DiceBonusCalculatorSingleton.Instance.CalculateBonusForRolledDiceFace(_rolledDiceFace.MyDiceFaceData.DiceFaceEnum);
+    }
+
+    public void ResetDieToBaseState()
+    {
+        if(TemporaryDie)
+        {
+            StartCoroutine(DestroyDieAfterFrameDelay());
+            return;
+        }
+
+        _removedFromActiveCombat = false;
+
+        foreach(DiceFaceBehaviour diceFace in _diceFaces)
+        {
+            if (diceFace.TempFaceRemovedAfterCombat)
+                diceFace.RevertToOriginalDiceFace();
+        }
+    }
+
+    private IEnumerator DestroyDieAfterFrameDelay()
+    {
+        yield return new WaitForEndOfFrame();
+        DiceRollerSingleton.Instance.CurrentDice.Remove(this);
+        Destroy(gameObject);
+    }
+
+    public void RemoveFromActiveCombat()
+    {
+        _removedFromActiveCombat = true;
     }
 }

@@ -7,6 +7,7 @@ public class DiceFaceBehaviour : MonoBehaviour
 {
     public DiceFaceData MyDiceFaceData { get => _myDiceFaceData; }
     public DiceFaceData MyTempDiceFaceData { get => _myTempDiceFaceData; }
+    public bool TempFaceRemovedAfterCombat { get => _tempFaceRemovedAfterCombat; }
 
     [SerializeField] private string _startingDiceFaceState;
 
@@ -15,6 +16,9 @@ public class DiceFaceBehaviour : MonoBehaviour
     [SerializeField] private DiceFaceData _myDiceFaceData;
     [SerializeField] private DiceFaceData _myTempDiceFaceData;
     private Renderer _renderer;
+
+    private bool _tempFaceRemovedAfterCombat = false;
+    
 
     private void Start()
     {
@@ -30,17 +34,12 @@ public class DiceFaceBehaviour : MonoBehaviour
         _renderer.material = _myDiceFaceData.DiceFaceMat;
     }
 
-    public void TemporarySwitchDiceFace(string diceFaceName)
-    {
-        _myTempDiceFaceData = DiceFaceDataSingleton.Instance.GetDiceFaceDataByName(diceFaceName);
-        _particleSystemToSpawn = _myTempDiceFaceData.RolledDiceParticles;
-        _renderer.material = _myTempDiceFaceData.DiceFaceMat;
-    }
-    public void TemporarySwitchDiceFace(DiceFaceData diceFaceData)
+    public void TemporarySwitchDiceFace(DiceFaceData diceFaceData, bool tempFaceRevertsAfterCombat = false)
     {
         _myTempDiceFaceData = diceFaceData;
         _particleSystemToSpawn = _myTempDiceFaceData.RolledDiceParticles;
         _renderer.material = _myTempDiceFaceData.DiceFaceMat;
+        _tempFaceRemovedAfterCombat = tempFaceRevertsAfterCombat;
     }
 
     public void RevertToOriginalDiceFace()

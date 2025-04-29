@@ -12,13 +12,17 @@ public class DiceRollerSingleton : MonoBehaviour
     private const float DICE_IDLE_ANIM_CHANCE = 0.3f;
     private const float HIDE_TO_DORMANT_DELAY_INCREMENT = 0.2f;
     private const float PARTICLE_TO_STAT_ADDDITION_DELAY = 3f;
+    private const float CHAIN_SPAWN_HEIGHT = -0.15f;
 
     public static DiceRollerSingleton Instance;
     public enum DiceRollingState { Dormant, ClickToRoll, Rolling, ReRollChoice };
     public List<DiceRollingBehaviour> CurrentDice { get => _currentDice; }
+    public bool RerollsLockedByCurse { get => _rerollsLockedByCurse; }
+    public int DiesRemovedFromCombat { get => _diesRemovedFromCombat; set => _diesRemovedFromCombat = value; }
 
     [SerializeField] private List<DiceRollingBehaviour> _currentDice;
     [SerializeField] private LayerMask _diceLayerMask;
+    [SerializeField] private GameObject _rerollLockChainsPrefab;
 
     private DiceRollingState _currentDiceRollState = DiceRollingState.Dormant;
     private float _currentDiceIdleAnimTimer = 0f;
@@ -26,6 +30,10 @@ public class DiceRollerSingleton : MonoBehaviour
     private int _rerollCount = 1;
     private Transform _currentHoveredDice;
     private bool _hasRerolledAlready = false;
+    private bool _rerollsLockedByCurse = false;
+    private int _diesRemovedFromCombat = 0;
+
+    private List<GameObject> _rerollLockChains = new List<GameObject>();
 
 
     private void Awake()
@@ -35,7 +43,6 @@ public class DiceRollerSingleton : MonoBehaviour
         if (Instance != this)
             Destroy(this);
 
-        //_currentDice = FindObjectsOfType<DiceRollingBehaviour>();
         SwitchToDiceState(DiceRollingState.Dormant);
         foreach(DiceRollingBehaviour die in _currentDice)
             die.gameObject.transform.position = Vector3.one * 999;
@@ -59,6 +66,8 @@ public class DiceRollerSingleton : MonoBehaviour
             case DiceRollingState.Rolling:
                 break;
             case DiceRollingState.ReRollChoice:
+                if (RerollsLockedByCurse)
+                    break;
                 HighlightHoveredDice();
                 AddHoveredDiceToRerollSelectionOnClick();
                 break;
@@ -73,6 +82,7 @@ public class DiceRollerSingleton : MonoBehaviour
         switch (newState)
         {
             case DiceRollingState.Dormant:
+                ClearRerollLockChainFx();
                 float delay = 0f;
                 foreach(DiceRollingBehaviour diceRollingBehaviour in _currentDice)
                 {
@@ -88,11 +98,14 @@ public class DiceRollerSingleton : MonoBehaviour
 
                 List<Transform> diceToRollTransforms = new List<Transform>();
                 foreach(DiceRollingBehaviour diceRollingTransform in _currentDice)
-                    diceToRollTransforms.Add(diceRollingTransform.transform);
+                    if(!diceRollingTransform.RemovedFromActiveCombat)
+                        diceToRollTransforms.Add(diceRollingTransform.transform);
                 DicePrerollPlacerSingleton.Instance.PlaceSelectedDiceInPattern(diceToRollTransforms);
 
                 foreach(DiceRollingBehaviour diceRollingBehaviour in _currentDice)
                 {
+                    if (diceRollingBehaviour.RemovedFromActiveCombat) continue;
+
                     diceToRollTransforms.Add(diceRollingBehaviour.transform);
                     diceRollingBehaviour.gameObject.SetActive(true);
                     diceRollingBehaviour.OnSnapAndAppearFromDormant();
@@ -109,7 +122,7 @@ public class DiceRollerSingleton : MonoBehaviour
 
             case DiceRollingState.Rolling:
                 foreach(DiceRollingBehaviour diceRollingBehaviour in _currentDice)
-                    if(diceRollingBehaviour.CurrentlyAllowsRolls)
+                    if(diceRollingBehaviour.CurrentlyAllowsRolls && !diceRollingBehaviour.RemovedFromActiveCombat)
                         diceRollingBehaviour.OnRollDice(diceRollingBehaviour.SelectedForReroll);
                 
                 UiDiceSummarySingleton.Instance.SetWindowVisibility(false);
@@ -128,7 +141,7 @@ public class DiceRollerSingleton : MonoBehaviour
     public void IncrementDiceFinishedRollingCount()
     {
         _diceFinishedRollingCount++;
-        if (_diceFinishedRollingCount >= _currentDice.Count)
+        if (_diceFinishedRollingCount >= _currentDice.Count - DiesRemovedFromCombat)
         {
             if (_rerollCount > 0 && !_hasRerolledAlready)
                 SwitchToDiceState(DiceRollingState.ReRollChoice);
@@ -146,7 +159,7 @@ public class DiceRollerSingleton : MonoBehaviour
     {
         List<Transform> diceToRollTransforms = new List<Transform>();
         foreach(DiceRollingBehaviour diceRollingTransform in _currentDice)
-            if(diceRollingTransform.CurrentlyAllowsRolls)
+            if(diceRollingTransform.CurrentlyAllowsRolls && !diceRollingTransform.RemovedFromActiveCombat)
                 diceToRollTransforms.Add(diceRollingTransform.transform);
 
         DicePrerollPlacerSingleton.Instance.PlaceSelectedDiceInPattern(diceToRollTransforms);
@@ -230,6 +243,14 @@ public class DiceRollerSingleton : MonoBehaviour
         return true;
     }
 
+    public void PostCombatDiceCleanup()
+    {
+        foreach(DiceRollingBehaviour diceRollingBehaviour in _currentDice)
+        {
+            diceRollingBehaviour.ResetDieToBaseState();
+        }
+    }
+
     private void HighlightHoveredDice()
     {
         if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit rayhit, 10f, _diceLayerMask))
@@ -282,5 +303,43 @@ public class DiceRollerSingleton : MonoBehaviour
     public void AddDiceRerolls(int v)
     {
         _rerollCount += v;
+    }
+
+    public void LockRerollsByCurse()
+    {
+        if (_rerollsLockedByCurse)
+            return;
+
+        _rerollsLockedByCurse = true;
+
+        foreach (DiceRollingBehaviour diceBehaviour in CurrentDice)
+            if (diceBehaviour.DiceFinishedRolling)
+                SpawnRerollLockChains(diceBehaviour.transform);
+    }
+
+    public void UnlockRerollsByCurse()
+    {
+        if (!_rerollsLockedByCurse)
+            return;
+
+        _rerollsLockedByCurse = false;
+        ClearRerollLockChainFx();
+    }
+
+    public void ClearRerollLockChainFx()
+    {
+
+        foreach (GameObject chainFx in _rerollLockChains)
+        {
+            var emissionModule = chainFx.GetComponent<ParticleSystem>().emission;
+            emissionModule.rateOverTime = 0;
+            Destroy(chainFx, 1f);
+        }
+        _rerollLockChains.Clear();
+    }
+
+    public void SpawnRerollLockChains(Transform targetTransform)
+    {
+        _rerollLockChains.Add(Instantiate(_rerollLockChainsPrefab, targetTransform.position + Vector3.forward * CHAIN_SPAWN_HEIGHT, Quaternion.Euler(0, 0, UnityEngine.Random.Range(0, 360))));
     }
 }

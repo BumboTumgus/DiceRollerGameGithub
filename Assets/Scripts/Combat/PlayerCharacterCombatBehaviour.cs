@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerCharacterCombatBehaviour : MonoBehaviour
 {
+    private const float GROW_SIZE_GAIN = 0.01f;
+
     [SerializeField] private UiEntityCombatStats _uiCombatStats;
 
     public int AttackCountCurrent { get { return _attackCountCurrent;}}
@@ -26,6 +28,8 @@ public class PlayerCharacterCombatBehaviour : MonoBehaviour
     private CombatAnimationBehaviour _combatAnimationBehaviour;
     private BuffManager _buffManager;
     private PlayerDebuffsToInflictManager _debuffInflictionManager;
+
+    private float _sizeModifier = 0;
 
     private void Awake()
     {
@@ -72,7 +76,7 @@ public class PlayerCharacterCombatBehaviour : MonoBehaviour
         int attackDamage = _attackDamageCurrent + BuffManager.GetBuffStackCount(BuffScriptableObject.BuffType.Strength);
         if (BuffManager.IsBuffActive(BuffScriptableObject.BuffType.Weaken))
             attackDamage /= 2;
-        _uiCombatStats.UpdateAttackReadout(attackDamage, _attackCountCurrent, false);
+        _uiCombatStats.UpdateAttackReadout(attackDamage, GetCurrentAttackCount(), false);
     }
 
     public void TakeDamage(int value)
@@ -113,6 +117,8 @@ public class PlayerCharacterCombatBehaviour : MonoBehaviour
     {
         if(value < 0)
             return;
+        if (BuffManager.IsBuffActive(BuffScriptableObject.BuffType.Wither))
+            return;
 
         _healthCurrent += value;
         if(_healthCurrent > _healthMax)
@@ -138,6 +144,9 @@ public class PlayerCharacterCombatBehaviour : MonoBehaviour
 
     public bool IsAttackCritical()
     {
+        if (BuffManager.IsBuffActive(BuffScriptableObject.BuffType.Anoint))
+            return true;
+
         int randomNum = Random.Range(0, 10);
         return randomNum < 1 + BuffManager.GetBuffStackCount(BuffScriptableObject.BuffType.Luck);
     }
@@ -160,12 +169,24 @@ public class PlayerCharacterCombatBehaviour : MonoBehaviour
         _uiCombatStats.UpdateDefenseReadout(_defenseCurrent, true);
     }
 
+    public int GetCurrentAttackCount()
+    {
+        if (BuffManager.IsBuffActive(BuffScriptableObject.BuffType.Shackle))
+            return 1;
+
+        int attackCount = _attackCountCurrent;
+        if (BuffManager.IsBuffActive(BuffScriptableObject.BuffType.Anoint))
+            attackCount *= 2;
+        return attackCount;
+    }
+
     private void DrawAttackReadout()
     {
         int attackDamage = _attackDamageCurrent + BuffManager.GetBuffStackCount(BuffScriptableObject.BuffType.Strength);
         if (BuffManager.IsBuffActive(BuffScriptableObject.BuffType.Weaken))
             attackDamage /= 2;
-        _uiCombatStats.UpdateAttackReadout(attackDamage, _attackCountCurrent);
+
+        _uiCombatStats.UpdateAttackReadout(attackDamage, GetCurrentAttackCount());
     }
 
     public void AddLuck(int v)
@@ -243,4 +264,126 @@ public class PlayerCharacterCombatBehaviour : MonoBehaviour
     {
         DebuffInflictionManager.AddDebuffToInflict(BuffSingleton.Instance.GetBuffDataByType(BuffScriptableObject.BuffType.Weaken), v);
     }
+
+    public void AddPrayer(int v)
+    {
+        DivineDemonstrationSingleton.Instance.AddFavor(v);
+    }
+
+    public void AddGrow(int v)
+    {
+    }
+
+    public void AddBoonAnoint(int v)
+    {
+        BuffManager.AddBuff(BuffSingleton.Instance.GetBuffDataByType(BuffScriptableObject.BuffType.Anoint), v);
+    }
+    
+    public void AddBoonCommand(int v)
+    {
+        //TODO ADD a way to set a dice to be rolled on any face.
+    }
+
+    public void AddBoonCleanse(int v)
+    {
+        //TODO USE THE SAME TARGETTING AS DEBUFFS TO APPLY THIS EFFECT
+    }
+
+    public void AddBoonMirror(int v)
+    {
+        //TODO HAve a way to create a temporary dice that dissapears at the end of combat
+    }
+
+    public void AddBoonOmniscience(int v)
+    {
+        BuffManager.AddBuff(BuffSingleton.Instance.GetBuffDataByType(BuffScriptableObject.BuffType.Omniscience), v);
+    }
+
+    public void AddBoonWindfall(int v)
+    {
+        for (int i = 0; i < v; i++)
+            PlayerInventorySingleton.Instance.UpdateGoldValue(PlayerInventorySingleton.Instance.CollectedGold + Random.Range(5, 25));
+    }
+
+    public void AddBoonRestoration(int v)
+    {
+        HealHealth(25 * v);
+    }
+
+    public void AddBoonSmite(int v)
+    {
+        //TODO USE THE SAME TARGETTING AS DEBUFFS TO DEAL THIS DAMAGE
+    }
+
+    public void AddBoonExalt(int v)
+    {
+        DivineDemonstrationSingleton.Instance.AddFavor(v * 5);
+    }
+
+    public void AddBoonWard(int v)
+    {
+
+    }
+
+    public void AddCurseLock(int v)
+    {
+
+    }
+
+    public void AddCurseSacrifice(int v)
+    {
+        //TODO have a way to kill a dice for combat and have it come back at combat start.
+    }
+
+    public void AddCurseExsanguinate(int v)
+    {
+        BuffManager.AddBuff(BuffSingleton.Instance.GetBuffDataByType(BuffScriptableObject.BuffType.Bleed), 5 * v);
+    }
+
+    public void AddCurseWither(int v)
+    {
+        BuffManager.AddBuff(BuffSingleton.Instance.GetBuffDataByType(BuffScriptableObject.BuffType.Wither), v);
+    }
+
+    public void AddCurseTithe(int v)
+    {
+        for (int i = 0; i < v; i++)
+            PlayerInventorySingleton.Instance.UpdateGoldValue(PlayerInventorySingleton.Instance.CollectedGold - Random.Range(5, 25));
+    }
+
+    public void AddCurseStill(int v)
+    {
+        BuffManager.AddBuff(BuffSingleton.Instance.GetBuffDataByType(BuffScriptableObject.BuffType.Still), v);
+    }
+
+    public void AddCurseShackle (int v)
+    {
+        BuffManager.AddBuff(BuffSingleton.Instance.GetBuffDataByType(BuffScriptableObject.BuffType.Shackle), v);
+    }
+
+    public void AddCurseWhisper(int v)
+    {
+        BuffManager.AddBuff(BuffSingleton.Instance.GetBuffDataByType(BuffScriptableObject.BuffType.Whisper), v);
+    }
+
+    public void AddCurseEcho(int v)
+    {
+        for(int i = 0; i < v;i++)
+            CurseManagerSingleton.Instance.AddRandomCurseFace(true);
+    }
+
+    public void AddCurseRust(int v)
+    {
+        AddDefense(DefenseCurrent * -1);
+    }
+
+    public void AddCurseWane(int v)
+    {
+        _healthMax -= v;
+        if(_healthCurrent > _healthMax)
+            _healthCurrent = _healthMax;
+        _sizeModifier -= GROW_SIZE_GAIN * v;
+        transform.localScale = Vector3.one + Vector3.one * _sizeModifier;
+    }
+
 }

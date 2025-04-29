@@ -5,7 +5,8 @@ using UnityEngine;
 [CreateAssetMenu]
 public class BuffScriptableObject : ScriptableObject
 {
-    public enum BuffType { None, Strength, Thorns, Weaken, Stun, Bleed, Luck, Sunder, RerollAttack, RerollDefense, Brace, Regen, Tenacity, Vamperism, Evade };
+    public enum BuffType { None, Strength, Thorns, Weaken, Stun, Bleed, Luck, Sunder, RerollAttack, RerollDefense, Brace, Regen, Tenacity, Vamperism, Evade,
+    Anoint, Omniscience, Wither, Still, Shackle, Whisper};
     public BuffType MyBuffType;
     public Sprite BuffIcon;
     public string BuffDescription;

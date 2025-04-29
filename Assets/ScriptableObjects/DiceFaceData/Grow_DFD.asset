@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Grow_DFD
   m_EditorClassIdentifier: 
   DiceFaceMat: {fileID: 2100000, guid: bdaa849672e473341b0aed6c25d86223, type: 2}
-  RolledDiceParticles: {fileID: 7698782438158763098, guid: 47a404ad82385fc48bfc3ae628720d93,
+  RolledDiceParticles: {fileID: 8833649549848326606, guid: 53e83ca2c51578542a26b807278676aa,
     type: 3}
-  PlayerPowerUpParticles: {fileID: 2112066996366332082, guid: f598e6c15c834a74dbf84e0e342833bc,
+  PlayerPowerUpParticles: {fileID: 3149958232377705460, guid: 8ed31b2d1e0d2e04e96805122d9e8a9b,
     type: 3}
   DiceFaceEnum: 21
   DiceFaceUiSprite: {fileID: 21300000, guid: 2c87b6f1af51c664a8f11c01ce83bcac, type: 3}

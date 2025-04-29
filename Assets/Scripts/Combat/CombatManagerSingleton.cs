@@ -221,7 +221,7 @@ public class CombatManagerSingleton : MonoBehaviour
             _attackTargettedEnemies.Add(enemyCombatBehaviour);
             enemyCombatBehaviour.UiCombatStats.AddPlayerActionMarker();
 
-            if (_attackTargettedEnemies.Count == PlayerCharacterCombatBehaviour.AttackCountCurrent)
+            if (_attackTargettedEnemies.Count == PlayerCharacterCombatBehaviour.GetCurrentAttackCount())
                 SwapToCombatState(CombatState.PlayerExecutingAllActions);
         }
     }
@@ -332,6 +332,7 @@ public class CombatManagerSingleton : MonoBehaviour
         {
             SwapToCombatState(CombatState.Idle);
             PayoutCombatRewards();
+            DiceRollerSingleton.Instance.PostCombatDiceCleanup();
         }
 
         return _enemyCombatBehaviours.Count > 0;
@@ -351,6 +352,8 @@ public class CombatManagerSingleton : MonoBehaviour
             damage /= 2;
         if (criticalStrike)
             damage *= 2;
+        if (_playerCharacterCombatBehaviour.BuffManager.IsBuffActive(BuffScriptableObject.BuffType.Whisper))
+            damage = 1;
 
         _playerCharacterCombatBehaviour.CombatAnimationBehaviour.PlayAttackAnimation();
         if(target.DefenseCurrent < damage)

@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54e21caa6f14e894dbdfffbd2ffab931, type: 3}
+  m_Name: Anoint_BSO
+  m_EditorClassIdentifier: 
+  MyBuffType: 15
+  BuffIcon: {fileID: 21300000, guid: 5177bf0106066ae4c9ccb319842c6cfe, type: 3}
+  BuffDescription: All Of This Unit's Attacks Will Critically Strike This Round.
+  BuffStackingAllowed: 1
+  BuffIsPermanent: 0

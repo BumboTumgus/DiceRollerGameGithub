@@ -182,6 +182,7 @@ public class RestingSingleton : MonoBehaviour
 
     public void UiButtonPress_RemoveCurses()
     {
+        CurseManagerSingleton.Instance.RemoveAllCurses();
         FinishedRestingNowProceedToMap();
     }
     #endregion

@@ -85,6 +85,8 @@ public class PlayerInventorySingleton : MonoBehaviour
     public void UpdateGoldValue(int newGoldValue)
     {
         _collectedGold = newGoldValue;
+        if (_collectedGold < 0)
+            _collectedGold = 0;
         InventoryUiManagerSingleton.Instance.SetGoldReadoutValue(_collectedGold);
     }
 

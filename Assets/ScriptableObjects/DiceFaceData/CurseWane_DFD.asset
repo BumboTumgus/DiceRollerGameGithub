@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: CurseWane_DFD
   m_EditorClassIdentifier: 
   DiceFaceMat: {fileID: 2100000, guid: dd0a280470612ed4da39983deee63a38, type: 2}
-  RolledDiceParticles: {fileID: 7698782438158763098, guid: 47a404ad82385fc48bfc3ae628720d93,
+  RolledDiceParticles: {fileID: 6528738168448788537, guid: ecd0caa0794811940ad75a7a1be26d93,
     type: 3}
-  PlayerPowerUpParticles: {fileID: 2112066996366332082, guid: f598e6c15c834a74dbf84e0e342833bc,
+  PlayerPowerUpParticles: {fileID: 8587755946103279631, guid: f96d92e4621db134986f721f12e11f28,
     type: 3}
   DiceFaceEnum: 27
   DiceFaceUiSprite: {fileID: 21300000, guid: 1b3632c42635f214391bd7b1db4972f2, type: 3}

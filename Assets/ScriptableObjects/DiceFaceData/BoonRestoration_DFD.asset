@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: BoonRestoration_DFD
   m_EditorClassIdentifier: 
   DiceFaceMat: {fileID: 2100000, guid: 3de2698571bc287428bf716a4ef8ae75, type: 2}
-  RolledDiceParticles: {fileID: 7698782438158763098, guid: 47a404ad82385fc48bfc3ae628720d93,
+  RolledDiceParticles: {fileID: 5665627531926093144, guid: 11dcad0fa5fda114286ca2cbac9c2c36,
     type: 3}
-  PlayerPowerUpParticles: {fileID: 2112066996366332082, guid: f598e6c15c834a74dbf84e0e342833bc,
+  PlayerPowerUpParticles: {fileID: 6573565677693331252, guid: bfa1349a8f59a8f4895d4bec303f6a20,
     type: 3}
   DiceFaceEnum: 37
   DiceFaceUiSprite: {fileID: 21300000, guid: fc9a9a32eed5ef04cbe03ead111e0503, type: 3}

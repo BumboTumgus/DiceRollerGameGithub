@@ -114,6 +114,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _startingDiceFaceState: Defense
+  _myDiceFaceData: {fileID: 0}
+  _myTempDiceFaceData: {fileID: 0}
 --- !u!1 &633464388332816178
 GameObject:
   m_ObjectHideFlags: 0
@@ -260,6 +262,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _startingDiceFaceState: Defense
+  _myDiceFaceData: {fileID: 0}
+  _myTempDiceFaceData: {fileID: 0}
 --- !u!1 &1229732837571102690
 GameObject:
   m_ObjectHideFlags: 0
@@ -406,6 +410,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _startingDiceFaceState: Attack
+  _myDiceFaceData: {fileID: 0}
+  _myTempDiceFaceData: {fileID: 0}
 --- !u!1 &1604946283671079035
 GameObject:
   m_ObjectHideFlags: 0
@@ -552,6 +558,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _startingDiceFaceState: Attack
+  _myDiceFaceData: {fileID: 0}
+  _myTempDiceFaceData: {fileID: 0}
 --- !u!1 &2559198829450461888
 GameObject:
   m_ObjectHideFlags: 0
@@ -698,6 +706,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _startingDiceFaceState: Attack
+  _myDiceFaceData: {fileID: 0}
+  _myTempDiceFaceData: {fileID: 0}
 --- !u!1 &5091021899196980453
 GameObject:
   m_ObjectHideFlags: 0
@@ -859,6 +869,8 @@ MonoBehaviour:
   - {fileID: 7698981077888776336}
   - {fileID: 1274222211079874940}
   - {fileID: 4041820927092430365}
+  _diceSacrificeParticleFx: {fileID: 7655124906925099429, guid: a7d5046499fe2504c8d9d41368fff7fc,
+    type: 3}
 --- !u!111 &7772297220700394110
 Animation:
   m_ObjectHideFlags: 0
@@ -1072,3 +1084,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _startingDiceFaceState: Defense
+  _myDiceFaceData: {fileID: 0}
+  _myTempDiceFaceData: {fileID: 0}
